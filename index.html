@@ -34,8 +34,8 @@
       else { document.documentElement.setAttribute('data-theme','light'); }
     } catch(e){}
     try {
-      // 'Enable New UI Dashboard' flag — default OFF (classic dashboard)
-      if (localStorage.getItem('zipNewUiDashboard') === '1') document.documentElement.classList.add('new-ui');
+      // 'Enable New UI Dashboard' flag — default ON (classic dashboard only when explicitly turned off)
+      if (localStorage.getItem('zipNewUiDashboard') !== '0') document.documentElement.classList.add('new-ui');
     } catch(e){}
   })();
 </script>
@@ -4204,21 +4204,29 @@ function switchTab(tab) {
 </div>
 
 <!-- DELETE UNASSIGNED SHIFT CONFIRM -->
-<div id="uaDeleteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[9999]" onclick="if(event.target===this) closeUaDelete()">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
-    <div class="p-6 text-center">
-      <div class="w-12 h-12 mx-auto rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4">
-        <i data-lucide="trash-2" class="w-6 h-6"></i>
+<div id="uaDeleteModal" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] hidden items-start justify-center pt-20 z-[9999]" onclick="if(event.target===this) closeUaDelete()">
+  <div id="uaDeleteCard" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden border border-slate-100">
+    <div class="p-5 flex gap-4">
+      <div class="w-11 h-11 shrink-0 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
+        <i data-lucide="trash-2" class="w-5 h-5"></i>
       </div>
-      <div class="font-bold text-slate-800 text-[16px]">Delete Unassigned Shift?</div>
-      <div id="uaDeleteText" class="text-slate-500 text-[13px] mt-1.5"></div>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-slate-800 text-[15px]">Delete Unassigned Shift</div>
+        <div class="text-slate-500 text-[13px] mt-1">Are you sure you want to delete this unassigned shift? This action cannot be undone.</div>
+        <div id="uaDeleteText" class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[13px]"></div>
+      </div>
+      <button onclick="closeUaDelete()" class="self-start text-slate-400 hover:text-slate-600 transition" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button>
     </div>
-    <div class="px-6 pb-6 flex gap-3">
-      <button onclick="closeUaDelete()" class="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
-      <button onclick="confirmUaDelete()" class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white text-[13px] font-semibold hover:bg-red-700 transition">Delete</button>
+    <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+      <button onclick="closeUaDelete()" class="px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
+      <button onclick="confirmUaDelete()" class="px-4 py-2 rounded-lg bg-red-600 text-white text-[13px] font-semibold hover:bg-red-700 transition flex items-center gap-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Shift</button>
     </div>
   </div>
 </div>
+<style>
+  #uaDeleteModal.flex #uaDeleteCard { animation: uaDropIn .18s ease-out; }
+  @keyframes uaDropIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+</style>
 
 <!-- UI SETTINGS MODAL -->
 <div id="uiSettingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[9999]" onclick="if(event.target===this) closeUiSettings()">
@@ -4354,11 +4362,36 @@ let uaPendingRow = null;
 function deleteUnassignedShift(btn, role) {
     uaPendingRow = btn.closest('.ua-actions').parentElement;
     const when = uaPendingRow.querySelector('.sd-row-sub, .text-\\[11px\\]');
+    // Row text looks like "16th Feb 2026 • 10:00 AM - 4:00 PM"
+    const [date = '', time = ''] = (when ? when.textContent.trim() : '').split('•').map(s => s.trim());
+    // Department comes from the sibling Assign button: openAssignModal('ua-1', 'Front', 'Crew')
+    const assignBtn = btn.closest('.ua-actions').querySelector('[onclick^="openAssignModal"]');
+    const dept = ((assignBtn && assignBtn.getAttribute('onclick').match(/openAssignModal\('[^']*',\s*'([^']*)'/)) || [])[1] || '';
+    const detail = (icon, value) => value
+        ? `<span class="flex items-center gap-1.5"><i data-lucide="${icon}" class="w-3.5 h-3.5 text-slate-400"></i>${value}</span>`
+        : '';
     document.getElementById('uaDeleteText').innerHTML =
-        '<strong class="text-slate-700">' + role + '</strong>' + (when ? '<br>' + when.textContent.trim() : '');
+        `<div class="flex items-center gap-2"><span class="font-semibold text-slate-800">${role}</span>` +
+        (dept ? `<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold">${dept}</span>` : '') + `</div>` +
+        `<div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-[12.5px] text-slate-600">` +
+        detail('calendar', date) + detail('clock', time) + detail('timer', uaShiftDuration(time)) + `</div>`;
     const m = document.getElementById('uaDeleteModal');
     m.classList.remove('hidden'); m.classList.add('flex');
     lucide.createIcons();
+}
+// "10:00 AM - 4:00 PM" → "6h" / "6h 30m"
+function uaShiftDuration(range) {
+    const toMin = t => {
+        const m = (t || '').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+        if (!m) return null;
+        let h = +m[1] % 12;
+        if (m[3].toUpperCase() === 'PM') h += 12;
+        return h * 60 + +m[2];
+    };
+    const [a, b] = range.split('-').map(toMin);
+    if (a === null || b === null || a === undefined || b === undefined) return '';
+    const mins = (b - a + 1440) % 1440;
+    return `${Math.floor(mins / 60)}h${mins % 60 ? ' ' + (mins % 60) + 'm' : ''}`;
 }
 function closeUaDelete() {
     uaPendingRow = null;
@@ -4375,7 +4408,7 @@ function confirmUaDelete() {
     closeUaDelete();
 }
 
-/* ---- UI Settings: 'Enable New UI Dashboard' flag (default OFF) ---- */
+/* ---- UI Settings: 'Enable New UI Dashboard' flag (default ON) ---- */
 function openUiSettings() {
     document.getElementById('profilePopup').classList.add('hidden');
     document.getElementById('newUiToggle').checked = document.documentElement.classList.contains('new-ui');

@@ -782,9 +782,152 @@ px !important;
 
 /* ===== REPORT MODALS — slightly above center ===== */
 #auditReportModal > div,
-#timeoffReportModal > div,
-#dailyCoverageModal > div {
+#timeoffReportModal > div {
     margin-top: -7vh;
+}
+
+/* ===== DAILY COVERAGE REPORT — full-screen view ===== */
+#dailyCoverageView { --dcv-cols: 248px 96px repeat(24, minmax(46px, 1fr)); }
+.dcv-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 34px; padding: 0 14px 0 10px; border-radius: 10px;
+    border: 1px solid #e2e8f0; background: #fff; color: #1e3a8a;
+    font-size: 13px; font-weight: 600; transition: all .15s ease;
+}
+.dcv-back:hover { background: #eff6ff; border-color: #bfdbfe; }
+.dcv-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 34px; padding: 0 14px; border-radius: 10px;
+    border: 1px solid #e2e8f0; background: #fff; color: #334155;
+    font-size: 13px; font-weight: 600; transition: all .15s ease;
+}
+.dcv-btn:hover { background: #f8fafc; }
+.dcv-btn-primary { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
+.dcv-btn-primary:hover { background: #1d4ed8; }
+.dcv-datenav {
+    display: flex; align-items: center; height: 34px;
+    border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; overflow: hidden;
+}
+.dcv-datenav > button { width: 34px; height: 100%; display: flex; align-items: center; justify-content: center; color: #64748b; }
+.dcv-datenav > button:hover { background: #f1f5f9; color: #1e3a8a; }
+.dcv-datelabel {
+    position: relative; display: flex; align-items: center; gap: 8px; height: 100%;
+    padding: 0 14px; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
+    font-size: 13px; font-weight: 600; color: #1e3a8a; cursor: pointer; white-space: nowrap;
+}
+.dcv-datelabel input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.dcv-datelabel input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+.dcv-search {
+    display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px;
+    border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; width: 220px;
+}
+.dcv-search input { border: 0; outline: 0; background: transparent; font-size: 13px; width: 100%; color: #1e293b; }
+#dcvGroupFilter button { padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 8px; color: #64748b; transition: all .15s ease; }
+#dcvGroupFilter button.active { background: #fff; color: #1e3a8a; box-shadow: 0 1px 2px rgba(15,23,42,.08); }
+.dcv-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.dcv-swatch-break { background: repeating-linear-gradient(135deg, #94a3b8 0 2px, #e2e8f0 2px 4px); }
+
+/* KPI tiles */
+.dcv-kpi { padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-radius: 12px; }
+.dcv-kpi-label { font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dcv-kpi-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dcv-kpi-value { font-size: 18px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+
+/* insights */
+.dcv-insight { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid; font-size: 12.5px; line-height: 1.4; }
+.dcv-insight b { font-weight: 600; }
+.dcv-insight-red { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.dcv-insight-amber { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.dcv-insight-green { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.dcv-insight-blue { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+
+/* timeline + stats: one scroll area, shared column template keeps hours aligned */
+#dcvGridCard { height: calc(100vh - 172px); min-height: 520px; } /* fills the area under the frozen header bar */
+.dcv-tabs { display: flex; align-items: center; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.dcv-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #64748b; transition: all .15s ease; }
+.dcv-tabs button.active { background: #fff; color: #1e3a8a; box-shadow: 0 1px 2px rgba(15,23,42,.08); }
+.dcv-count { min-width: 22px; padding: 1px 7px; border-radius: 9999px; background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 700; text-align: center; }
+.dcv-tabs button.active .dcv-count { background: #dbeafe; color: #1e40af; }
+.dcv-scroll { flex: 1; min-height: 0; overflow: auto; position: relative; }
+.dcv-grid, .dcv-row, .dcv-srow { display: grid; grid-template-columns: var(--dcv-cols); min-width: 1448px; }
+.dcv-head { position: sticky; top: 0; z-index: 6; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.dcv-head .dcv-cell { height: 38px; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; color: #475569; border-left: 1px solid #eef2f6; }
+.dcv-head .dcv-cell.now { color: #dc2626; }
+.dcv-sticky { position: sticky; left: 0; z-index: 3; background: inherit; }
+.dcv-sticky2 { position: sticky; left: 248px; z-index: 3; background: inherit; }
+.dcv-head .dcv-sticky, .dcv-head .dcv-sticky2 { justify-content: flex-start; padding-left: 16px; background: #f8fafc; border-left: 0; }
+.dcv-head .dcv-sticky2 { justify-content: flex-end; padding: 0 12px 0 0; border-right: 1px solid #e2e8f0; }
+.dcv-row { background: #fff; border-bottom: 1px solid #f1f5f9; }
+.dcv-row:nth-child(even) { background: #fbfcfe; }
+.dcv-row:hover { background: #f5f8ff; }
+.dcv-emp { display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 16px; min-width: 0; }
+.dcv-avatar { width: 34px; height: 34px; border-radius: 9999px; object-fit: cover; flex-shrink: 0; background: #e2e8f0; border: 2px solid #fff; }
+.dcv-emp-name { font-size: 13px; font-weight: 700; color: #2563eb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
+.dcv-emp-pos { font-size: 11.5px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dcv-hrs { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; padding-right: 12px; border-right: 1px solid #e2e8f0; }
+.dcv-hrs-day { font-size: 13px; font-weight: 700; color: #1e293b; }
+.dcv-hrs-week { font-size: 11px; color: #64748b; }
+.dcv-track {
+    grid-column: 3 / -1; position: relative; min-height: 52px;
+    background-image: linear-gradient(to right, #eef2f6 1px, transparent 1px);
+    background-size: calc(100% / 24) 100%;
+}
+.dcv-bar {
+    position: absolute; top: 50%; transform: translateY(-50%); height: 28px;
+    border-radius: 9999px; color: #fff; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 0 10px; font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15,23,42,.12); cursor: default; transition: box-shadow .15s ease, transform .15s ease;
+}
+.dcv-bar:hover { box-shadow: 0 4px 12px rgba(15,23,42,.18); transform: translateY(-50%) scale(1.01); z-index: 2; }
+.dcv-bar span { position: relative; z-index: 1; overflow: hidden; text-overflow: ellipsis; }
+.dcv-bar .dcv-pos { font-weight: 700; opacity: .9; }
+.dcv-bar span { text-shadow: 0 1px 1px rgba(15,23,42,.25); }
+.dcv-break {
+    position: absolute; top: 0; bottom: 0;
+    background: repeating-linear-gradient(135deg, rgba(15,23,42,.38) 0 3px, rgba(15,23,42,.18) 3px 6px);
+}
+.dcv-nowline { position: absolute; top: 0; bottom: 0; width: 2px; background: #ef4444; z-index: 1; pointer-events: none; }
+.dcv-nowline::before { content: ''; position: absolute; top: -1px; left: -3px; width: 8px; height: 8px; border-radius: 9999px; background: #ef4444; }
+.dcv-empty { padding: 32px; text-align: center; font-size: 13px; color: #64748b; }
+.dcv-band { position: sticky; top: 0; z-index: 7; background: #1e3a8a; border-top: 2px solid #1e3a8a; }
+.dcv-band > div { height: 38px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11.5px; font-weight: 700; border-left: 1px solid rgba(255,255,255,.12); }
+.dcv-band > .dcv-sticky, .dcv-band > .dcv-sticky2 { background: #1e3a8a; border-left: 0; }
+.dcv-band > .dcv-sticky { justify-content: flex-start; gap: 8px; padding-left: 16px; font-size: 12px; letter-spacing: .4px; text-transform: uppercase; }
+.dcv-band > .dcv-sticky2 { justify-content: flex-end; padding-right: 12px; border-right: 1px solid rgba(255,255,255,.2); }
+.dcv-srow { background: #fff; border-bottom: 1px solid #f1f5f9; }
+.dcv-srow > div { font-size: 12px; color: #334155; text-align: right; padding: 7px 8px; font-variant-numeric: tabular-nums; border-left: 1px solid #f1f5f9; }
+.dcv-srow > .dcv-sticky { text-align: left; padding-left: 16px; font-weight: 600; color: #1e293b; border-left: 0; }
+.dcv-srow > .dcv-sticky2 { font-weight: 700; color: #0f172a; border-right: 1px solid #e2e8f0; background: #f8fafc; }
+.dcv-srow:hover { background: #f5f8ff; }
+.dcv-srow.dcv-sales { background: #fffbeb; }
+.dcv-srow.dcv-sales > .dcv-sticky2 { background: #fef3c7; }
+.dcv-sgroup > span { position: sticky; left: 16px; }
+.dcv-sgroup { padding: 6px 16px; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #64748b; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; min-width: 1452px; }
+.dcv-neg { color: #dc2626 !important; }
+.dcv-pos-v { color: #16a34a !important; }
+.dcv-zero { color: #cbd5e1 !important; }
+
+html.dark .dcv-back, html.dark .dcv-btn, html.dark .dcv-datenav, html.dark .dcv-search { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+html.dark .dcv-datelabel { border-color: #334155; color: #bfdbfe; }
+html.dark .dcv-btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+html.dark .dcv-search input { color: #e2e8f0; }
+html.dark .dcv-kpi-value, html.dark .dcv-emp-name, html.dark .dcv-hrs-day { color: #f1f5f9; }
+html.dark .dcv-head, html.dark .dcv-head .dcv-sticky, html.dark .dcv-head .dcv-sticky2 { background: #0f172a; border-color: #334155; }
+html.dark .dcv-row, html.dark .dcv-srow { background: #1e293b; border-color: #334155; }
+html.dark .dcv-row:nth-child(even) { background: #1a2436; }
+html.dark .dcv-srow > div { color: #cbd5e1; border-color: #334155; }
+html.dark .dcv-srow > .dcv-sticky, html.dark .dcv-srow > .dcv-sticky2 { color: #f1f5f9; background: #1e293b; }
+html.dark .dcv-srow.dcv-sales { background: #2a2414; }
+html.dark .dcv-srow.dcv-sales > .dcv-sticky2 { background: #3a3018; }
+html.dark .dcv-sgroup { background: #0f172a; color: #94a3b8; border-color: #334155; }
+html.dark .dcv-track { background-image: linear-gradient(to right, #334155 1px, transparent 1px); }
+
+@media print {
+    body.dcv-print { height: auto !important; overflow: visible !important; }
+    body.dcv-print > div:first-of-type, body.dcv-print .sidebar, body.dcv-print .dcv-noprint { display: none !important; }
+    body.dcv-print #dailyCoverageView, body.dcv-print #dcvContent { overflow: visible !important; padding: 0 !important; }
+    body.dcv-print #dcvGridCard { height: auto !important; }
+    body.dcv-print .dcv-scroll { overflow: visible !important; }
 }
 
 /* ===== SCHEDULE PAD POLISH — matches Sch_dash.html ===== */
@@ -1251,7 +1394,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     </div>
 
     <div class="flex-1 flex flex-col overflow-hidden">
-        <div class="flex-1 p-5 overflow-y-auto space-y-4 flex flex-col">
+        <div id="schedulePadView" class="flex-1 p-5 overflow-y-auto space-y-4 flex flex-col">
             <!-- COMPACT CONTROL BAR -->
             <div class="card py-3 px-5 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-4">
@@ -1422,6 +1565,127 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- DAILY COVERAGE REPORT — full-screen view (opened from Schedule Pad ⋮ menu) -->
+        <div id="dailyCoverageView" class="hidden flex-1 p-5 overflow-hidden flex-col gap-4">
+
+            <!-- HEADER BAR -->
+            <div class="card py-3 px-5 flex flex-wrap justify-between items-center gap-3 shrink-0">
+                <div class="flex items-center gap-4 min-w-0">
+                    <button onclick="closeDailyCoverage()" class="dcv-back dcv-noprint" title="Back to Schedule (Esc)">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back</span>
+                    </button>
+                    <div class="h-8 border-l border-slate-200 dcv-noprint"></div>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-9 h-9 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <div class="text-[16px] font-bold text-slate-800 leading-tight">Daily Coverage Report</div>
+                            <div id="dcvSubtitle" class="text-[12px] text-slate-500 truncate">085 - Del Mar</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 dcv-noprint">
+                    <div class="dcv-datenav">
+                        <button onclick="shiftCoverageDate(-1)" title="Previous day"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                        <label class="dcv-datelabel">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span id="dcvDateLabel">—</span>
+                            <input type="date" id="dcvDateInput" onchange="setCoverageDate(this.value)">
+                        </label>
+                        <button onclick="shiftCoverageDate(1)" title="Next day"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    </div>
+                    <button onclick="setCoverageDate('today')" class="dcv-btn">Today</button>
+                    <div class="relative">
+                        <button onclick="toggleCoverageExport()" class="dcv-btn dcv-btn-primary">
+                            <i data-lucide="download" class="w-4 h-4"></i> Export <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <div id="coverageExportMenu" class="hidden absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg text-[13px] py-1 z-[60]">
+                            <div class="px-4 py-2 hover:bg-slate-50 cursor-pointer flex items-center gap-2" onclick="exportCoveragePDF()"><i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i> Export PDF</div>
+                            <div class="px-4 py-2 hover:bg-slate-50 cursor-pointer flex items-center gap-2" onclick="exportCoverageCSV()"><i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i> Export CSV</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCROLLABLE CONTENT (header bar above stays frozen) -->
+            <div id="dcvContent" class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4">
+
+            <!-- KPI TILES -->
+            <div id="dcvKpis" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 shrink-0"></div>
+
+            <!-- CHART + INSIGHTS -->
+            <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 shrink-0">
+                <div class="card p-5 xl:col-span-3 flex flex-col xl:h-[320px]">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                            <div class="text-[14px] font-bold text-slate-800">Hourly Staffing Coverage</div>
+                            <div class="text-[12px] text-slate-500">Scheduled staff vs. forecasted need, by hour</div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-[11.5px] font-medium text-slate-500">
+                            <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#2563eb"></span>On Target</span>
+                            <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#f59e0b"></span>Understaffed</span>
+                            <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#ef4444"></span>Critical Gap</span>
+                            <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#10b981"></span>Overstaffed</span>
+                            <span class="flex items-center gap-1.5"><span class="w-4 border-t-2 border-dashed border-slate-500"></span>Forecast</span>
+                        </div>
+                    </div>
+                    <div class="relative flex-1 min-h-[200px]"><canvas id="coverageChart"></canvas></div>
+                </div>
+                <div class="card p-5 flex flex-col xl:h-[320px]">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-violet-500"></i>
+                        <div class="text-[14px] font-bold text-slate-800">Coverage Insights</div>
+                    </div>
+                    <div id="dcvInsights" class="flex flex-col gap-2 overflow-y-auto flex-1 min-h-0 pr-1"></div>
+                </div>
+            </div>
+
+            <!-- SHIFT TIMELINE + DAILY STATS (one component, one scroll area, shared hour columns) -->
+            <div id="dcvGridCard" class="card overflow-hidden flex flex-col shrink-0">
+                <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-slate-100 dcv-noprint">
+                    <div id="dcvTabs" class="dcv-tabs">
+                        <button data-sec="timeline" class="active" onclick="scrollCoverageTo('timeline')">
+                            <i data-lucide="calendar-range" class="w-4 h-4"></i> Shift Timeline <span id="dcvRowCount" class="dcv-count">0</span>
+                        </button>
+                        <button data-sec="stats" onclick="scrollCoverageTo('stats')">
+                            <i data-lucide="table" class="w-4 h-4"></i> Daily Stats
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="dcv-search">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                            <input id="dcvSearch" type="text" placeholder="Search employee" oninput="renderCoverageEmployeeRows()">
+                        </div>
+                        <div id="dcvGroupFilter" class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                            <button data-group="all" onclick="setCoverageGroup('all')">All</button>
+                            <button data-group="mgmt" onclick="setCoverageGroup('mgmt')">Management</button>
+                            <button data-group="kitchen" onclick="setCoverageGroup('kitchen')">Kitchen</button>
+                            <button data-group="foh" onclick="setCoverageGroup('foh')">Front of House</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- legend -->
+                <div class="flex flex-wrap items-center gap-4 px-5 py-2 border-b border-slate-100 text-[11.5px] text-slate-500 font-medium">
+                    <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#7c3aed"></span>General Manager</span>
+                    <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#d97706"></span>Shift Leader</span>
+                    <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#16a34a"></span>Line Cook</span>
+                    <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#e11d48"></span>Cashier</span>
+                    <span class="flex items-center gap-1.5"><span class="dcv-swatch dcv-swatch-break"></span>Meal Break</span>
+                    <span class="ml-auto flex items-center gap-1.5 text-slate-400"><i data-lucide="mouse-pointer-2" class="w-3.5 h-3.5"></i>Scroll down for hourly Daily Stats</span>
+                </div>
+
+                <div id="dcvScroll" class="dcv-scroll">
+                    <div id="dcvHead" class="dcv-grid dcv-head"></div>
+                    <div id="coverageEmployeeBody"></div>
+                    <div id="dcvStatsHead" class="dcv-grid dcv-band"></div>
+                    <div id="coverageStatsBody"></div>
+                </div>
+            </div>
             </div>
         </div>
     </div>
@@ -2076,179 +2340,6 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
         </div>
 
     </div>
-</div>
-<!-- DAILY COVERAGE REPORT -->
-<div id="dailyCoverageModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[800]">
-
-    <div class="bg-white w-[1300px] rounded-xl shadow-2xl overflow-hidden">
-
-        <!-- HEADER -->
-        <div class="flex justify-between items-center px-6 py-3 bg-[#0b2545] border-b border-[#1d3b6a]">
-            <span class="font-bold text-[15px] text-white">Daily Coverage Report</span>
-
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <button onclick="toggleCoverageExport()" class="border border-white/30 text-white rounded-full px-4 py-1 text-[12px] flex items-center gap-2 hover:bg-white/10 transition-colors">
-                        Export <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                    </button>
-
-                    <div id="coverageExportMenu" class="hidden absolute right-0 mt-2 bg-white border rounded-lg shadow text-[12px] z-[900]">
-                        <div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="exportCoveragePDF()">Export PDF</div>
-                        <div class="px-4 py-2 hover:bg-slate-50 cursor-pointer" onclick="exportCoverageCSV()">Export CSV</div>
-                    </div>
-                </div>
-
-                <button onclick="closeDailyCoverage()" class="bg-white/10 hover:bg-white/20 text-white text-[12px] px-4 py-1 rounded-full transition-colors">
-                    Close
-                </button>
-            </div>
-        </div>
-
-        <!-- BODY -->
-<div class="flex flex-col max-h-[720px]">
-
-    <!-- HOURLY STAFFING CHART -->
-    <div class="px-5 pt-4 pb-3 border-b bg-white shrink-0">
-        <div class="flex items-center justify-between mb-2">
-            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hourly Staffing Coverage</span>
-            <div class="flex items-center gap-3 text-[10px] font-semibold">
-                <span class="flex items-center gap-1 text-slate-500"><span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:#2563eb"></span> On Target</span>
-                <span class="flex items-center gap-1 text-slate-500"><span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:#f59e0b"></span> Understaffed</span>
-                <span class="flex items-center gap-1 text-slate-500"><span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:#ef4444"></span> Critical Gap</span>
-                <span class="flex items-center gap-1 text-slate-500"><span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:#10b981"></span> Overstaffed</span>
-            </div>
-        </div>
-        <div style="height:120px;">
-            <canvas id="coverageChart"></canvas>
-        </div>
-    </div>
-
-    <!-- EMPLOYEE AREA (SCROLLABLE) -->
-    <div class="overflow-auto max-h-[220px]">
-
-<table class="w-full border-collapse text-[11px]">
-
-<thead>
-<tr class="bg-[#1d3b6a] text-white uppercase text-[10px]">
-<th class="px-4 py-2 text-left w-[240px]">Employees</th>
-<th class="px-2 text-center">12A</th>
-<th class="px-2 text-center">1A</th>
-<th class="px-2 text-center">2A</th>
-<th class="px-2 text-center">3A</th>
-<th class="px-2 text-center">4A</th>
-<th class="px-2 text-center">5A</th>
-<th class="px-2 text-center">6A</th>
-<th class="px-2 text-center">7A</th>
-<th class="px-2 text-center">8A</th>
-<th class="px-2 text-center">9A</th>
-<th class="px-2 text-center">10A</th>
-<th class="px-2 text-center">11A</th>
-<th class="px-2 text-center">12P</th>
-<th class="px-2 text-center">1P</th>
-<th class="px-2 text-center">2P</th>
-<th class="px-2 text-center">3P</th>
-<th class="px-2 text-center">4P</th>
-<th class="px-2 text-center">5P</th>
-<th class="px-2 text-center">6P</th>
-<th class="px-2 text-center">7P</th>
-<th class="px-2 text-center">8P</th>
-<th class="px-2 text-center">9P</th>
-<th class="px-2 text-center">10P</th>
-<th class="px-2 text-center">11P</th>
-</tr>
-</thead>
-
-<tbody id="coverageEmployeeBody">
-<!-- Populated by JS (renderCoverageEmployeeRows) -->
-</tbody>
-</table>
-</div>
-
-<!-- DAILY STATS FIXED AREA -->
-<div class="border-t bg-slate-50">
-    <table class="w-full border-collapse text-[11px]">
-        <tbody id="coverageStatsBody">
-
-<tr>
-<td class="px-4 py-2 font-semibold w-[240px]">Total Scheduled Staff</td>
-<td class="text-center">81.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Fixed Staff</td>
-<td class="text-center">0.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Variable Staff</td>
-<td class="text-center">81.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Forecasted Staff</td>
-<td class="text-center">91.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold text-red-500">Staff Variance</td>
-<td class="text-center text-red-500">-10.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Management Coverage</td>
-<td class="text-center">24.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">SPLH (Sales/Labor Hours)</td>
-<td class="text-center">59.26</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">TPLH (Transactions/Labor Hrs)</td>
-<td class="text-center">3.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Sch Labour %</td>
-<td class="text-center">32.06</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Forecasted Sales ($)</td>
-<td class="text-center">4800.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Actual Sales ($)</td>
-<td class="text-center">4150.00</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Forecasted Transactions</td>
-<td class="text-center">243</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Actual Transactions</td>
-<td class="text-center">228</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Forecasted No Of Items Sold</td>
-<td class="text-center">0</td>
-</tr>
-
-<tr>
-<td class="px-4 py-2 font-semibold">Actual No Of Items Sold</td>
-<td class="text-center">0</td>
-</tr>
-
-        </tbody>
-    </table>
-</div>
-</div>
-</div>
 </div>
 <div id="moreOptionsMenu" class="hidden">
     <div class="more-option-item" onclick="handleMoreOption('unassigned')"><i data-lucide="clock" class="w-3.5 h-3.5"></i> Mark as unassigned</div>
@@ -4010,121 +4101,421 @@ function exportTimeoffCSV(){
     a.download = "TimeoffReport.csv";
     a.click();
 }
-// ── Daily Coverage: varied mock roster (deliberately leaves a midday gap) ──
-const _coverageRows = [
-    { name: "Daniel Garcia",      position: "Prep Cook",         start: 5,  end: 11 },
-    { name: "Daniel Velazquez",   position: "Line Cook",         start: 6,  end: 14 },
-    { name: "Sofia Ramirez",      position: "Crew",              start: 6,  end: 12 },
-    { name: "Angie Vasquez",      position: "General Manager",   start: 7,  end: 15 },
-    { name: "Benjamin Limon",     position: "Cashier",           start: 8,  end: 16 },
-    { name: "Michael Turner",     position: "Line Cook",         start: 9,  end: 17 },
-    { name: "David Acosta",       position: "Shift Leader",      start: 11, end: 19 },
-    { name: "Angela Cruz",        position: "Assistant Manager", start: 12, end: 20 },
-    { name: "Evelia Gonzalez",    position: "Cashier",           start: 16, end: 22 },
-    { name: "James Rodriguez",    position: "Crew",              start: 17, end: 23 },
-    { name: "Jessica Smith",      position: "Dishwasher",        start: 18, end: 23 },
-    { name: "Marcus Chen",        position: "Cashier",           start: 19, end: 23 },
-];
-const _coverageWeekHrs = { "Daniel Garcia":"22:00", "Daniel Velazquez":"34:00", "Sofia Ramirez":"26:00", "Angie Vasquez":"38:30", "Benjamin Limon":"30:00", "Michael Turner":"32:00", "David Acosta":"36:00", "Angela Cruz":"35:30", "Evelia Gonzalez":"24:30", "James Rodriguez":"18:00", "Jessica Smith":"20:00", "Marcus Chen":"16:00" };
-// Target headcount per hour-of-day (0=12AM ... 23=11PM) — used to color the chart
-const _coverageTargetByHour = [0,0,0,0,0,1,3,4,5,4,4,4,6,6,7,7,7,7,7,7,5,4,3,0];
+// ── Daily Coverage: roster is derived from the Schedule Pad (employeeData + shiftAssignments) ──
+// start/end/brk are hours of the day (decimal, 13.5 = 1:30 PM); week = scheduled hours this week
+let _coverageRows = [];
+// Share of the day's sales landing in each hour (drives forecasted staff + sales)
+const _coverageSalesCurve = [0,0,0,0,0,0,1,2,3,3,4,7,9,8,5,4,5,8,10,9,6,4,2,0];
+const _coverageDowSales = [0.9,0.85,0.9,0.95,1.05,1.2,1.1]; // Sun..Sat demand multiplier
+const _coverageSalesPerHr = 62;// forecasted $ per scheduled labor hour
+const _coverageAvgTicket = 20, _coverageAvgWage = 16.5;
+const _coverageMgmt = ["General Manager", "Assistant Manager", "Shift Leader"];
+const _coverageGroups = {
+    mgmt:    ["General Manager", "Assistant Manager", "Shift Leader"],
+    kitchen: ["Line Cook", "Prep Cook", "Dishwasher"],
+    foh:     ["Cashier", "Crew"],
+};
+// Same hue families as the Schedule Pad shift classes (shift-gm / shift-leader / shift-kitchen / shift-cashier)
+const _coverageColors = {
+    "General Manager": "#7c3aed", "Assistant Manager": "#7c3aed", "Shift Leader": "#d97706",
+    "Line Cook": "#16a34a", "Prep Cook": "#16a34a", "Dishwasher": "#16a34a",
+    "Cashier": "#e11d48", "Crew": "#e11d48",
+};
 let coverageChartInstance = null;
+let _coverageDate = null;
+let _coverageGroup = "all";
+let _coverageStats = null;
 
-function _coveragePosClass(position) {
-    const map = { "General Manager":"shift-gm", "Assistant Manager":"shift-gm", "Shift Leader":"shift-leader", "Line Cook":"shift-kitchen", "Prep Cook":"shift-kitchen", "Dishwasher":"shift-kitchen", "Cashier":"shift-cashier", "Crew":"shift-leader" };
-    return map[position] || "shift-kitchen";
-}
-function _coverageFmtHour(h) {
+function _coverageFmtTime(t) {
+    const h = Math.floor(t) % 24, m = Math.round((t - Math.floor(t)) * 60);
     const d = h % 12 === 0 ? 12 : h % 12;
-    return `${d}:00${h >= 12 ? 'P' : 'A'}`;
+    return `${d}${m ? ':' + String(m).padStart(2, '0') : ''}${h >= 12 ? 'p' : 'a'}`;
 }
-function _coverageScheduledByHour() {
+function _coverageHourLabel(h) {
+    const d = h % 12 === 0 ? 12 : h % 12;
+    return `${d}${h >= 12 ? 'p' : 'a'}`;
+}
+function _coverageOverlap(a, b, h) { return Math.max(0, Math.min(b, h + 1) - Math.max(a, h)); }
+function _coverageRowHours(r) { return (r.end - r.start) - (r.brk ? r.brk[1] - r.brk[0] : 0); }
+function _coverageSameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+
+// "06:00" | "14:30" | "8:00A" | "4:00P" → decimal hour
+function _coverageParseTime(s) {
+    const m = String(s || '').trim().match(/^(\d{1,2})(?::(\d{2}))?\s*([AaPp])?/);
+    if (!m) return null;
+    let h = +m[1];
+    const ap = m[3] && m[3].toUpperCase();
+    if (ap === 'P' && h < 12) h += 12;
+    if (ap === 'A' && h === 12) h = 0;
+    return h + (+(m[2] || 0)) / 60;
+}
+
+// Shifts for the selected weekday, using the same rules the Schedule Pad week view renders with
+function _coverageBuildRows() {
+    const c = _coverageDate.getDay(); // week columns start on Sunday
+    const rows = [];
+    employeeData.forEach(emp => {
+        if (emp.unavailableDays.includes(c)) return;
+        const assigned = shiftAssignments[`w_${emp.id}_${c}`]; // undefined=default, null=deleted, obj=assigned
+        if (assigned === null) return;
+        if (!assigned && (emp.id * 3 + c * 7) % 4 === 0) return;
+        const src = assigned || { position: emp.position, time: emp.shift.time };
+        const [a, b] = String(src.time).split('-');
+        const start = _coverageParseTime(a);
+        let end = _coverageParseTime(b);
+        if (start === null || end === null) return;
+        if (end <= start) end = 24;
+        const mid = start + Math.floor((end - start) / 2);
+        rows.push({
+            id: emp.id, name: emp.name, avatar: emp.avatar, position: src.position || emp.position,
+            start, end, brk: (emp.id % 2 === 0 && end - start >= 6) ? [mid, mid + 0.5] : null,
+            week: parseFloat(emp.totalHours) || 0, isShared: emp.isShared, isMinor: emp.isMinor,
+        });
+    });
+    return rows.sort((x, y) => x.start - y.start || x.name.localeCompare(y.name) || x.id - y.id);
+}
+
+// Fraction of each hour worked (net of meal breaks)
+function _coverageHourly(rows) {
     const arr = Array(24).fill(0);
-    _coverageRows.forEach(r => { for (let h = r.start; h < r.end; h++) arr[h]++; });
+    rows.forEach(r => {
+        for (let h = 0; h < 24; h++) {
+            arr[h] += _coverageOverlap(r.start, r.end, h) - (r.brk ? _coverageOverlap(r.brk[0], r.brk[1], h) : 0);
+        }
+    });
     return arr;
 }
+
+function _coverageComputeStats() {
+    const d = _coverageDate, now = new Date();
+    const sched = _coverageHourly(_coverageRows);
+    const mgmt = _coverageHourly(_coverageRows.filter(r => _coverageMgmt.includes(r.position)));
+    const fixed = _coverageHourly(_coverageRows.filter(r => r.position === "General Manager" || r.position === "Assistant Manager"));
+    const curveSum = _coverageSalesCurve.reduce((a, b) => a + b, 0);
+    const curveMax = Math.max(..._coverageSalesCurve);
+    const daySales = sched.reduce((a, b) => a + b, 0) * _coverageSalesPerHr * _coverageDowSales[d.getDay()];
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const hours = [];
+    for (let h = 0; h < 24; h++) {
+        const fSales = daySales * _coverageSalesCurve[h] / curveSum;
+        const hasActual = day < today || (day.getTime() === today.getTime() && h < now.getHours());
+        const factor = 0.9 + ((h * 7 + d.getDate()) % 9) / 40; // deterministic ±10% around forecast
+        const aSales = hasActual ? fSales * factor : 0;
+        // Forecast need follows demand: peaks ask for more than scheduled, quiet hours for less
+        const forecast = _coverageSalesCurve[h] ? Math.max(1, Math.round(sched[h] * (0.8 + 0.4 * _coverageSalesCurve[h] / curveMax))) : 0;
+        hours.push({
+            sched: sched[h], fixed: fixed[h], variable: sched[h] - fixed[h],
+            forecast, variance: sched[h] - forecast,
+            mgmt: mgmt[h], fSales, aSales,
+            fTxn: Math.round(fSales / _coverageAvgTicket), aTxn: Math.round(aSales / _coverageAvgTicket),
+        });
+    }
+    const sum = k => hours.reduce((a, x) => a + x[k], 0);
+    const total = {
+        sched: sum('sched'), fixed: sum('fixed'), variable: sum('variable'), forecast: sum('forecast'),
+        variance: sum('variance'), mgmt: sum('mgmt'), fSales: sum('fSales'), aSales: sum('aSales'),
+        fTxn: sum('fTxn'), aTxn: sum('aTxn'),
+    };
+    return { hours, total };
+}
+
+// critical | under | over | ok — relative to forecast so it scales with roster size
+function _coverageLevel(x) {
+    if (!x.forecast) return x.sched > 0 ? 'over' : 'ok';
+    const pct = x.variance / x.forecast;
+    if (pct <= -0.15) return 'critical';
+    if (pct < -0.03) return 'under';
+    if (pct >= 0.15) return 'over';
+    return 'ok';
+}
+function _coverageBarColor(x) {
+    return { critical: '#ef4444', under: '#f59e0b', over: '#10b981', ok: '#2563eb' }[_coverageLevel(x)];
+}
+
+function _coverageWindows(pred) {
+    const out = []; let s = null;
+    _coverageStats.hours.forEach((x, h) => {
+        if (pred(x) && s === null) s = h;
+        if (!pred(x) && s !== null) { out.push([s, h]); s = null; }
+    });
+    if (s !== null) out.push([s, 24]);
+    return out;
+}
+
+function renderCoverageHeader() {
+    const d = _coverageDate;
+    document.getElementById('dcvDateLabel').innerText =
+        d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('dcvDateInput').value =
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    document.getElementById('dcvSubtitle').innerText =
+        `085 - Del Mar · ${d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`;
+    const nowH = _coverageSameDay(d, new Date()) ? new Date().getHours() : -1;
+    let hrs = '';
+    for (let h = 0; h < 24; h++) hrs += `<div class="dcv-cell${h === nowH ? ' now' : ''}">${_coverageHourLabel(h)}</div>`;
+    document.getElementById('dcvHead').innerHTML =
+        `<div class="dcv-cell dcv-sticky">Employee</div><div class="dcv-cell dcv-sticky2">Day | Week</div>${hrs}`;
+    // Daily Stats carries its own hour header (sticks to the top once the stats section is reached)
+    document.getElementById('dcvStatsHead').innerHTML =
+        `<div class="dcv-sticky"><i data-lucide="table" class="w-4 h-4"></i>Daily Stats</div><div class="dcv-sticky2">Total</div>${hrs.replace(/dcv-cell/g, '')}`;
+}
+
+function renderCoverageKpis() {
+    const { hours, total } = _coverageStats;
+    const fmt$ = v => '$' + Math.round(v).toLocaleString();
+    const labourPct = total.fSales ? (total.sched * _coverageAvgWage / total.fSales * 100) : 0;
+    const splh = total.sched ? total.fSales / total.sched : 0;
+    const gapHrs = hours.filter(x => ['critical', 'under'].includes(_coverageLevel(x))).length;
+    const tile = (label, icon, tint, value) => `
+        <div class="card dcv-kpi">
+            <span class="dcv-kpi-icon" style="background:${tint}1a;color:${tint}"><i data-lucide="${icon}" class="w-4 h-4"></i></span>
+            <div class="min-w-0"><div class="dcv-kpi-label">${label}</div><div class="dcv-kpi-value">${value}</div></div>
+        </div>`;
+    document.getElementById('dcvKpis').innerHTML =
+        tile('Scheduled Hours', 'clock', '#2563eb', total.sched.toFixed(2)) +
+        tile('Staff Scheduled', 'users', '#7c3aed', _coverageRows.length) +
+        tile('Forecasted Sales', 'trending-up', '#16a34a', fmt$(total.fSales)) +
+        tile('Sch Labour %', 'percent', '#ea580c', labourPct.toFixed(2) + '%') +
+        tile('SPLH', 'gauge', '#0891b2', '$' + splh.toFixed(2)) +
+        tile('Coverage Gaps', 'alert-triangle', gapHrs ? '#dc2626' : '#16a34a', `${gapHrs} hrs`);
+}
+
+function renderCoverageInsights() {
+    const { hours } = _coverageStats;
+    const rng = ([s, e]) => `${_coverageFmtTime(s)} – ${_coverageFmtTime(e)}`;
+    const item = (cls, icon, html) => `<div class="dcv-insight ${cls}"><i data-lucide="${icon}" class="w-4 h-4 shrink-0 mt-0.5"></i><div>${html}</div></div>`;
+    const crit = _coverageWindows(x => _coverageLevel(x) === 'critical');
+    const under = _coverageWindows(x => _coverageLevel(x) === 'under');
+    const over = _coverageWindows(x => _coverageLevel(x) === 'over' && x.forecast > 0);
+    const noMgr = _coverageWindows(x => x.forecast > 0 && x.mgmt < 1);
+    let html = '';
+    crit.forEach(w => html += item('dcv-insight-red', 'alert-octagon', `<b>Critical gap</b> ${rng(w)} — short by ${Math.abs(Math.min(...hours.slice(w[0], w[1]).map(x => x.variance))).toFixed(2)} staff`));
+    under.forEach(w => html += item('dcv-insight-amber', 'alert-triangle', `<b>Understaffed</b> ${rng(w)}`));
+    noMgr.forEach(w => html += item('dcv-insight-amber', 'shield-alert', `<b>No manager on floor</b> ${rng(w)}`));
+    over.forEach(w => html += item('dcv-insight-green', 'trending-up', `<b>Overstaffed</b> ${rng(w)} — consider trimming`));
+    if (!html) html = item('dcv-insight-blue', 'check-circle-2', `<b>Fully covered.</b> Scheduled staff meets forecast all day.`);
+    document.getElementById('dcvInsights').innerHTML = html;
+}
+
+function setCoverageGroup(g) {
+    _coverageGroup = g;
+    document.querySelectorAll('#dcvGroupFilter button').forEach(b => b.classList.toggle('active', b.dataset.group === g));
+    renderCoverageEmployeeRows();
+}
+
 function renderCoverageEmployeeRows() {
-    const tbody = document.getElementById("coverageEmployeeBody");
-    if (!tbody) return;
-    tbody.innerHTML = _coverageRows.map(r => {
-        let tds = "";
-        for (let h = 0; h < 24; h++) {
-            if (h === r.start) {
-                const span = r.end - r.start;
-                tds += `<td colspan="${span}" class="relative"><div class="shiftBox ${_coveragePosClass(r.position)} !h-8 !rounded-full !py-0 flex items-center justify-center text-[10px] font-bold">${_coverageFmtHour(r.start)}–${_coverageFmtHour(r.end)}<span class="ml-2 bg-white/20 px-2 py-0.5 rounded-full text-[9px]">${r.position.toUpperCase()}</span></div></td>`;
-                h = r.end - 1;
-            } else {
-                tds += `<td></td>`;
-            }
-        }
-        const shiftHrs = String(r.end - r.start).padStart(2, '0');
-        return `<tr class="border-b"><td class="px-4 py-3"><div class="font-semibold text-blue-600">${r.name}</div><div class="text-[10px] text-slate-500 font-bold">${shiftHrs}:00 Hrs | ${_coverageWeekHrs[r.name] || '00:00'} Hrs</div></td>${tds}</tr>`;
+    const body = document.getElementById("coverageEmployeeBody");
+    if (!body) return;
+    const q = (document.getElementById('dcvSearch').value || '').trim().toLowerCase();
+    const rows = _coverageRows
+        .filter(r => _coverageGroup === 'all' || _coverageGroups[_coverageGroup].includes(r.position))
+        .filter(r => !q || r.name.toLowerCase().includes(q) || r.position.toLowerCase().includes(q));
+    const count = document.getElementById('dcvRowCount');
+    count.innerText = rows.length === _coverageRows.length ? rows.length : `${rows.length}/${_coverageRows.length}`;
+    count.title = `Showing ${rows.length} of ${_coverageRows.length} scheduled employees`;
+    const now = new Date();
+    const nowLine = _coverageSameDay(_coverageDate, now)
+        ? `<div class="dcv-nowline" style="left:${((now.getHours() + now.getMinutes() / 60) / 24 * 100).toFixed(3)}%"></div>` : '';
+    if (!rows.length) { body.innerHTML = `<div class="dcv-empty">No employees match the current filter.</div>`; return; }
+    body.innerHTML = rows.map(r => {
+        const color = _coverageColors[r.position] || '#475569';
+        const left = r.start / 24 * 100, width = (r.end - r.start) / 24 * 100;
+        const brk = r.brk
+            ? `<div class="dcv-break" style="left:${(r.brk[0] - r.start) / (r.end - r.start) * 100}%;width:${(r.brk[1] - r.brk[0]) / (r.end - r.start) * 100}%"></div>` : '';
+        const tip = `${r.name} · ${r.position}\n${_coverageFmtTime(r.start)} – ${_coverageFmtTime(r.end)} (${_coverageRowHours(r).toFixed(2)} hrs)` +
+            (r.brk ? `\nMeal break ${_coverageFmtTime(r.brk[0])} – ${_coverageFmtTime(r.brk[1])}` : '');
+        const badges = (r.isShared ? `<span class="status-badge shared-badge">S</span>` : '') + (r.isMinor ? `<span class="status-badge minor-badge">M</span>` : '');
+        return `<div class="dcv-row">
+            <div class="dcv-emp dcv-sticky">
+                <img src="${r.avatar}" alt="" class="dcv-avatar" style="box-shadow:0 0 0 2px ${color}">
+                <div class="min-w-0"><div class="dcv-emp-name"><span class="truncate">${r.name}</span>${badges}</div><div class="dcv-emp-pos">${r.position}${r.brk ? ` · Break ${_coverageFmtTime(r.brk[0])}` : ''}</div></div>
+            </div>
+            <div class="dcv-hrs dcv-sticky2"><span class="dcv-hrs-day">${fmtHrs(_coverageRowHours(r))}</span><span class="dcv-hrs-week">${fmtHrs(r.week)} wk</span></div>
+            <div class="dcv-track">${nowLine}
+                <div class="dcv-bar" title="${tip}" style="left:${left}%;width:${width}%;background-color:${color}">
+                    ${brk}<span>${_coverageFmtTime(r.start)} – ${_coverageFmtTime(r.end)}</span><span class="dcv-pos">${r.position}</span>
+                </div>
+            </div>
+        </div>`;
     }).join('');
 }
-function _coverageBarColor(sched, target) {
-    const diff = sched - target;
-    if (diff <= -2) return '#ef4444'; // critical gap
-    if (diff === -1) return '#f59e0b'; // understaffed
-    if (diff >= 2) return '#10b981'; // overstaffed
-    return '#2563eb'; // on target
+
+function renderCoverageStats() {
+    const { hours, total } = _coverageStats;
+    const n2 = v => v.toFixed(2), n0 = v => Math.round(v).toLocaleString();
+    const cell = (v, fmt, cls = '') => `<div class="${cls || (Math.abs(v) < 0.005 ? 'dcv-zero' : '')}">${fmt(v)}</div>`;
+    const varCls = v => v < -0.005 ? 'dcv-neg' : (v > 0.005 ? 'dcv-pos-v' : 'dcv-zero');
+    const row = (label, key, fmt, opts = {}) => {
+        let html = `<div class="dcv-srow${opts.sales ? ' dcv-sales' : ''}"><div class="dcv-sticky">${label}</div>`;
+        const tv = opts.total ? opts.total() : total[key];
+        html += `<div class="dcv-sticky2 ${opts.signed ? varCls(tv) : ''}">${fmt(tv)}</div>`;
+        hours.forEach(x => {
+            const v = opts.calc ? opts.calc(x) : x[key];
+            html += cell(v, fmt, opts.signed ? varCls(v) : '');
+        });
+        return html + `</div>`;
+    };
+    const ratio = (a, b) => b ? a / b : 0;
+    const group = t => `<div class="dcv-sgroup"><span>${t}</span></div>`;
+    document.getElementById('coverageStatsBody').innerHTML =
+        group('Staffing') +
+        row('Total Scheduled Staff', 'sched', n2) +
+        row('Fixed Staff', 'fixed', n2) +
+        row('Variable Staff', 'variable', n2) +
+        row('Forecasted Staff', 'forecast', n2) +
+        row('Staff Variance', 'variance', v => (v > 0.005 ? '+' : '') + n2(v), { signed: true }) +
+        row('Management Coverage', 'mgmt', n2) +
+        group('Productivity') +
+        row('SPLH (Sales/Labor Hrs)', null, n2, { calc: x => ratio(x.fSales, x.sched), total: () => ratio(total.fSales, total.sched) }) +
+        row('TPLH (Transactions/Labor Hrs)', null, n2, { calc: x => ratio(x.fTxn, x.sched), total: () => ratio(total.fTxn, total.sched) }) +
+        row('Sch Labour %', null, n2, { calc: x => ratio(x.sched * _coverageAvgWage, x.fSales) * 100, total: () => ratio(total.sched * _coverageAvgWage, total.fSales) * 100 }) +
+        group('Sales & Transactions') +
+        row('Forecasted Sales ($)', 'fSales', n0, { sales: true }) +
+        row('Actual Sales ($)', 'aSales', n0, { sales: true }) +
+        row('Forecasted Transactions', 'fTxn', n0, { sales: true }) +
+        row('Actual Transactions', 'aTxn', n0, { sales: true });
 }
+
 function renderCoverageChart() {
     const canvas = document.getElementById('coverageChart');
     if (!canvas || typeof Chart === 'undefined') return;
-    const scheduled = _coverageScheduledByHour();
-    const labels = [], data = [], colors = [];
-    for (let i = 0; i < 24; i++) {
-        const hour = (4 + i) % 24; // 4AM → 3AM, matching the rest of the app
-        const d = hour % 12 === 0 ? 12 : hour % 12;
-        labels.push(`${d}${hour >= 12 ? 'P' : 'A'}`);
-        data.push(scheduled[hour]);
-        colors.push(_coverageBarColor(scheduled[hour], _coverageTargetByHour[hour]));
-    }
+    const { hours } = _coverageStats;
+    const labels = hours.map((_, h) => _coverageHourLabel(h));
     if (coverageChartInstance) coverageChartInstance.destroy();
     coverageChartInstance = new Chart(canvas.getContext('2d'), {
-        type: 'bar',
-        data: { labels, datasets: [{ label: 'Scheduled Staff', data, backgroundColor: colors, borderRadius: 4, barPercentage: 0.75 }] },
+        data: {
+            labels,
+            datasets: [
+                { type: 'line', label: 'Forecasted Staff', data: hours.map(x => x.forecast), borderColor: '#64748b', borderWidth: 2,
+                  borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, stepped: 'middle', fill: false, order: 0 },
+                { type: 'bar', label: 'Scheduled Staff', data: hours.map(x => +x.sched.toFixed(2)),
+                  backgroundColor: hours.map(_coverageBarColor), borderRadius: 5, barPercentage: 0.72, order: 1 },
+            ]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: (ctx) => {
-                    const hour = (4 + ctx.dataIndex) % 24;
-                    return `Scheduled ${ctx.parsed.y} · Target ${_coverageTargetByHour[hour]}`;
+                tooltip: { callbacks: { afterBody: (items) => {
+                    const x = hours[items[0].dataIndex];
+                    return `Variance ${x.variance >= 0 ? '+' : ''}${x.variance.toFixed(2)}`;
                 } } }
             },
             scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 2, font: { size: 9 } }, grid: { color: '#f1f5f9' } },
-                x: { ticks: { font: { size: 9, weight: 'bold' } }, grid: { display: false } }
+                y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                x: { ticks: { font: { size: 11, weight: '600' } }, grid: { display: false } }
             }
         }
     });
 }
-function openDailyCoverage(){
+
+function renderDailyCoverage() {
+    _coverageRows = _coverageBuildRows();
+    _coverageStats = _coverageComputeStats();
+    renderCoverageHeader();
+    renderCoverageKpis();
+    renderCoverageInsights();
     renderCoverageEmployeeRows();
-    document.getElementById("dailyCoverageModal").classList.remove("hidden");
-    document.getElementById("dailyCoverageModal").classList.add("flex");
+    renderCoverageStats();
+    renderCoverageChart();
     lucide.createIcons();
-    setTimeout(renderCoverageChart, 50);
+}
+
+function shiftCoverageDate(days) {
+    _coverageDate = new Date(_coverageDate.getFullYear(), _coverageDate.getMonth(), _coverageDate.getDate() + days);
+    renderDailyCoverage();
+}
+function setCoverageDate(val) {
+    if (val === 'today') { const t = new Date(); _coverageDate = new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+    else if (val) { const [y, m, d] = val.split('-').map(Number); _coverageDate = new Date(y, m - 1, d); }
+    else return;
+    renderDailyCoverage();
+}
+
+// Timeline / Daily Stats tabs jump within the shared scroll area and follow the scroll position
+function scrollCoverageTo(sec) {
+    const sc = document.getElementById('dcvScroll');
+    const top = sec === 'stats' ? document.getElementById('dcvStatsHead').offsetTop : 0;
+    sc.scrollTo({ top, behavior: 'smooth' });
+}
+function _coverageSyncTabs() {
+    const sc = document.getElementById('dcvScroll');
+    const inStats = sc.scrollTop + 4 >= document.getElementById('dcvStatsHead').offsetTop
+        || sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2;
+    document.querySelectorAll('#dcvTabs button').forEach(b => b.classList.toggle('active', (b.dataset.sec === 'stats') === inStats));
+}
+let _coverageScrollBound = false;
+
+function _coverageOnKey(e) {
+    if (e.key === 'Escape' && !document.getElementById('dailyCoverageView').classList.contains('hidden')) closeDailyCoverage();
+}
+
+function openDailyCoverage(){
+    document.getElementById('actionDropdown')?.classList.add('hidden');
+    if (!_coverageDate) _coverageDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate());
+    document.getElementById('schedulePadView').classList.add('hidden');
+    const view = document.getElementById('dailyCoverageView');
+    view.classList.remove('hidden');
+    view.classList.add('flex');
+    document.getElementById('dcvContent').scrollTop = 0;
+    if (!_coverageScrollBound) {
+        document.getElementById('dcvScroll').addEventListener('scroll', _coverageSyncTabs, { passive: true });
+        _coverageScrollBound = true;
+    }
+    document.getElementById('dcvScroll').scrollTop = 0;
+    setCoverageGroup(_coverageGroup);
+    renderDailyCoverage();
+    document.addEventListener('keydown', _coverageOnKey);
 }
 function closeDailyCoverage(){
-    document.getElementById("dailyCoverageModal").classList.add("hidden");
+    const view = document.getElementById('dailyCoverageView');
+    view.classList.add('hidden');
+    view.classList.remove('flex');
+    document.getElementById('schedulePadView').classList.remove('hidden');
+    document.getElementById('coverageExportMenu').classList.add('hidden');
+    document.removeEventListener('keydown', _coverageOnKey);
 }
 function toggleCoverageExport(){
     document.getElementById("coverageExportMenu").classList.toggle("hidden");
 }
 function exportCoveragePDF(){
-    const win = window.open('', '', 'width=1200,height=700');
-    win.document.write(document.querySelector("#dailyCoverageModal .p-6")?.outerHTML || document.querySelector("#dailyCoverageModal table").outerHTML);
-    win.print();
+    document.getElementById('coverageExportMenu').classList.add('hidden');
+    document.body.classList.add('dcv-print');
+    window.addEventListener('afterprint', () => document.body.classList.remove('dcv-print'), { once: true });
+    window.print();
 }
 function exportCoverageCSV(){
-    let csv = "Employee,Position,Shift\n" + _coverageRows.map(r => `${r.name},${r.position},${_coverageFmtHour(r.start)} - ${_coverageFmtHour(r.end)}`).join("\n");
+    document.getElementById('coverageExportMenu').classList.add('hidden');
+    const { hours, total } = _coverageStats;
+    const ratio = (a, b) => b ? a / b : 0;
+    const line = (label, total, vals) => [`"${label}"`, total, ...vals].join(',');
+    const stat = (label, fn, fmt = v => v.toFixed(2)) => line(label, fmt(fn(total)), hours.map(x => fmt(fn(x))));
+    let csv = `Daily Coverage Report,${document.getElementById('dcvDateInput').value}\n\n`;
+    csv += "Employee,Position,Start,End,Meal Break,Day Hrs,Week Hrs\n" + _coverageRows.map(r =>
+        `${r.name},${r.position},${_coverageFmtTime(r.start)},${_coverageFmtTime(r.end)},${r.brk ? _coverageFmtTime(r.brk[0]) + ' - ' + _coverageFmtTime(r.brk[1]) : ''},${_coverageRowHours(r).toFixed(2)},${r.week.toFixed(2)}`
+    ).join("\n");
+    csv += "\n\n" + line('Daily Stats', 'Total', hours.map((_, h) => _coverageHourLabel(h))) + "\n" + [
+        stat('Total Scheduled Staff', x => x.sched),
+        stat('Fixed Staff', x => x.fixed),
+        stat('Variable Staff', x => x.variable),
+        stat('Forecasted Staff', x => x.forecast),
+        stat('Staff Variance', x => x.variance),
+        stat('Management Coverage', x => x.mgmt),
+        stat('SPLH (Sales/Labor Hrs)', x => ratio(x.fSales, x.sched)),
+        stat('TPLH (Transactions/Labor Hrs)', x => ratio(x.fTxn, x.sched)),
+        stat('Sch Labour %', x => ratio(x.sched * _coverageAvgWage, x.fSales) * 100),
+        stat('Forecasted Sales ($)', x => x.fSales),
+        stat('Actual Sales ($)', x => x.aSales),
+        stat('Forecasted Transactions', x => x.fTxn, v => Math.round(v)),
+        stat('Actual Transactions', x => x.aTxn, v => Math.round(v)),
+    ].join("\n");
     let blob = new Blob([csv], {type:'text/csv'});
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "DailyCoverage.csv";
+    a.download = `DailyCoverage_${document.getElementById('dcvDateInput').value}.csv`;
     a.click();
 }
 function toggleEmpSearch(e){
