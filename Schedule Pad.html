@@ -1843,9 +1843,15 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                     </select>
                 </div>
             </div>
-            <div class="flex items-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <input type="checkbox" class="w-4 h-4 text-blue-600" checked>
-                <span class="text-[12px] font-medium text-blue-700">Apply employee availability checks during copy</span>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl divide-y divide-blue-100">
+                <label class="flex items-center gap-3 p-4 cursor-pointer">
+                    <input type="checkbox" id="copyApplyAvailability" class="w-4 h-4 text-blue-600" checked>
+                    <span class="text-[12px] font-medium text-blue-700">Apply employee availability checks during copy</span>
+                </label>
+                <label class="flex items-center gap-3 p-4 cursor-pointer">
+                    <input type="checkbox" id="copyUnassignedShifts" class="w-4 h-4 text-blue-600" checked>
+                    <span class="text-[12px] font-medium text-blue-700">Copy unassigned shifts from the source week</span>
+                </label>
             </div>
         </div>
         <div class="h-16 border-t px-8 flex items-center justify-end gap-3 bg-white">
@@ -2468,6 +2474,13 @@ let activeView = "week";
 let activeCell = null;
 let sortAsc = true;
 let isUnassignedVisible = false;
+// Unassigned shifts per week column (Sun..Sat); null = untouched demo data. Set by Copy Schedule.
+let unassignedCounts = null;
+function unassignedCountAt(idx) {
+    if (!unassignedCounts) return (idx % 3) + 1;
+    if (activeView === 'week') return unassignedCounts[idx] || 0;
+    return unassignedCounts.some(Boolean) ? (idx % 3) + 1 : 0;
+}
 let myChart = null;
 
 // ── Canonical Position Taxonomy ─────────────────────────────────────────────
@@ -2798,13 +2811,15 @@ function performCopy() {
     const sel = document.getElementById('copySourceWeek');
     const label = sel ? sel.value : Object.keys(copySourceWeekPatterns)[0];
     const pattern = copySourceWeekPatterns[label] || copySourceWeekPatterns[Object.keys(copySourceWeekPatterns)[0]];
+    const applyAvailability = document.getElementById('copyApplyAvailability')?.checked !== false;
+    const copyUnassigned = document.getElementById('copyUnassignedShifts')?.checked !== false;
 
     employeeData.forEach(emp => {
         for (let c = 0; c < 7; c++) shiftAssignments[`w_${emp.id}_${c}`] = null;
     });
     employeeData.forEach(emp => {
         for (let c = 0; c < 7; c++) {
-            if (emp.unavailableDays && emp.unavailableDays.includes(c)) continue;
+            if (applyAvailability && emp.unavailableDays && emp.unavailableDays.includes(c)) continue;
             const hash = (emp.id * 7 + c * 5 + pattern.seedOffset * 11) % 10;
             if (hash / 10 < pattern.density) {
                 const p = _shiftPatterns[(emp.id + c + pattern.seedOffset) % _shiftPatterns.length];
@@ -2812,9 +2827,12 @@ function performCopy() {
             }
         }
     });
+    // Unassigned shifts per weekday come across only when the flag is checked
+    unassignedCounts = Array.from({ length: 7 }, (_, c) => copyUnassigned ? ((c + pattern.seedOffset) % 3) + 1 : 0);
     closeCopyModal();
     if (activeView !== 'week') switchView('week'); else renderScheduleTable();
-    showToast(`Copied the schedule pattern from ${label} onto the current week.`, 'info');
+    showToast(`Copied the schedule pattern from ${label} onto the current week` +
+        (copyUnassigned ? `, including ${unassignedCounts.reduce((a, b) => a + b, 0)} unassigned shifts.` : ` (unassigned shifts not copied).`), 'info');
 }
 function saveInitiatePreferences() { closeInitiateModal(); renderScheduleTable(); }
 
@@ -3115,7 +3133,7 @@ function renderScheduleTable(list=employeeData){
     html += `<tr class="unassigned-summary-row border-b-2 border-slate-200">
         <td class="px-4 py-3 sticky left-0 bg-[#f8fafc] z-[15] shadow-[1px_0_0_#e5e7eb]">
             <div class="flex flex-col items-center justify-center">
-                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">11 Pending</span></div>
+                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">${unassignedCounts ? unassignedCounts.reduce((a, b) => a + b, 0) : 11} Pending</span></div>
                 <div class="flex gap-1.5 w-full">
                     <button onclick="toggleUnassignedVisibility()" class="flex-1 px-1 py-1 bg-white border rounded text-[10px] font-bold text-blue-600 flex items-center justify-center gap-1"><i data-lucide="${isUnassignedVisible ? 'eye-off' : 'eye'}" class="w-2.5 h-2.5"></i> ${isUnassignedVisible ? 'Hide' : 'Show'}</button>
                     <button onclick="openUnassignedModal()" class="flex-1 px-1 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold">Offer</button>
@@ -3123,8 +3141,10 @@ function renderScheduleTable(list=employeeData){
             </div>
         </td>`;
     columns.forEach((_, idx) => {
-        if(isUnassignedVisible) { html += `<td class="dropZone" style="width:${cellWidth}px"><div class="shiftBox unassigned-shift !h-1/2 !py-0.5 border-l-blue-500 !min-h-0"><div class="font-bold text-[9px]">08:00A - 4:00P</div><div class="text-[8px] opacity-70">Kitchen</div></div></td>`; }
-        else { html += `<td class="text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${(idx % 3) + 1} Shift(s)</span></td>`; }
+        const uaCount = unassignedCountAt(idx);
+        if (!uaCount) { html += `<td class="${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-medium text-slate-300">No shifts</span></td>`; }
+        else if(isUnassignedVisible) { html += `<td class="dropZone" style="width:${cellWidth}px"><div class="shiftBox unassigned-shift !h-1/2 !py-0.5 border-l-blue-500 !min-h-0"><div class="font-bold text-[9px]">08:00A - 4:00P</div><div class="text-[8px] opacity-70">Kitchen</div></div></td>`; }
+        else { html += `<td class="text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${uaCount} Shift(s)</span></td>`; }
     });
     html += `</tr>`;
 
