@@ -1107,6 +1107,13 @@ table td, table th {
     border-left: 4px solid #3b82f6 !important;
     border-radius: 8px;
 }
+/* Compact unassigned tiles stacked in the Unassigned row */
+.ua-stack { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
+.shiftBox.ua-mini {
+    height: auto; min-height: 0; padding: 3px 6px 3px 8px; border-radius: 6px;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start; line-height: 1.25; overflow: hidden;
+}
+.ua-dur { flex-shrink: 0; padding: 0 5px; border-radius: 9999px; background: #dbeafe; color: #1e40af; font-size: 8.5px; font-weight: 700; }
 
 /* Other-store shift */
 .other-store-shift {
@@ -1426,7 +1433,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         <button onclick="customTogglePopover('filtersPopover')" class="popover-btn">
                             Filters <i data-lucide="sliders-horizontal" class="w-5 h-5 text-slate-400"></i>
                         </button>
-                        <div id="filtersPopover" class="hidden popover-container right-0 w-[400px]">
+                        <div id="filtersPopover" class="hidden popover-container right-0 w-[620px]">
                             <div class="flex">
                                 <div class="popover-column border-r">
                                     <div class="popover-column-title">Show Employees From</div>
@@ -1434,15 +1441,23 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                                     <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterDept" value="crew" onchange="setFilterDept(this)"> <span>Crew</span></label>
                                     <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterDept" value="manager" onchange="setFilterDept(this)"> <span>Manager</span></label>
                                 </div>
-                                <div class="popover-column">
+                                <div class="popover-column border-r">
                                     <div class="popover-column-title">Highlight Shifts For</div>
                                     <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterPos" value="all" checked onchange="setFilterPos(this)"> <span>All Positions</span></label>
                                     <div id="highlightPositionOptions"></div>
                                 </div>
+                                <div class="popover-column">
+                                    <div class="popover-column-title">Unassigned Shifts</div>
+                                    <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterUaLen" value="0" checked> <span>All Shifts</span></label>
+                                    <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterUaLen" value="1"> <span>Shift less than 1 Hour</span></label>
+                                    <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterUaLen" value="2"> <span>Shift less than 2 Hours</span></label>
+                                    <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterUaLen" value="3"> <span>Shift less than 3 Hours</span></label>
+                                    <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterUaLen" value="4"> <span>Shift less than 4 Hours</span></label>
+                                </div>
                             </div>
                             <div class="popover-footer">
                                 <button class="btn-clear" onclick="resetFilters()">Clear</button>
-                                <button class="btn-apply" onclick="customTogglePopover('filtersPopover')">Apply</button>
+                                <button class="btn-apply" onclick="applyFilters()">Apply</button>
                             </div>
                         </div>
                     </div>
@@ -2473,13 +2488,51 @@ let calendarViewDate = new Date(2026, 1, 2);
 let activeView = "week";
 let activeCell = null;
 let sortAsc = true;
-let isUnassignedVisible = false;
-// Unassigned shifts per week column (Sun..Sat); null = untouched demo data. Set by Copy Schedule.
-let unassignedCounts = null;
-function unassignedCountAt(idx) {
-    if (!unassignedCounts) return (idx % 3) + 1;
-    if (activeView === 'week') return unassignedCounts[idx] || 0;
-    return unassignedCounts.some(Boolean) ? (idx % 3) + 1 : 0;
+let isUnassignedVisible = true;
+// Unassigned shifts per weekday (Sun..Sat). Every day gets a 2h, 4h and 6h shift plus a
+// shorter one (30m / 1.5h / 3.5h) so the "Unassigned Shifts" length filter has something to match.
+const _uaPositions = [
+    { position: 'Line Cook', dept: 'Kitchen' }, { position: 'Cashier', dept: 'Front' },
+    { position: 'Crew', dept: 'Front' },        { position: 'Prep Cook', dept: 'Kitchen' },
+    { position: 'Dishwasher', dept: 'Kitchen' },{ position: 'Shift Leader', dept: 'Front' },
+];
+function buildUnassignedWeek(seed = 0) {
+    return Array.from({ length: 7 }, (_, c) => {
+        const k = c + seed;
+        const pos = i => _uaPositions[(k + i) % _uaPositions.length];
+        const shifts = [
+            { start: 6 + (k % 3),  end: 8 + (k % 3),  ...pos(0) },  // 2h
+            { start: 10 + (k % 2), end: 14 + (k % 2), ...pos(1) },  // 4h
+            { start: 14 + (k % 3), end: 20 + (k % 3), ...pos(2) },  // 6h
+        ];
+        const extra = [[11.5, 12], [17, 18.5], [18, 21.5]][k % 3];   // 30m / 1.5h / 3.5h
+        shifts.push({ start: extra[0], end: extra[1], ...pos(3) });
+        if (k % 2 === 0) shifts.push({ start: 12, end: 12.75, ...pos(4) }); // 45m on alternate days
+        return shifts.sort((a, b) => a.start - b.start);
+    });
+}
+let unassignedShifts = buildUnassignedWeek(0);
+let unassignedMaxHrs = 0; // Filters → Unassigned Shifts: 0 = all, N = only shifts shorter than N hours
+function uaShiftsForDay(dayIdx) {
+    return (unassignedShifts[dayIdx] || []).filter(s => !unassignedMaxHrs || (s.end - s.start) < unassignedMaxHrs);
+}
+function uaPendingCount() {
+    if (activeView === 'day') return uaShiftsForDay(activeDate.getDay()).length;
+    return unassignedShifts.reduce((n, _, c) => n + uaShiftsForDay(c).length, 0);
+}
+function uaFmtTime(t) {
+    const h = Math.floor(t), m = Math.round((t - h) * 60), d = h % 12 === 0 ? 12 : h % 12;
+    return `${String(d).padStart(2, '0')}:${String(m).padStart(2, '0')}${h >= 12 ? 'P' : 'A'}`;
+}
+function uaFmtDur(s) {
+    const mins = Math.round((s.end - s.start) * 60);
+    return mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h${mins % 60 ? ' ' + (mins % 60) + 'm' : ''}`;
+}
+function uaShiftBox(s, style = '') {
+    return `<div class="shiftBox unassigned-shift ua-mini" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})">
+        <div class="flex items-center justify-between gap-1 w-full"><span class="font-bold text-[9.5px] truncate">${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}</span><span class="ua-dur">${uaFmtDur(s)}</span></div>
+        <div class="text-[8.5px] opacity-75 truncate">${s.position} · ${s.dept}</div>
+    </div>`;
 }
 let myChart = null;
 
@@ -2827,12 +2880,12 @@ function performCopy() {
             }
         }
     });
-    // Unassigned shifts per weekday come across only when the flag is checked
-    unassignedCounts = Array.from({ length: 7 }, (_, c) => copyUnassigned ? ((c + pattern.seedOffset) % 3) + 1 : 0);
+    // Unassigned shifts come across only when the flag is checked
+    unassignedShifts = copyUnassigned ? buildUnassignedWeek(pattern.seedOffset + 1) : Array.from({ length: 7 }, () => []);
     closeCopyModal();
     if (activeView !== 'week') switchView('week'); else renderScheduleTable();
     showToast(`Copied the schedule pattern from ${label} onto the current week` +
-        (copyUnassigned ? `, including ${unassignedCounts.reduce((a, b) => a + b, 0)} unassigned shifts.` : ` (unassigned shifts not copied).`), 'info');
+        (copyUnassigned ? `, including ${unassignedShifts.flat().length} unassigned shifts.` : ` (unassigned shifts not copied).`), 'info');
 }
 function saveInitiatePreferences() { closeInitiateModal(); renderScheduleTable(); }
 
@@ -3133,18 +3186,37 @@ function renderScheduleTable(list=employeeData){
     html += `<tr class="unassigned-summary-row border-b-2 border-slate-200">
         <td class="px-4 py-3 sticky left-0 bg-[#f8fafc] z-[15] shadow-[1px_0_0_#e5e7eb]">
             <div class="flex flex-col items-center justify-center">
-                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">${unassignedCounts ? unassignedCounts.reduce((a, b) => a + b, 0) : 11} Pending</span></div>
+                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">${uaPendingCount()} Pending</span></div>
                 <div class="flex gap-1.5 w-full">
                     <button onclick="toggleUnassignedVisibility()" class="flex-1 px-1 py-1 bg-white border rounded text-[10px] font-bold text-blue-600 flex items-center justify-center gap-1"><i data-lucide="${isUnassignedVisible ? 'eye-off' : 'eye'}" class="w-2.5 h-2.5"></i> ${isUnassignedVisible ? 'Hide' : 'Show'}</button>
                     <button onclick="openUnassignedModal()" class="flex-1 px-1 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold">Offer</button>
                 </div>
             </div>
         </td>`;
+    const _uaDayList = activeView === 'day' ? uaShiftsForDay(activeDate.getDay()) : null;
     columns.forEach((_, idx) => {
-        const uaCount = unassignedCountAt(idx);
-        if (!uaCount) { html += `<td class="${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-medium text-slate-300">No shifts</span></td>`; }
-        else if(isUnassignedVisible) { html += `<td class="dropZone" style="width:${cellWidth}px"><div class="shiftBox unassigned-shift !h-1/2 !py-0.5 border-l-blue-500 !min-h-0"><div class="font-bold text-[9px]">08:00A - 4:00P</div><div class="text-[8px] opacity-70">Kitchen</div></div></td>`; }
-        else { html += `<td class="text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${uaCount} Shift(s)</span></td>`; }
+        let list;
+        if (activeView === 'day') {
+            // Hour column: shifts that start in this hour; each keeps its own lane so spans never overlap
+            const hour = (4 + idx) % 24;
+            list = _uaDayList.filter(s => Math.floor(s.start) === hour);
+        } else {
+            const dayIdx = activeView === 'month' ? new Date(activeDate.getFullYear(), activeDate.getMonth(), idx + 1).getDay() : idx;
+            list = uaShiftsForDay(dayIdx);
+        }
+        if (activeView === 'day') {
+            const laneH = 34, h = Math.max(1, _uaDayList.length) * laneH + 6;
+            const boxes = isUnassignedVisible ? list.map(s => uaShiftBox(s,
+                `position:absolute;top:${3 + _uaDayList.indexOf(s) * laneH}px;left:${(s.start - Math.floor(s.start)) * cellWidth}px;width:${(s.end - s.start) * cellWidth}px;height:${laneH - 4}px;z-index:5;`)).join('') : '';
+            const label = !isUnassignedVisible && list.length ? `<span class="text-[11px] font-bold text-blue-600">${list.length}</span>` : '';
+            html += `<td class="${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px;height:${isUnassignedVisible ? h : 40}px;position:relative;">${boxes}${label}</td>`;
+        } else if (!list.length) {
+            html += `<td class="${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-medium text-slate-300">${activeView === 'month' ? '–' : 'No shifts'}</span></td>`;
+        } else if (isUnassignedVisible && activeView === 'week') {
+            html += `<td class="dropZone align-top" style="width:${cellWidth}px"><div class="ua-stack">${list.map(s => uaShiftBox(s)).join('')}</div></td>`;
+        } else {
+            html += `<td class="text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${list.length}${activeView === 'month' ? '' : ' Shift(s)'}</span></td>`;
+        }
     });
     html += `</tr>`;
 
@@ -5157,6 +5229,16 @@ function resetFilters() {
     activeFilterPos  = 'all';
     document.querySelectorAll('input[name="filterDept"]').forEach(r => { r.checked = (r.value === 'all'); });
     document.querySelectorAll('input[name="filterPos"]').forEach(r  => { r.checked = (r.value === 'all'); });
+    document.querySelectorAll('input[name="filterUaLen"]').forEach(r => { r.checked = (r.value === '0'); });
+    if (unassignedMaxHrs) { unassignedMaxHrs = 0; renderScheduleTable(); }
+}
+
+function applyFilters() {
+    const ua = document.querySelector('input[name="filterUaLen"]:checked');
+    unassignedMaxHrs = ua ? parseInt(ua.value, 10) : 0;
+    customTogglePopover('filtersPopover');
+    renderScheduleTable();
+    if (unassignedMaxHrs) showToast(`Showing ${uaPendingCount()} unassigned shift(s) shorter than ${unassignedMaxHrs} hour${unassignedMaxHrs > 1 ? 's' : ''}.`, 'info');
 }
 
 // ── Sort By ───────────────────────────────────────────────────────────────
