@@ -4383,7 +4383,28 @@ function renderCoverageChart() {
     const { hours } = _coverageStats;
     const labels = hours.map((_, h) => _coverageHourLabel(h));
     if (coverageChartInstance) coverageChartInstance.destroy();
+    // Draws Sch − Fct above each bar (above the forecast step too, so the dashed line never covers it)
+    const varianceLabels = {
+        id: 'dcvVarianceLabels',
+        afterDatasetsDraw(chart) {
+            const { ctx } = chart;
+            const line = chart.getDatasetMeta(0).data, bars = chart.getDatasetMeta(1).data;
+            ctx.save();
+            ctx.font = '600 11px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            hours.forEach((x, i) => {
+                if (!x.sched && !x.forecast) return;
+                const v = x.variance;
+                ctx.fillStyle = v < -0.005 ? '#dc2626' : v > 0.005 ? '#16a34a' : '#64748b';
+                const y = Math.min(bars[i].y, line[i] ? line[i].y : bars[i].y) - 4;
+                ctx.fillText((v > 0.005 ? '+' : '') + (Number.isInteger(v) ? v : v.toFixed(1)), bars[i].x, y);
+            });
+            ctx.restore();
+        }
+    };
     coverageChartInstance = new Chart(canvas.getContext('2d'), {
+        plugins: [varianceLabels],
         data: {
             labels,
             datasets: [
@@ -4405,7 +4426,7 @@ function renderCoverageChart() {
                 } } }
             },
             scales: {
-                y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                y: { beginAtZero: true, grace: '12%', ticks: { precision: 0, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
                 x: { ticks: { font: { size: 11, weight: '600' } }, grid: { display: false } }
             }
         }
