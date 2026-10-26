@@ -1152,6 +1152,146 @@ body.density-compact .ua-stack { gap: 2px; padding: 2px 0; }
 body.density-compact .shiftBox.ua-mini { flex-direction: row; align-items: center; gap: 6px; padding: 2px 6px; }
 body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 1 auto; }
 
+/* ===== SIDEBAR + TOP BAR — same look as the dashboard (dashboard-redesign.css, new UI) ===== */
+.h-14.bg-\[\#0b2545\],
+.sidebar.bg-\[\#0b2545\] { background: #0b1f3f !important; }
+/* keep the sidebar above full-page views (Standard Shifts) so it can expand over them */
+.sidebar { position: relative; z-index: 260; }
+.sidebar .menu-item { border-radius: 10px; }
+.sidebar .bg-\[\#1d3b6a\] { background: transparent !important; box-shadow: none !important; }
+.sidebar .bg-\[\#1d3b6a\] svg { background: #1a73e8; border-radius: 8px; padding: 5px; width: 32px !important; height: 32px !important; }
+.sidebar:hover .bg-\[\#1d3b6a\] { background: rgba(26, 115, 232, .18) !important; }
+
+/* ===== STANDARD SHIFTS ===== */
+.std-back { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 10px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; color: #1e3a8a; font-size: 13px; font-weight: 600; transition: all .15s ease; }
+.std-back:hover { background: #eff6ff; border-color: #bfdbfe; }
+.std-count { min-width: 22px; padding: 1px 8px; border-radius: 9999px; background: #eff6ff; color: #1d4ed8; font-size: 11.5px; font-weight: 700; text-align: center; }
+.std-search { display: flex; align-items: center; gap: 8px; height: 36px; width: 260px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; }
+.std-search input { border: 0; outline: 0; background: transparent; font-size: 13px; width: 100%; color: #1e293b; }
+.std-add { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 10px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 1px 2px rgba(37,99,235,.3); transition: background .15s ease; }
+.std-add:hover { background: #1d4ed8; }
+.std-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+.std-table th, .std-table td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; height: auto !important; padding: 12px 20px !important; text-align: left; vertical-align: middle; }
+.std-table thead th { background: #f8fafc; border-bottom: 1px solid #e2e8f0 !important; font-size: 11.5px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #64748b; padding-top: 11px !important; padding-bottom: 11px !important; }
+.std-table thead th.text-right { text-align: right; }
+.std-table thead button { display: inline-flex; align-items: center; gap: 4px; text-transform: inherit; letter-spacing: inherit; font-weight: inherit; color: inherit; }
+.std-table thead button:hover { color: #1e3a8a; }
+.std-table tbody tr { transition: background .15s ease; }
+.std-table tbody tr:hover { background: #f8fbff; }
+.std-table tbody tr:last-child td { border-bottom: 0 !important; }
+.std-time-ic { width: 32px; height: 32px; border-radius: 9px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.std-time { font-size: 14px; font-weight: 700; color: #1e293b; }
+.std-sub { font-size: 12px; color: #64748b; margin-top: 1px; }
+.std-pos { display: inline-flex; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+.std-break { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 9999px; background: #fef2f2; color: #b91c1c; font-size: 12px; font-weight: 600; }
+.std-none { font-size: 12.5px; color: #94a3b8; }
+.std-notes { color: #475569; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.std-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: #64748b; transition: all .15s ease; }
+.std-icon:hover { background: #eff6ff; color: #2563eb; }
+.std-icon-del:hover { background: #fef2f2; color: #dc2626; }
+.std-empty { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 48px 0; color: #94a3b8; font-size: 13px; }
+.std-select { height: 38px; padding-top: 0; padding-bottom: 0; }
+.std-seg { display: flex; gap: 2px; padding: 3px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; }
+.std-seg button { flex: 1; padding: 6px 0; border-radius: 8px; font-size: 12.5px; font-weight: 600; color: #64748b; }
+.std-seg button.active { background: #fff; color: #1d4ed8; box-shadow: 0 1px 2px rgba(15,23,42,.1); }
+.std-preview { padding: 6px 10px; border-radius: 8px; background: #f8fafc; color: #64748b; }
+.std-preview-ok { background: #eff6ff; color: #1e40af; }
+.std-preview b { font-weight: 700; }
+
+/* ===== AI SCHEDULE AGENT ===== */
+#aiModal .ai-panel { animation: aiIn .2s ease-out; }
+@keyframes aiIn { from { opacity: 0; transform: translateY(10px) scale(.99); } to { opacity: 1; transform: none; } }
+.ai-pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; }
+.ai-pill > i { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; }
+.ai-pill-working { background: #eef2ff; color: #4f46e5; }
+.ai-pill-working > i { animation: aiPulse 1s ease-in-out infinite; }
+.ai-pill-ready { background: #ecfdf5; color: #047857; }
+.ai-pill-review { background: #fffbeb; color: #b45309; }
+@keyframes aiPulse { 50% { opacity: .25; } }
+.ai-progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: #eef2ff; }
+.ai-progress > div { height: 100%; width: 0; background: #4f46e5; transition: width .3s ease; }
+.ai-stepper { align-items: center; gap: 0; }
+.ai-node { width: 26px; height: 26px; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #fff; color: #64748b; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all .2s ease; }
+.ai-node.done { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+.ai-node.active { border-color: #4f46e5; color: #4f46e5; box-shadow: 0 0 0 4px #e0e7ff; }
+.ai-link { width: 14px; height: 1.5px; background: #e2e8f0; }
+.ai-link.on { background: #4f46e5; }
+.ai-dots { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 2px; }
+.ai-dots i { width: 4px; height: 4px; border-radius: 9999px; background: currentColor; animation: aiPulse 1s infinite; }
+.ai-dots i:nth-child(2) { animation-delay: .15s; } .ai-dots i:nth-child(3) { animation-delay: .3s; }
+.ai-steps { position: relative; }
+.ai-step { position: relative; padding-left: 0; }
+.ai-step:not(:last-child)::before { content: ''; position: absolute; left: 14px; top: 30px; bottom: -2px; width: 1.5px; background: #e2e8f0; }
+.ai-step.done:not(:last-child)::before { background: #c7d2fe; }
+.ai-step-head { width: 100%; display: flex; align-items: center; gap: 12px; padding: 6px 0; text-align: left; }
+.ai-step-head:disabled { cursor: default; }
+.ai-step-dot { position: relative; z-index: 1; width: 29px; height: 29px; border-radius: 9px; border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ai-step.done .ai-step-dot { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+.ai-step.active .ai-step-dot { border-color: #4f46e5; color: #4f46e5; box-shadow: 0 0 0 4px #eef2ff; }
+.ai-step-title { flex: 1; font-size: 13.5px; font-weight: 600; color: #334155; }
+.ai-step.pending .ai-step-title { color: #64748b; font-weight: 500; }
+.ai-step.active .ai-step-title { color: #0f172a; }
+.ai-step-ms { font-size: 11.5px; color: #64748b; font-variant-numeric: tabular-nums; }
+.ai-chev { color: #94a3b8; transition: transform .2s ease; }
+.ai-step.open .ai-chev { transform: rotate(180deg); }
+.ai-step-body { padding: 0 0 8px 41px; font-size: 12.5px; color: #64748b; }
+.ai-step-body p { margin-bottom: 6px; }
+.ai-step-body li { position: relative; padding-left: 12px; margin-top: 4px; color: #475569; line-height: 1.45; animation: aiIn .25s ease-out; }
+.ai-step-body li::before { content: ''; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 9999px; background: #818cf8; }
+.ai-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; }
+.ai-kv { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #475569; }
+.ai-kv b { color: #0f172a; font-variant-numeric: tabular-nums; }
+.ai-kpi { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; }
+.ai-kpi-val { font-size: 24px; font-weight: 700; color: #0f172a; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ai-kpi-label { font-size: 12.5px; color: #64748b; margin-top: 4px; }
+.ai-bar { height: 6px; border-radius: 9999px; background: #e2e8f0; overflow: hidden; margin-top: 10px; }
+.ai-bar > i { display: block; height: 100%; background: #4f46e5; border-radius: 9999px; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+.ai-wait { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 56px 20px; border: 1.5px dashed #e2e8f0; border-radius: 14px; background: #fff; text-align: center; }
+.ai-wait-icon { width: 44px; height: 44px; border-radius: 9999px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.ai-skeleton { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; width: 100%; max-width: 620px; margin-top: 22px; }
+.ai-skeleton span { height: 26px; border-radius: 8px; background: linear-gradient(90deg, #f1f5f9 0%, #e9eef5 50%, #f1f5f9 100%); background-size: 200% 100%; animation: aiShimmer 1.4s infinite; }
+@keyframes aiShimmer { to { background-position: -200% 0; } }
+.ai-banner { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-radius: 14px; border: 1px solid; }
+.ai-banner b { font-weight: 700; }
+.ai-banner-green { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+.ai-banner-amber { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.ai-tab { padding: 11px 12px; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; }
+.ai-tab.active { color: #4338ca; border-color: #4f46e5; }
+.ai-count { min-width: 20px; padding: 0 6px; border-radius: 9999px; background: #eef2ff; color: #4338ca; font-size: 11px; text-align: center; }
+.ai-seg { display: flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 10px; border: 1px solid #e2e8f0; }
+.ai-seg button { padding: 5px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; color: #64748b; }
+.ai-seg button.active { background: #fff; color: #0f172a; box-shadow: 0 1px 2px rgba(15,23,42,.1); }
+.ai-leg { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: -6px; }
+.ai-grid-wrap { overflow-x: auto; border: 1px solid #f1f5f9; border-radius: 10px; }
+.ai-grid { width: 100%; min-width: 800px; border-collapse: collapse; font-size: 12.5px; }
+.ai-grid th, .ai-grid td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; padding: 6px 6px !important; height: auto !important; vertical-align: top; }
+.ai-grid th { font-size: 12px; font-weight: 600; color: #64748b; text-align: center; background: #f8fafc; }
+.ai-grid th span { display: block; font-size: 15px; font-weight: 700; color: #0f172a; }
+.ai-grid td:first-child { width: 170px; max-width: 170px; vertical-align: middle; overflow: hidden; }
+.ai-grid td:first-child .text-\[11px\] { white-space: nowrap; }
+.ai-grid td:not(:first-child) { width: 11.5%; }
+.ai-chip { display: flex; flex-direction: column; padding: 4px 7px; border-radius: 8px; margin-bottom: 4px; line-height: 1.25; }
+.ai-chip b { font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+.ai-chip span { font-size: 11px; opacity: .8; }
+.ai-am { background: #e0f2fe; color: #075985; }
+.ai-pm { background: #fef3c7; color: #92400e; }
+.ai-ev { background: #ede9fe; color: #5b21b6; }
+.ai-chip.open { background: repeating-linear-gradient(135deg, #fff 0 5px, #f1f5f9 5px 10px); color: #475569; border: 1px dashed #94a3b8; }
+.ai-open-row { background: #fffdf5; }
+.ai-open-ic { width: 28px; height: 28px; border-radius: 9999px; border: 1.5px dashed #f59e0b; color: #d97706; display: flex; align-items: center; justify-content: center; }
+.ai-ch { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 9999px; font-size: 11.5px; font-weight: 600; flex-shrink: 0; }
+.ai-ch-added { background: #ecfdf5; color: #047857; }
+.ai-ch-removed { background: #fef2f2; color: #b91c1c; }
+.ai-ch-changed { background: #eef2ff; color: #4338ca; }
+.ai-ch-open { background: #fffbeb; color: #b45309; }
+.ai-changes { max-height: 420px; overflow-y: auto; border: 1px solid #f1f5f9; border-radius: 10px; }
+.ai-change { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; }
+.ai-change .ai-ch { width: 74px; justify-content: center; }
+.ai-sum { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ai-sum th, .ai-sum td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; padding: 9px 10px !important; height: auto !important; text-align: right; font-variant-numeric: tabular-nums; }
+.ai-sum th { font-size: 12px; color: #64748b; font-weight: 600; background: #f8fafc; }
+.ai-sum tfoot td { font-weight: 700; color: #0f172a; background: #f8fafc; }
+
 /* Day view: week day switcher */
 .day-strip { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
 .day-strip.hidden { display: none; }
@@ -1526,6 +1666,11 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 <a href="#" class="menu-item px-4 py-3 opacity-90 block">
     <i data-lucide="file-text"></i>
     <span class="label">Reports</span>
+</a>
+
+<a href="#" class="menu-item px-4 py-3 opacity-90 block">
+    <i data-lucide="cloud"></i>
+    <span class="label">Cloud Library</span>
 </a>
 
 <a href="#" class="menu-item px-4 py-3 opacity-90 block">
@@ -1909,13 +2054,12 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                     <h3 class="font-bold text-[15px] text-slate-800">Start from Scratch</h3>
                     <p class="text-[11px] text-slate-400 font-medium mt-1">Begin with a blank week roster</p>
                 </div>
-                <!-- click actions for both AI tiles to be defined later -->
-                <div class="initiate-card">
+                <div class="initiate-card" onclick="openAIAgent(true)">
                     <div class="initiate-icon bg-violet-100 text-violet-600"><i data-lucide="calendar-clock"></i></div>
                     <h3 class="font-bold text-[15px] text-slate-800">AI Scheduling Using Standard Shift</h3>
                     <p class="text-[11px] text-slate-400 font-medium mt-1">Build an AI roster from your standard shifts</p>
                 </div>
-                <div class="initiate-card">
+                <div class="initiate-card" onclick="openAIAgent(false)">
                     <div class="initiate-icon bg-indigo-100 text-indigo-600"><i data-lucide="sparkles"></i></div>
                     <h3 class="font-bold text-[15px] text-slate-800">AI Scheduling</h3>
                     <p class="text-[11px] text-slate-400 font-medium mt-1">Generate optimized roster using AI</p>
@@ -2013,30 +2157,68 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 </div>
 
 <!-- AI SCHEDULING MODAL -->
-<div id="aiModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[500] backdrop-blur-sm">
-    <div class="bg-indigo-900 w-[500px] rounded-3xl shadow-2xl overflow-hidden text-white">
-        <div class="p-10 flex flex-col items-center text-center">
-            <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6 border border-white/20">
-                <i data-lucide="robot" class="w-8 h-8 text-indigo-300"></i>
-            </div>
-            <h2 class="text-2xl font-black mb-2 tracking-tight">AI Schedule Optimization</h2>
-            <p class="text-indigo-200 text-[13px] leading-relaxed mb-8">System will analyze sales forecasts, employee availability, and labor laws to generate the most efficient schedule.</p>
-            
-            <div class="w-full space-y-4 mb-8">
-                <div class="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-indigo-300">
-                    <span>Labor Budget Priority</span>
-                    <span>95%</span>
-                </div>
-                <div class="w-full h-2 bg-indigo-950 rounded-full overflow-hidden">
-                    <div class="h-full bg-white rounded-full w-[95%]"></div>
-                </div>
-            </div>
+<!-- AI SCHEDULE AGENT -->
+<div id="aiModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[500] backdrop-blur-sm p-4" onclick="if(event.target===this) closeAIAgent()">
+    <section class="ai-panel bg-white w-[1240px] max-w-full h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
-            <button onclick="runAIScheduling()" id="aiRunBtn" class="w-full bg-white text-indigo-900 py-4 rounded-2xl font-black shadow-xl hover:bg-indigo-50 transition-all flex items-center justify-center gap-3">
-                <i data-lucide="play-circle" class="w-5 h-5"></i> Start AI Generation
+        <!-- HEADER -->
+        <header class="relative flex items-center gap-4 px-6 py-4 border-b border-slate-100 shrink-0">
+            <span class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-200">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </span>
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h2 id="aiTitle" class="text-[17px] font-bold text-slate-900">AI schedule</h2>
+                    <span id="aiStatus" class="ai-pill ai-pill-working"><i></i><span>Working</span></span>
+                </div>
+                <p id="aiSubtitle" class="text-[12.5px] text-slate-500 truncate mt-0.5">Reading the roster, the forecast and this week's shifts</p>
+            </div>
+            <div id="aiStepper" class="ai-stepper hidden md:flex"></div>
+            <div class="text-right shrink-0 pl-2">
+                <div class="text-[11px] text-slate-500">Worked out in</div>
+                <div id="aiElapsed" class="text-[15px] font-bold text-slate-900 tabular-nums">—</div>
+            </div>
+            <button onclick="closeAIAgent()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0" title="Close (Esc)">
+                <i data-lucide="x" class="w-5 h-5"></i>
             </button>
+            <div class="ai-progress"><div id="aiProgress"></div></div>
+        </header>
+
+        <!-- BODY -->
+        <div class="flex-1 min-h-0 flex">
+            <!-- left: agent steps / run summary -->
+            <aside class="w-[330px] shrink-0 border-r border-slate-100 overflow-y-auto px-5 py-4">
+                <div id="aiRunSummary" class="hidden mb-4"></div>
+                <div id="aiStepsWrap">
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div id="aiNow" class="text-[13.5px] font-semibold text-indigo-600 leading-snug"></div>
+                        <span id="aiDoneCount" class="text-[12px] text-slate-500 whitespace-nowrap pt-0.5">0 of 8 done</span>
+                    </div>
+                    <ol id="aiSteps" class="ai-steps"></ol>
+                    <button id="aiSkip" onclick="aiSkip()" class="mt-3 ml-1 text-[12.5px] font-semibold text-indigo-600 hover:underline">Skip to result</button>
+                </div>
+            </aside>
+
+            <!-- right: KPIs + result -->
+            <main class="flex-1 min-w-0 overflow-y-auto bg-slate-50/60 p-5 space-y-4">
+                <div id="aiKpis" class="grid grid-cols-2 xl:grid-cols-4 gap-3"></div>
+                <div id="aiStage"></div>
+            </main>
         </div>
-    </div>
+
+        <!-- FOOTER -->
+        <footer class="flex items-center gap-3 px-6 py-3 border-t border-slate-100 shrink-0 bg-white">
+            <label class="flex items-center gap-2 px-3 py-2 rounded-lg border border-indigo-100 bg-indigo-50/60 text-[12.5px] font-semibold text-indigo-700 cursor-pointer">
+                <input type="checkbox" id="aiUseStd" class="w-4 h-4 accent-indigo-600" onchange="aiStart()">
+                Use the employee core shifts (standard shifts)
+            </label>
+            <span class="text-[12px] text-slate-500 mr-auto hidden lg:inline">Nothing is saved until you apply. You can edit every shift afterwards.</span>
+            <button onclick="closeAIAgent()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
+            <button id="aiApply" onclick="aiApply()" disabled class="px-5 py-2 rounded-lg bg-indigo-600 text-white text-[13px] font-semibold hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                <i data-lucide="check-check" class="w-4 h-4"></i> Review &amp; apply schedule
+            </button>
+        </footer>
+    </section>
 </div>
 
 <!-- UNASSIGNED MODAL (OFFER) -->
@@ -2604,112 +2786,112 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
      STANDARD SHIFTS VIEW  (fixed overlay, shows right of sidebar)
      ══════════════════════════════════════════════════════════════ -->
 <div id="standardShiftsView" style="display:none; position:fixed; top:56px; left:72px; right:0; bottom:0; background:#eef2f6; z-index:200; overflow-y:auto;">
-    <div class="p-7">
+    <div class="p-5 space-y-4">
 
         <!-- Page header -->
-        <div class="flex items-start justify-between mb-6">
-            <div>
-                <h1 class="text-[22px] font-bold text-slate-800 tracking-tight">Standard Shifts</h1>
-                <p class="text-[13px] text-slate-500 mt-1">Define your commonly used shifts as standard shifts. Assign them to your employees with a single click while creating schedules.</p>
+        <div class="card py-3 px-5 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <button onclick="closeStandardShifts()" class="std-back" title="Back to Schedule">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Schedule</span>
+                </button>
+                <div class="h-8 border-l border-slate-200"></div>
+                <span class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-5 h-5"></i></span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-[16px] font-bold text-slate-800 leading-tight">Standard Shifts</h1>
+                        <span id="stdCount" class="std-count">0</span>
+                    </div>
+                    <p class="text-[12px] text-slate-500 truncate">Commonly used shifts you can assign to employees in one click while scheduling.</p>
+                </div>
             </div>
-            <button onclick="openAddStandardShift()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold px-5 py-2.5 rounded-xl shadow-sm shadow-blue-200 transition-colors">
-                <i data-lucide="plus" class="w-4 h-4"></i> + Add
-            </button>
+            <div class="flex items-center gap-3">
+                <div class="std-search">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    <input id="stdSearch" type="text" placeholder="Search shift or position" oninput="renderStdShiftsTable()">
+                </div>
+                <button onclick="openAddStandardShift()" class="std-add">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Standard Shift
+                </button>
+            </div>
         </div>
 
         <!-- Table card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <table class="w-full border-collapse text-[13px]">
+        <div class="card overflow-hidden">
+            <table class="std-table">
+                <colgroup><col style="width:30%"><col style="width:26%"><col style="width:16%"><col><col style="width:110px"></colgroup>
                 <thead>
-                    <tr class="bg-[#f8fafc] border-b border-slate-200">
-                        <th class="text-left px-6 py-3.5 font-bold text-slate-600 uppercase text-[11px] tracking-wide cursor-pointer select-none">
-                            Shift <i data-lucide="chevrons-up-down" class="w-3 h-3 inline-block ml-0.5 text-slate-400"></i>
-                        </th>
-                        <th class="text-left px-6 py-3.5 font-bold text-slate-600 uppercase text-[11px] tracking-wide cursor-pointer select-none">
-                            Position <i data-lucide="chevrons-up-down" class="w-3 h-3 inline-block ml-0.5 text-slate-400"></i>
-                        </th>
-                        <th class="text-left px-6 py-3.5 font-bold text-slate-600 uppercase text-[11px] tracking-wide cursor-pointer select-none">
-                            Meal Break (Unpaid) <i data-lucide="chevrons-up-down" class="w-3 h-3 inline-block ml-0.5 text-slate-400"></i>
-                        </th>
-                        <th class="text-right px-6 py-3.5 font-bold text-slate-600 uppercase text-[11px] tracking-wide">
-                            Action(s) <i data-lucide="search" class="w-3 h-3 inline-block ml-0.5 text-slate-400"></i>
-                        </th>
+                    <tr>
+                        <th><button type="button" onclick="sortStdShifts('start')">Shift <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i></button></th>
+                        <th><button type="button" onclick="sortStdShifts('position')">Position <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i></button></th>
+                        <th><button type="button" onclick="sortStdShifts('break')">Meal Break (Unpaid) <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i></button></th>
+                        <th>Notes</th>
+                        <th class="text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="stdShiftsTableBody">
-                    <!-- Populated by JS -->
-                </tbody>
+                <tbody id="stdShiftsTableBody"></tbody>
             </table>
         </div>
 
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     ADD STANDARD SHIFT MODAL
-     ══════════════════════════════════════════════════════════════ -->
-<div id="addStandardShiftModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-[300] backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-2xl w-[560px] overflow-hidden">
-
-        <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 bg-[#f8fafc] border-b border-slate-200">
-            <h2 class="text-[16px] font-bold text-slate-800">Standard Shift</h2>
-            <button onclick="closeAddStandardShift()" class="w-8 h-8 rounded-full bg-rose-100 hover:bg-rose-200 flex items-center justify-center text-rose-500 hover:text-rose-600 transition-colors">
-                <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-        </div>
-
-        <!-- Body -->
-        <div class="px-6 py-5 space-y-5">
-
-            <!-- Row 1: Shift Start-End Time + Position -->
-            <div class="grid grid-cols-2 gap-4">
+<!-- ADD / EDIT STANDARD SHIFT MODAL -->
+<div id="addStandardShiftModal" class="hidden fixed inset-0 bg-slate-900/40 items-center justify-center z-[300] backdrop-blur-[2px]" onclick="if(event.target===this) closeAddStandardShift()">
+    <section class="bg-white rounded-2xl shadow-2xl w-[560px] max-w-[94vw] overflow-hidden">
+        <header class="flex items-center justify-between px-6 h-14 border-b border-slate-200">
+            <h2 id="stdModalTitle" class="text-[16px] font-bold text-slate-900">Add Standard Shift</h2>
+            <button onclick="closeAddStandardShift()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </header>
+        <div class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-[1fr_1fr_1.3fr] gap-3 items-end">
                 <div>
-                    <label class="block text-[12px] font-bold text-slate-600 mb-1.5">Shift Start-End Time <span class="text-rose-500">*</span></label>
-                    <input id="stdShiftTime" type="text" placeholder="e.g. 8:00a-4:00p" value="12:00a-12:00a +1 D"
-                        class="w-full border border-slate-300 rounded-lg px-3 py-2 text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
-                </div>
-                <div>
-                    <label class="block text-[12px] font-bold text-slate-600 mb-1.5">Position</label>
-                    <div class="relative">
-                        <select id="stdShiftPosition" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-[13px] text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 appearance-none transition bg-white">
-                            <option value="">Select Position</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <label class="input-label" for="stdStartInput">Starts <span class="text-rose-500">*</span></label>
+                    <div class="tc" id="stdStart" data-change="updateStdPreview">
+                        <input type="text" id="stdStartInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
+                        <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                        <div class="time-drop"></div>
+                        <input type="hidden" class="tc-value" value="">
                     </div>
                 </div>
-            </div>
-
-            <!-- Break -->
-            <div>
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[13px] font-bold text-slate-700">Break</span>
-                    <button onclick="addBreakRow()" class="w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition-colors shadow-sm">
-                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    </button>
+                <div>
+                    <label class="input-label" for="stdEndInput">Ends <span class="text-rose-500">*</span></label>
+                    <div class="tc" id="stdEnd" data-change="updateStdPreview">
+                        <input type="text" id="stdEndInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
+                        <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                        <div class="time-drop"></div>
+                        <input type="hidden" class="tc-value" value="">
+                    </div>
                 </div>
-                <div id="breakRowsContainer" class="space-y-2 text-[12px] text-slate-400 italic">
-                    No break added.
+                <div>
+                    <label class="input-label" for="stdShiftPosition">Position</label>
+                    <select id="stdShiftPosition" class="form-input std-select"></select>
                 </div>
             </div>
-
-            <!-- Notes -->
-            <div>
-                <label class="block text-[12px] font-bold text-slate-600 mb-1.5">Notes</label>
-                <textarea id="stdShiftNotes" rows="4" placeholder="Add notes..."
-                    class="w-full border border-slate-300 rounded-lg px-3 py-2 text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 resize-none transition"></textarea>
+            <div class="flex items-center gap-2 text-[12.5px] text-slate-600">
+                <span id="stdPreview" class="std-preview">Pick a start and end time</span>
             </div>
-
+            <div>
+                <label class="input-label">Meal break (unpaid)</label>
+                <div id="stdBreakSeg" class="std-seg">
+                    <button type="button" data-v="00:00" onclick="setStdBreak('00:00')">None</button>
+                    <button type="button" data-v="00:15" onclick="setStdBreak('00:15')">15 min</button>
+                    <button type="button" data-v="00:30" onclick="setStdBreak('00:30')">30 min</button>
+                    <button type="button" data-v="00:45" onclick="setStdBreak('00:45')">45 min</button>
+                    <button type="button" data-v="01:00" onclick="setStdBreak('01:00')">1 hr</button>
+                </div>
+            </div>
+            <div>
+                <label class="input-label" for="stdShiftNotes">Notes</label>
+                <textarea id="stdShiftNotes" rows="3" maxlength="200" placeholder="Optional, e.g. opening shift, covers lunch rush"
+                    class="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none transition"></textarea>
+            </div>
+            <p id="stdError" class="hidden text-[12.5px] text-rose-600 font-medium"></p>
         </div>
-
-        <!-- Footer -->
-        <div class="px-6 py-4 bg-[#f8fafc] border-t border-slate-200 flex justify-end">
-            <button onclick="saveStandardShift()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold px-6 py-2.5 rounded-xl shadow-sm shadow-blue-200 transition-colors">
-                <i data-lucide="plus" class="w-4 h-4"></i> + Add
-            </button>
-        </div>
-
-    </div>
+        <footer class="px-6 py-3 border-t border-slate-200 flex justify-end gap-2">
+            <button onclick="closeAddStandardShift()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
+            <button id="stdSaveBtn" onclick="saveStandardShift()" class="px-5 py-2 rounded-lg bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition">Add Shift</button>
+        </footer>
+    </section>
 </div>
 
 <script>
@@ -3047,8 +3229,6 @@ function openInitiateModal() { document.getElementById("initiateModal").classLis
 function closeInitiateModal() { document.getElementById("initiateModal").classList.add("hidden"); document.getElementById("initiateModal").classList.remove("flex"); }
 function openCopyModal() { closeInitiateModal(); document.getElementById("copyModal").classList.remove("hidden"); document.getElementById("copyModal").classList.add("flex"); lucide.createIcons(); }
 function closeCopyModal() { document.getElementById("copyModal").classList.add("hidden"); document.getElementById("copyModal").classList.remove("flex"); }
-function openAIModal() { document.getElementById("aiModal").classList.remove("hidden"); document.getElementById("aiModal").classList.add("flex"); lucide.createIcons(); }
-function closeAIModal() { document.getElementById("aiModal").classList.add("hidden"); }
 
 /* NOTES FUNCTIONS */
 function openDayNotes(dayStr) {
@@ -3228,10 +3408,464 @@ function handleSortChange(criteria) {
     else if (criteria === 'hours') employeeData.sort((a,b) => b.totalHours - a.totalHours);
     renderScheduleTable();
 }
-function runAIScheduling() {
-    const btn = document.getElementById("aiRunBtn");
-    btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Generating...'; lucide.createIcons();
-    setTimeout(() => { closeAIModal(); renderScheduleTable(); btn.innerHTML = '<i data-lucide="play-circle" class="w-5 h-5"></i> Start AI Generation'; lucide.createIcons(); }, 1500);
+// ── AI Schedule agent ───────────────────────────────────────────────────────
+// Builds a real draft for the active week from employeeData + the forecast, then
+// replays the work as 8 steps. Nothing touches the schedule until "Review & apply".
+const AI_STEPS = [
+    { title: 'Gathering employees',  sub: 'Roster, positions, availability and time off' },
+    { title: 'Reading the forecast', sub: 'Staff hours needed each day of the week' },
+    { title: 'Building shifts',      sub: 'Turning the forecast into shift blocks' },
+    { title: 'Assigning employees',  sub: 'Matching skills, availability and weekly hours' },
+    { title: 'Checking rules',       sub: 'Overtime, minor work hours, one shift per day' },
+    { title: 'Placing breaks',       sub: '30-min meal break on shifts of 6 hours or more' },
+    { title: 'Grouping open shifts', sub: 'Shifts nobody could take go to Unassigned' },
+    { title: 'Preparing the draft',  sub: 'Coverage, cost and a side-by-side with the current week' },
+];
+const AI_MAX_WEEK_HRS = 40, AI_MINOR_LATEST = 22;
+const AI_DEFAULT_PATTERNS = [{ s: 6, e: 14 }, { s: 10, e: 18 }, { s: 14, e: 22 }, { s: 11, e: 15 }, { s: 17, e: 22 }];
+const AI_POSITION_MIX = ['Line Cook', 'Cashier', 'Shift Leader', 'Prep Cook', 'Crew', 'Dishwasher'];
+let _ai = null; // { plan, timers, step, expanded:Set, tab, view, finished }
+
+const aiT = h => { const hh = Math.floor(h), m = Math.round((h - hh) * 60); return `${hh % 12 || 12}${m ? ':' + String(m).padStart(2, '0') : ':00'}${hh >= 12 ? 'p' : 'a'}`; };
+const aiDayName = (ws, c, opt = { weekday: 'short' }) => new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + c).toLocaleDateString('en-US', opt);
+const aiMoney = v => '$' + Math.round(v).toLocaleString();
+const aiMs = v => v < 1 ? '< 1 ms' : `${v < 10 ? v.toFixed(1) : Math.round(v)} ms`;
+
+function _aiPlan(useStd) {
+    const t = [performance.now()];
+    const lap = () => t.push(performance.now());
+    const ws = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay());
+
+    // 1 · employees
+    const roster = employeeData;
+    const managers = roster.filter(e => e.position === 'General Manager');
+    const pool = roster.filter(e => e.position !== 'General Manager');
+    const minors = pool.filter(e => e.isMinor);
+    const offAll = pool.filter(e => e.unavailableDays.length >= 7);
+    const offSome = pool.filter(e => e.unavailableDays.length && e.unavailableDays.length < 7 || e.partialUnavailableDays);
+    lap();
+
+    // 2 · forecast (Sun..Sat staff hours)
+    const fct = _dayStripFct.slice();
+    const fctTotal = fct.reduce((a, b) => a + b, 0);
+    const busiest = fct.indexOf(Math.max(...fct));
+    const quietest = fct.indexOf(Math.min(...fct));
+    lap();
+
+    // 3 · shift blocks
+    let patterns = AI_DEFAULT_PATTERNS.map(p => ({ ...p, position: null }));
+    if (useStd) {
+        const seen = new Set();
+        patterns = stdShiftsData.map(r => {
+            const [a, b] = r.shift.split(/\s+to\s+/i).map(parseTimeText);
+            if (!a || !b) return null;
+            const s = _hhmmToMin(a) / 60, e = _hhmmToMin(b) / 60;
+            const key = `${s}-${e}-${r.position}`;
+            if (e <= s || seen.has(key)) return null;
+            seen.add(key);
+            return { s, e, position: CANONICAL_POSITIONS.includes(r.position) ? r.position : null };
+        }).filter(Boolean);
+        if (!patterns.length) patterns = AI_DEFAULT_PATTERNS.map(p => ({ ...p, position: null }));
+    }
+    const shifts = [];
+    let posN = 0;
+    for (let c = 0; c < 7; c++) {
+        let hrs = 0, k = c;
+        while (hrs < fct[c]) {
+            const p = patterns[k++ % patterns.length];
+            shifts.push({ day: c, start: p.s, end: p.e, position: p.position || AI_POSITION_MIX[posN++ % AI_POSITION_MIX.length], empId: null, brk: null });
+            hrs += p.e - p.s;
+        }
+    }
+    lap();
+
+    // 4 · assign (fewest hours first, exact position preferred)
+    const weekHrs = new Map(pool.map(e => [e.id, 0]));
+    const busyDay = new Set();
+    let overtimeSkips = 0, minorSkips = 0, availSkips = 0;
+    [...shifts].sort((a, b) => a.day - b.day || a.start - b.start).forEach(sh => {
+        const len = sh.end - sh.start;
+        const cands = [];
+        pool.forEach(emp => {
+            if (!(_skillsByPosition[emp.position] || [emp.position]).includes(sh.position)) return;
+            if (busyDay.has(`${emp.id}_${sh.day}`)) return;
+            if (emp.unavailableDays.includes(sh.day)) { availSkips++; return; }
+            const pu = emp.partialUnavailableDays;
+            if (pu && sh.day === 4 && sh.start < pu.end && sh.end > pu.start) { availSkips++; return; }
+            if (emp.isMinor && sh.end > AI_MINOR_LATEST) { minorSkips++; return; }
+            if (weekHrs.get(emp.id) + len > AI_MAX_WEEK_HRS) { overtimeSkips++; return; }
+            cands.push(emp);
+        });
+        cands.sort((a, b) => (b.position === sh.position) - (a.position === sh.position) || weekHrs.get(a.id) - weekHrs.get(b.id));
+        const pick = cands[0];
+        if (pick) { sh.empId = pick.id; weekHrs.set(pick.id, weekHrs.get(pick.id) + len); busyDay.add(`${pick.id}_${sh.day}`); }
+    });
+    const assigned = shifts.filter(s => s.empId !== null);
+    lap();
+
+    // 5 · rules re-check on the draft
+    let conflicts = 0;
+    weekHrs.forEach(h => { if (h > AI_MAX_WEEK_HRS) conflicts++; });
+    assigned.forEach(s => { const e = employeeData.find(x => x.id === s.empId); if (e.isMinor && s.end > AI_MINOR_LATEST) conflicts++; });
+    lap();
+
+    // 6 · breaks
+    let breaks = 0;
+    shifts.forEach(s => { if (s.end - s.start >= 6) { s.brk = [s.start + 3, s.start + 3.5]; breaks++; } });
+    lap();
+
+    // 7 · open shifts
+    const open = shifts.filter(s => s.empId === null);
+    const openByDay = Array.from({ length: 7 }, (_, c) => open.filter(s => s.day === c).length);
+    lap();
+
+    // 8 · draft numbers
+    const schByDay = Array.from({ length: 7 }, (_, c) => assigned.filter(s => s.day === c).reduce((a, s) => a + s.end - s.start, 0));
+    const covered = schByDay.reduce((a, h, c) => a + Math.min(h, fct[c]), 0);
+    const costByDay = Array.from({ length: 7 }, (_, c) => assigned.filter(s => s.day === c)
+        .reduce((a, s) => a + (s.end - s.start) * parseFloat(employeeData.find(e => e.id === s.empId).payrate), 0));
+    const people = new Set(assigned.map(s => s.empId)).size;
+    lap();
+
+    const phaseMs = t.slice(1).map((v, i) => v - t[i]);
+    return {
+        ws, useStd, roster, managers, pool, minors, offAll, offSome, fct, fctTotal, busiest, quietest, patterns,
+        shifts, assigned, open, openByDay, weekHrs, overtimeSkips, minorSkips, availSkips, conflicts, breaks,
+        schByDay, costByDay, cost: costByDay.reduce((a, b) => a + b, 0), coverage: fctTotal ? covered / fctTotal * 100 : 0,
+        people, phaseMs, ms: t[t.length - 1] - t[0],
+    };
+}
+
+function _aiBullets(p, i) {
+    const d = c => aiDayName(p.ws, c, { weekday: 'short', day: 'numeric' });
+    switch (i) {
+        case 0: return [
+            `${p.roster.length} people on the roster; ${p.pool.length} can be scheduled`,
+            `${p.managers.length} general managers left out: AI Schedule never schedules managers`,
+            p.offAll.length ? `${p.offAll.length} unavailable all week, ${p.offSome.length} with partial time off` : 'No one is off the whole week',
+            p.minors.length ? `${p.minors.length} minor${p.minors.length > 1 ? 's' : ''}: no shift ends after ${aiT(AI_MINOR_LATEST)}` : 'No minors on the roster'];
+        case 1: return [
+            `${p.fctTotal} h forecast across 7 days`,
+            `Busiest day: ${d(p.busiest)} with ${p.fct[p.busiest]} h`,
+            `Quietest day: ${d(p.quietest)} with ${p.fct[p.quietest]} h`];
+        case 2: return [
+            `${p.shifts.length} shift blocks drafted (${p.useStd ? 'from your standard shifts' : 'default 4–8 h patterns'})`,
+            `${p.patterns.length} shift pattern${p.patterns.length > 1 ? 's' : ''}: ${p.patterns.slice(0, 3).map(x => `${aiT(x.s)}–${aiT(x.e)}`).join(', ')}${p.patterns.length > 3 ? '…' : ''}`,
+            `Positions rotated so every role gets cover`];
+        case 3: return [
+            `${p.assigned.length} of ${p.shifts.length} shifts filled by ${p.people} people`,
+            `Exact position first, then the person with the fewest hours`,
+            `${p.availSkips} picks skipped for time off`];
+        case 4: return [
+            `${p.overtimeSkips} picks skipped to stay under ${AI_MAX_WEEK_HRS} h a week`,
+            `${p.minorSkips} late picks skipped for minors`,
+            p.conflicts ? `${p.conflicts} rule conflicts remain` : 'No rule conflicts left in the draft'];
+        case 5: return [
+            `${p.breaks} meal breaks placed after the 3rd hour`,
+            `Shifts under 6 h need no break`];
+        case 6: return p.open.length
+            ? [`${p.open.length} shift${p.open.length > 1 ? 's' : ''} left open`, `Most on ${d(p.openByDay.indexOf(Math.max(...p.openByDay)))}`, 'They will appear in the Unassigned row to offer']
+            : ['Every shift found someone', 'Nothing goes to Unassigned'];
+        case 7: return [
+            `${p.coverage.toFixed(1)}% of forecast hours covered`,
+            `Labour cost ${aiMoney(p.cost)} at base pay`,
+            `Ready to compare with the current week`];
+    }
+}
+
+function openAIAgent(useStd = false) {
+    if (typeof closeInitiateModal === 'function') closeInitiateModal();
+    document.getElementById('aiUseStd').checked = !!useStd;
+    const m = document.getElementById('aiModal');
+    m.classList.remove('hidden'); m.classList.add('flex');
+    document.addEventListener('keydown', _aiKey);
+    aiStart();
+}
+function closeAIAgent() {
+    if (_ai) _ai.timers.forEach(clearTimeout);
+    const m = document.getElementById('aiModal');
+    m.classList.add('hidden'); m.classList.remove('flex');
+    document.removeEventListener('keydown', _aiKey);
+}
+function _aiKey(e) { if (e.key === 'Escape') closeAIAgent(); }
+// keep the old entry points working
+function openAIModal() { openAIAgent(false); }
+function closeAIModal() { closeAIAgent(); }
+function runAIScheduling() { aiStart(); }
+
+function aiStart() {
+    if (_ai) _ai.timers.forEach(clearTimeout);
+    const plan = _aiPlan(document.getElementById('aiUseStd').checked);
+    _ai = { plan, timers: [], step: 0, shown: 0, expanded: new Set(), tab: 'schedule', view: 'proposed', finished: false, showSteps: true };
+    const we = new Date(plan.ws.getFullYear(), plan.ws.getMonth(), plan.ws.getDate() + 6);
+    const f = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    document.getElementById('aiTitle').innerText = `AI schedule for ${f(plan.ws)} – ${f(we)}`;
+    document.getElementById('aiApply').disabled = true;
+    document.getElementById('aiRunSummary').classList.add('hidden');
+    document.getElementById('aiStepsWrap').classList.remove('hidden');
+    document.getElementById('aiSkip').classList.remove('hidden');
+    _aiSetStatus('working', 'Working');
+    document.getElementById('aiSubtitle').innerText = plan.useStd ? 'Using your standard shifts as the shift patterns' : 'Reading the roster, the forecast and this week’s shifts';
+    _aiRender();
+    _aiTick();
+}
+
+// replay: one step at a time, its bullets appearing one by one
+function _aiTick() {
+    const s = _ai.step;
+    if (s >= AI_STEPS.length) return _aiFinish();
+    const bullets = _aiBullets(_ai.plan, s);
+    if (_ai.shown < bullets.length) {
+        _ai.shown++;
+        _aiRender();
+        _ai.timers.push(setTimeout(_aiTick, 260));
+    } else {
+        _ai.step++; _ai.shown = 0;
+        _aiRender();
+        _ai.timers.push(setTimeout(_aiTick, 220));
+    }
+}
+function aiSkip() {
+    _ai.timers.forEach(clearTimeout);
+    _ai.step = AI_STEPS.length; _ai.shown = 0;
+    _aiFinish();
+}
+function _aiFinish() {
+    _ai.finished = true;
+    _ai.showSteps = false;
+    const p = _ai.plan;
+    if (p.open.length) _aiSetStatus('review', `${p.open.length} open shift${p.open.length > 1 ? 's' : ''}`);
+    else _aiSetStatus('ready', 'Draft ready');
+    document.getElementById('aiSubtitle').innerText = `${p.roster.length} people on the roster · ${p.assigned.length} shifts drafted for ${p.people} people`;
+    document.getElementById('aiApply').disabled = !p.assigned.length && !p.open.length;
+    document.getElementById('aiSkip').classList.add('hidden');
+    _aiRender();
+    _aiCountUp();
+}
+function _aiSetStatus(kind, text) {
+    const el = document.getElementById('aiStatus');
+    el.className = `ai-pill ai-pill-${kind}`;
+    el.querySelector('span').innerText = text;
+}
+
+function aiToggleStep(i) {
+    if (i > _ai.step) return;
+    _ai.expanded.has(i) ? _ai.expanded.delete(i) : _ai.expanded.add(i);
+    if (_ai.finished) _ai.showSteps = true;
+    _aiRender();
+}
+function aiToggleSteps() { _ai.showSteps = !_ai.showSteps; _aiRender(); }
+function aiSetTab(t) { _ai.tab = t; _aiRenderStage(); }
+function aiSetView(v) { _ai.view = v; _aiRenderStage(); }
+
+function _aiRender() {
+    const p = _ai.plan, s = _ai.step, done = Math.min(s, AI_STEPS.length);
+    document.getElementById('aiProgress').style.width = `${done / AI_STEPS.length * 100}%`;
+    document.getElementById('aiElapsed').innerText = _ai.finished ? aiMs(p.ms) : '…';
+    document.getElementById('aiDoneCount').innerText = `${done} of ${AI_STEPS.length} done`;
+    document.getElementById('aiNow').innerHTML = _ai.finished
+        ? 'All steps finished'
+        : `Schedule Agent is ${AI_STEPS[s].title.charAt(0).toLowerCase() + AI_STEPS[s].title.slice(1)} <span class="ai-dots"><i></i><i></i><i></i></span>`;
+
+    // top stepper
+    document.getElementById('aiStepper').innerHTML = AI_STEPS.map((st, i) => {
+        const cls = i < s ? 'done' : i === s && !_ai.finished ? 'active' : '';
+        return `${i ? '<span class="ai-link' + (i <= s ? ' on' : '') + '"></span>' : ''}<button type="button" class="ai-node ${cls}" title="${st.title}" onclick="aiToggleStep(${i})">${i < s ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : i + 1}</button>`;
+    }).join('');
+
+    // step list
+    document.getElementById('aiSteps').innerHTML = AI_STEPS.map((st, i) => {
+        const state = i < s ? 'done' : i === s && !_ai.finished ? 'active' : 'pending';
+        const open = state === 'active' || _ai.expanded.has(i);
+        const bl = state === 'pending' ? [] : _aiBullets(p, i).slice(0, state === 'active' ? _ai.shown : undefined);
+        const ms = p.phaseMs[i];
+        return `<li class="ai-step ${state}${open ? ' open' : ''}">
+            <button type="button" class="ai-step-head" onclick="aiToggleStep(${i})" ${state === 'pending' ? 'disabled' : ''}>
+                <span class="ai-step-dot">${state === 'done' ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : i + 1}</span>
+                <span class="ai-step-title">${st.title}</span>
+                ${state === 'done' ? `<span class="ai-step-ms">${aiMs(ms)}</span><i data-lucide="chevron-down" class="ai-chev w-3.5 h-3.5"></i>` : ''}
+            </button>
+            ${open ? `<div class="ai-step-body"><p>${st.sub}</p><ul>${bl.map(b => `<li>${b}</li>`).join('')}</ul></div>` : ''}
+        </li>`;
+    }).join('');
+
+    // left summary once finished
+    const sum = document.getElementById('aiRunSummary');
+    if (_ai.finished) {
+        sum.classList.remove('hidden');
+        sum.innerHTML = `<div class="ai-card">
+            <div class="flex items-center gap-2 mb-2"><span class="ai-pill ai-pill-ready"><i></i><span>Completed</span></span><span class="text-[13px] font-semibold text-slate-700">in ${document.getElementById('aiElapsed').innerText}</span></div>
+            ${[['Steps', `${AI_STEPS.length} of ${AI_STEPS.length}`], ['People considered', `${p.pool.length} of ${p.roster.length}`], ['Shifts assigned', p.assigned.length], ['Left open', p.open.length], ['Meal breaks', p.breaks]]
+                .map(([k, v]) => `<div class="ai-kv"><span>${k}</span><b>${v}</b></div>`).join('')}
+            <button type="button" onclick="aiToggleSteps()" class="mt-2 text-[12.5px] font-semibold text-indigo-600 hover:underline">${_ai.showSteps ? 'Hide the steps' : 'Show the steps'}</button>
+        </div>`;
+        document.getElementById('aiStepsWrap').classList.toggle('hidden', !_ai.showSteps);
+    }
+    _aiRenderKpis();
+    _aiRenderStage();
+    lucide.createIcons();
+}
+
+function _aiRenderKpis() {
+    const p = _ai.plan, f = _ai.finished;
+    const card = (id, label, val, extra = '') => `<div class="ai-kpi"><div class="ai-kpi-val" id="${id}">${f ? val : '—'}</div><div class="ai-kpi-label">${label}</div>${extra}</div>`;
+    document.getElementById('aiKpis').innerHTML =
+        card('aiK1', 'Demand covered', '0.0%', `<div class="ai-bar"><i style="width:${f ? Math.min(100, p.coverage) : 0}%"></i></div>`) +
+        card('aiK2', 'Open shifts', '0') +
+        card('aiK3', 'Labour cost · base pay', '$0') +
+        card('aiK4', 'Rule conflicts', '0');
+}
+function _aiCountUp() {
+    const p = _ai.plan, t0 = performance.now(), dur = 700;
+    const step = () => {
+        const k = Math.min(1, (performance.now() - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+        set('aiK1', (p.coverage * e).toFixed(1) + '%');
+        set('aiK2', Math.round(p.open.length * e));
+        set('aiK3', aiMoney(p.cost * e));
+        set('aiK4', Math.round(p.conflicts * e));
+        if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+}
+
+// current week, in the same shape as the draft
+function _aiCurrent() {
+    const out = [];
+    employeeData.forEach(emp => {
+        for (let c = 0; c < 7; c++) {
+            if (emp.unavailableDays.includes(c)) continue;
+            const a = shiftAssignments[`w_${emp.id}_${c}`];
+            if (a === null) continue;
+            if (!a && (emp.id * 3 + c * 7) % 4 === 0) continue;
+            const src = a || { position: emp.position, startHHMM: emp.shift.time.split(' - ')[0], endHHMM: emp.shift.time.split(' - ')[1] };
+            const s = _hhmmToMin(src.startHHMM || `${src.start}:00`) / 60, e = _hhmmToMin(src.endHHMM || `${src.end}:00`) / 60;
+            out.push({ day: c, start: s, end: e, position: src.position, empId: emp.id });
+        }
+    });
+    return out;
+}
+
+function _aiRenderStage() {
+    const stage = document.getElementById('aiStage');
+    if (!_ai.finished) {
+        const s = AI_STEPS[Math.min(_ai.step, AI_STEPS.length - 1)];
+        stage.innerHTML = `<div class="ai-wait">
+            <span class="ai-wait-icon"><i data-lucide="calendar-days" class="w-5 h-5"></i></span>
+            <div class="text-[14px] font-semibold text-slate-800">The schedule will appear here when AI Schedule finishes</div>
+            <div class="text-[13px] text-indigo-600">${s.title} <span class="ai-dots"><i></i><i></i><i></i></span></div>
+            <div class="ai-skeleton">${'<span></span>'.repeat(21)}</div>
+        </div>`;
+        lucide.createIcons();
+        return;
+    }
+    const p = _ai.plan;
+    const tone = p.open.length ? 'amber' : 'green';
+    const banner = p.open.length
+        ? `<b>${p.open.length} shift${p.open.length > 1 ? 's' : ''} could not be filled.</b> They will go to the Unassigned row so you can offer or assign them.`
+        : `<b>Every shift is covered.</b> ${p.assigned.length} shifts for ${p.people} people, ${p.coverage.toFixed(1)}% of forecast hours.`;
+    const current = _aiCurrent();
+    const changes = _aiChanges(current);
+    stage.innerHTML = `
+        <div class="ai-banner ai-banner-${tone}">
+            <i data-lucide="${p.open.length ? 'alert-triangle' : 'check-circle-2'}" class="w-5 h-5 shrink-0"></i>
+            <div class="flex-1 text-[13px]">${banner}</div>
+        </div>
+        <div class="ai-card !p-0 overflow-hidden">
+            <div class="flex items-center gap-1 px-4 border-b border-slate-100">
+                ${[['schedule', 'Schedule'], ['changes', `Changes <span class="ai-count">${changes.length}</span>`], ['summary', 'Summary']]
+                    .map(([k, l]) => `<button type="button" class="ai-tab${_ai.tab === k ? ' active' : ''}" onclick="aiSetTab('${k}')">${l}</button>`).join('')}
+            </div>
+            <div class="p-4">${_ai.tab === 'schedule' ? _aiScheduleTab(current) : _ai.tab === 'changes' ? _aiChangesTab(changes) : _aiSummaryTab()}</div>
+        </div>`;
+    lucide.createIcons();
+}
+
+function _aiChip(s, showPos = true) {
+    const tod = s.start < 11 ? 'am' : s.start < 16 ? 'pm' : 'ev';
+    return `<div class="ai-chip ai-${tod}${s.empId === null ? ' open' : ''}" title="${aiT(s.start)} – ${aiT(s.end)} · ${s.position}${s.brk ? `\nMeal break ${aiT(s.brk[0])}–${aiT(s.brk[1])}` : ''}">
+        <b>${aiT(s.start).replace(':00', '')} – ${aiT(s.end).replace(':00', '')}</b>${showPos ? `<span>${s.position}</span>` : ''}</div>`;
+}
+function _aiScheduleTab(current) {
+    const p = _ai.plan, prop = _ai.view === 'proposed';
+    const list = prop ? p.assigned : current;
+    const ids = [...new Set(list.map(s => s.empId))];
+    const emps = ids.map(id => employeeData.find(e => e.id === id)).sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
+    const head = Array.from({ length: 7 }, (_, c) => `<th>${aiDayName(p.ws, c)}<span>${aiDayName(p.ws, c, { day: 'numeric' })}</span></th>`).join('');
+    const openRow = prop && p.open.length ? `<tr class="ai-open-row"><td><div class="flex items-center gap-2"><span class="ai-open-ic"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></span><div><div class="font-semibold text-slate-800">Open shifts</div><div class="text-[11px] text-slate-500">${p.open.length} to offer</div></div></div></td>
+        ${Array.from({ length: 7 }, (_, c) => `<td>${p.open.filter(s => s.day === c).map(s => _aiChip(s)).join('')}</td>`).join('')}</tr>` : '';
+    const rows = emps.map(emp => `<tr><td><div class="flex items-center gap-2"><img src="${emp.avatar}" class="w-7 h-7 rounded-full object-cover"><div class="min-w-0"><div class="font-semibold text-slate-800 truncate">${emp.name}</div><div class="text-[11px] text-slate-500">${emp.position} · ${(prop ? p.weekHrs.get(emp.id) || 0 : list.filter(s => s.empId === emp.id).reduce((a, s) => a + s.end - s.start, 0)).toFixed(1)} h</div></div></div></td>
+        ${Array.from({ length: 7 }, (_, c) => `<td>${list.filter(s => s.empId === emp.id && s.day === c).map(s => _aiChip(s)).join('')}</td>`).join('')}</tr>`).join('');
+    return `<div class="flex flex-wrap items-center gap-3 mb-3">
+            <div class="ai-seg">${[['proposed', 'Proposed'], ['current', 'Current']].map(([k, l]) => `<button type="button" class="${_ai.view === k ? 'active' : ''}" onclick="aiSetView('${k}')">${l}</button>`).join('')}</div>
+            <span class="text-[12.5px] text-slate-500">${prop ? `${p.assigned.length} shifts · ${emps.length} people` : `The week as it stands · ${current.length} shifts`}</span>
+            <span class="ml-auto flex items-center gap-3 text-[12px] text-slate-500"><span class="ai-leg ai-am"></span>Morning<span class="ai-leg ai-pm"></span>Afternoon<span class="ai-leg ai-ev"></span>Evening</span>
+        </div>
+        <div class="ai-grid-wrap"><table class="ai-grid"><thead><tr><th class="text-left">Team member</th>${head}</tr></thead><tbody>${openRow}${rows}</tbody></table></div>`;
+}
+
+function _aiChanges(current) {
+    const p = _ai.plan, out = [];
+    const key = s => `${s.empId}_${s.day}`;
+    // managers are never rescheduled, so their shifts are not a change
+    const poolIds = new Set(p.pool.map(e => e.id));
+    const cur = new Map(current.filter(s => poolIds.has(s.empId)).map(s => [key(s), s])), prop = new Map(p.assigned.map(s => [key(s), s]));
+    new Set([...cur.keys(), ...prop.keys()]).forEach(k => {
+        const a = cur.get(k), b = prop.get(k);
+        if (a && b && a.start === b.start && a.end === b.end && a.position === b.position) return;
+        out.push({ empId: (a || b).empId, day: (a || b).day, from: a, to: b, kind: !a ? 'added' : !b ? 'removed' : 'changed' });
+    });
+    p.open.forEach(s => out.push({ empId: null, day: s.day, to: s, kind: 'open' }));
+    return out.sort((x, y) => x.day - y.day || (x.empId ?? 999) - (y.empId ?? 999));
+}
+function _aiChangesTab(changes) {
+    const p = _ai.plan;
+    const n = k => changes.filter(c => c.kind === k).length;
+    const lbl = { added: ['Added', 'plus'], removed: ['Removed', 'minus'], changed: ['Changed', 'repeat'], open: ['Open', 'user-plus'] };
+    const fmt = s => s ? `${aiT(s.start)} – ${aiT(s.end)} · ${s.position}` : '—';
+    return `<div class="flex flex-wrap gap-2 mb-3">${Object.keys(lbl).map(k => `<span class="ai-ch ai-ch-${k}"><i data-lucide="${lbl[k][1]}" class="w-3.5 h-3.5"></i>${n(k)} ${lbl[k][0].toLowerCase()}</span>`).join('')}</div>
+        <div class="ai-changes">${changes.map(c => {
+            const emp = c.empId !== null ? employeeData.find(e => e.id === c.empId) : null;
+            return `<div class="ai-change">
+                <span class="ai-ch ai-ch-${c.kind}">${lbl[c.kind][0]}</span>
+                <span class="w-[92px] shrink-0 text-slate-500">${aiDayName(p.ws, c.day, { weekday: 'short', day: 'numeric' })}</span>
+                <span class="w-[150px] shrink-0 font-semibold text-slate-800 truncate">${emp ? emp.name : 'Unassigned'}</span>
+                <span class="text-slate-400 line-through truncate">${c.kind === 'added' || c.kind === 'open' ? '' : fmt(c.from)}</span>
+                ${c.kind === 'changed' ? '<i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>' : ''}
+                <span class="text-slate-700 truncate">${c.kind === 'removed' ? 'No shift' : fmt(c.to)}</span>
+            </div>`;
+        }).join('') || '<div class="py-8 text-center text-slate-500">The draft matches the current week.</div>'}</div>`;
+}
+function _aiSummaryTab() {
+    const p = _ai.plan;
+    const rows = Array.from({ length: 7 }, (_, c) => {
+        const cov = p.fct[c] ? Math.min(100, p.schByDay[c] / p.fct[c] * 100) : 100;
+        return `<tr><td class="text-left font-semibold">${aiDayName(p.ws, c, { weekday: 'short', day: 'numeric' })}</td>
+            <td>${p.fct[c].toFixed(1)}</td><td>${p.schByDay[c].toFixed(1)}</td>
+            <td><div class="flex items-center gap-2 justify-end"><div class="ai-bar w-20 !mt-0"><i style="width:${cov}%"></i></div><span class="w-12 text-right ${cov < 95 ? 'text-amber-600' : 'text-emerald-600'}">${cov.toFixed(0)}%</span></div></td>
+            <td>${p.assigned.filter(s => s.day === c).length}</td><td class="${p.openByDay[c] ? 'text-amber-600 font-semibold' : ''}">${p.openByDay[c]}</td><td>${aiMoney(p.costByDay[c])}</td></tr>`;
+    }).join('');
+    const tot = p.schByDay.reduce((a, b) => a + b, 0);
+    return `<table class="ai-sum"><thead><tr><th class="text-left">Day</th><th>Forecast h</th><th>Scheduled h</th><th>Coverage</th><th>Shifts</th><th>Open</th><th>Labour cost</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td class="text-left">Week</td><td>${p.fctTotal.toFixed(1)}</td><td>${tot.toFixed(1)}</td><td>${p.coverage.toFixed(1)}%</td><td>${p.assigned.length}</td><td>${p.open.length}</td><td>${aiMoney(p.cost)}</td></tr></tfoot></table>
+        <p class="mt-3 text-[12px] text-slate-500">Rules used: no general managers, max ${AI_MAX_WEEK_HRS} h a week, one shift a day, minors finish by ${aiT(AI_MINOR_LATEST)}, 30-min meal break on shifts of 6 h or more.</p>`;
+}
+
+function aiApply() {
+    const p = _ai.plan;
+    // replace the week for every employee with the draft (managers keep their current shifts)
+    p.pool.forEach(emp => { for (let c = 0; c < 7; c++) shiftAssignments[`w_${emp.id}_${c}`] = null; });
+    p.assigned.forEach(s => {
+        const sh = _minToHhmm(Math.round(s.start * 60)), eh = _minToHhmm(Math.round(s.end * 60));
+        shiftAssignments[`w_${s.empId}_${s.day}`] = { start: Math.floor(s.start), end: Math.floor(s.end), startHHMM: sh, endHHMM: eh, time: `${sh} - ${eh}`, position: s.position, notes: '',
+            breaks: s.brk ? [{ start: _minToHhmm(Math.round(s.brk[0] * 60)), end: _minToHhmm(Math.round(s.brk[1] * 60)), type: 'Meal' }] : [] };
+    });
+    unassignedShifts = Array.from({ length: 7 }, (_, c) => p.open.filter(s => s.day === c)
+        .map(s => ({ id: _uaNextId++, start: s.start, end: s.end, position: s.position, dept: _uaDeptFor(s.position) })));
+    closeAIAgent();
+    if (activeView !== 'week') switchView('week'); else renderScheduleTable();
+    showToast(`AI schedule applied: ${p.assigned.length} shifts for ${p.people} people${p.open.length ? `, ${p.open.length} left in Unassigned` : ''}.`, 'info');
 }
 // Mock week patterns available to copy from in the Advanced Copy Schedule modal.
 // Each pattern is a deterministic seed + density so the copied result looks
@@ -5934,56 +6568,142 @@ let stdShiftsData = [
     { shift: '3:00p to 11:00p', position: 'No Position',         break: '00:00' },
 ];
 
+// "7:00a to 3:00p" → { s: 7, e: 15 } (decimal hours; end past midnight rolls to +24)
+function _stdRange(shift) {
+    const [a, b] = String(shift).split(/\s+to\s+/i).map(parseTimeText);
+    if (!a || !b) return null;
+    const s = _hhmmToMin(a) / 60; let e = _hhmmToMin(b) / 60;
+    if (e <= s) e += 24;
+    return { s, e };
+}
+const _stdFmt = hhmm => { const [h, m] = hhmm.split(':').map(Number); return `${h % 12 || 12}:${String(m).padStart(2, '0')}${h >= 12 ? 'p' : 'a'}`; };
+const _stdPosColor = {
+    'General Manager': ['#f5f3ff', '#6d28d9'], 'Assistant Manager': ['#f5f3ff', '#6d28d9'], 'Shift Leader': ['#fffbeb', '#b45309'],
+    'Line Cook': ['#f0fdf4', '#15803d'], 'Prep Cook': ['#f0fdf4', '#15803d'], 'Dishwasher': ['#f0fdf4', '#15803d'],
+    'Cashier': ['#fff1f2', '#be123c'], 'Crew': ['#fff1f2', '#be123c'],
+};
+let _stdSort = { key: 'start', dir: 1 };
+let _stdEditIdx = null;
+
+function sortStdShifts(key) {
+    _stdSort = { key, dir: _stdSort.key === key ? -_stdSort.dir : 1 };
+    renderStdShiftsTable();
+}
 function renderStdShiftsTable() {
     const tbody = document.getElementById('stdShiftsTableBody');
     if (!tbody) return;
-    tbody.innerHTML = stdShiftsData.map((row, i) => `
-        <tr class="border-b border-slate-100 hover:bg-slate-50/60 transition-colors">
-            <td class="px-6 py-3.5 text-blue-600 font-semibold text-[13px]">${row.shift}</td>
-            <td class="px-6 py-3.5 text-slate-700 text-[13px]">${row.position}</td>
-            <td class="px-6 py-3.5 text-slate-700 text-[13px]">${row.break}</td>
-            <td class="px-6 py-3.5 text-right">
-                <button onclick="editStdShift(${i})" class="text-blue-400 hover:text-blue-600 transition-colors mr-2" title="Edit">
-                    <i data-lucide="pencil" class="w-4 h-4 inline-block"></i>
-                </button>
-                <button onclick="deleteStdShift(${i})" class="text-rose-400 hover:text-rose-600 transition-colors" title="Delete">
-                    <i data-lucide="trash-2" class="w-4 h-4 inline-block"></i>
-                </button>
+    const q = (document.getElementById('stdSearch')?.value || '').trim().toLowerCase();
+    const rows = stdShiftsData.map((row, i) => ({ row, i, r: _stdRange(row.shift) }))
+        .filter(x => !q || x.row.shift.toLowerCase().includes(q) || x.row.position.toLowerCase().includes(q))
+        .sort((a, b) => {
+            const k = _stdSort.key;
+            const v = k === 'start' ? (a.r?.s ?? 0) - (b.r?.s ?? 0) || (a.r?.e ?? 0) - (b.r?.e ?? 0)
+                : k === 'position' ? a.row.position.localeCompare(b.row.position) : a.row.break.localeCompare(b.row.break);
+            return v * _stdSort.dir;
+        });
+    document.getElementById('stdCount').innerText = stdShiftsData.length;
+    if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="std-empty"><i data-lucide="clock" class="w-6 h-6"></i>
+            <div class="font-semibold text-slate-700">${q ? 'No standard shifts match your search' : 'No standard shifts yet'}</div>
+            <div>${q ? 'Try a different time or position.' : 'Add the shifts you use most often.'}</div></div></td></tr>`;
+        lucide.createIcons();
+        return;
+    }
+    tbody.innerHTML = rows.map(({ row, i, r }) => {
+        const len = r ? r.e - r.s : 0;
+        const brkMin = (() => { const [h, m] = row.break.split(':').map(Number); return h * 60 + m; })();
+        const paid = len - brkMin / 60;
+        const [bg, fg] = _stdPosColor[row.position] || ['#f1f5f9', '#475569'];
+        return `<tr>
+            <td><div class="flex items-center gap-3">
+                <span class="std-time-ic"><i data-lucide="clock-3" class="w-4 h-4"></i></span>
+                <div><div class="std-time">${row.shift}</div><div class="std-sub">${len ? `${len % 1 ? len.toFixed(1) : len} h shift · ${paid % 1 ? paid.toFixed(2) : paid} h paid` : ''}</div></div>
+            </div></td>
+            <td>${row.position === 'No Position' ? '<span class="std-none">No position</span>' : `<span class="std-pos" style="background:${bg};color:${fg}">${row.position}</span>`}</td>
+            <td>${brkMin ? `<span class="std-break"><i data-lucide="coffee" class="w-3.5 h-3.5"></i>${brkMin} min</span>` : '<span class="std-none">No break</span>'}</td>
+            <td class="std-notes">${row.notes || '<span class="text-slate-300">—</span>'}</td>
+            <td class="text-right whitespace-nowrap">
+                <button onclick="editStdShift(${i})" class="std-icon" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                <button onclick="deleteStdShift(${i})" class="std-icon std-icon-del" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </td>
-        </tr>
-    `).join('');
+        </tr>`;
+    }).join('');
     lucide.createIcons();
 }
 
 function openStandardShifts() {
     document.getElementById('standardShiftsView').style.display = 'block';
     document.getElementById('navStdShifts').classList.add('bg-[#1d3b6a]');
+    document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.remove('bg-[#1d3b6a]');
+    if (location.hash !== '#standard-shifts') history.replaceState(null, '', '#standard-shifts');
     renderStdShiftsTable();
     lucide.createIcons();
 }
-
 function closeStandardShifts() {
     document.getElementById('standardShiftsView').style.display = 'none';
     document.getElementById('navStdShifts').classList.remove('bg-[#1d3b6a]');
+    document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.add('bg-[#1d3b6a]');
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 }
+// Deep link from the dashboard sidebar: Schedule Pad.html#standard-shifts
+document.addEventListener('DOMContentLoaded', () => { if (location.hash === '#standard-shifts') openStandardShifts(); });
+window.addEventListener('hashchange', () => { if (location.hash === '#standard-shifts') openStandardShifts(); });
 
-let breakCount = 0;
-function openAddStandardShift() {
-    breakCount = 0;
-    document.getElementById('stdShiftTime').value = '12:00a-12:00a +1 D';
-    document.getElementById('stdShiftPosition').value = '';
-    document.getElementById('stdShiftNotes').value = '';
-    document.getElementById('breakRowsContainer').innerHTML = '<div class="text-[12px] text-slate-400 italic">No break added.</div>';
-    const modal = document.getElementById('addStandardShiftModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+function setStdBreak(v) {
+    document.querySelectorAll('#stdBreakSeg button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+    updateStdPreview();
+}
+function _stdBreakVal() { return document.querySelector('#stdBreakSeg button.active')?.dataset.v || '00:00'; }
+function updateStdPreview() {
+    const s = document.querySelector('#stdStart .tc-value').value, e = document.querySelector('#stdEnd .tc-value').value;
+    const el = document.getElementById('stdPreview');
+    document.getElementById('stdError').classList.add('hidden');
+    if (!s || !e) { el.innerText = 'Pick a start and end time'; el.className = 'std-preview'; return; }
+    const r = _stdRange(`${s} to ${e}`), len = r.e - r.s;
+    const [bh, bm] = _stdBreakVal().split(':').map(Number);
+    el.innerHTML = `<b>${_stdFmt(s)} to ${_stdFmt(e)}${r.e > 24 ? ' (+1 day)' : ''}</b> · ${len} h shift · ${(len - (bh * 60 + bm) / 60).toFixed(2).replace(/\.00$/, '')} h paid`;
+    el.className = 'std-preview std-preview-ok';
+}
+function _openStdModal(row) {
+    const pos = document.getElementById('stdShiftPosition');
+    pos.innerHTML = '<option value="No Position">No Position</option>' + CANONICAL_POSITIONS.map(p => `<option value="${p}">${p}</option>`).join('');
+    const r = row ? String(row.shift).split(/\s+to\s+/i).map(parseTimeText) : ['', ''];
+    tcSet(document.getElementById('stdStart'), r[0] || '', true);
+    tcSet(document.getElementById('stdEnd'), r[1] || '', true);
+    pos.value = row ? row.position : 'No Position';
+    document.getElementById('stdShiftNotes').value = row?.notes || '';
+    document.getElementById('stdModalTitle').innerText = row ? 'Edit Standard Shift' : 'Add Standard Shift';
+    document.getElementById('stdSaveBtn').innerText = row ? 'Save Changes' : 'Add Shift';
+    setStdBreak(row ? row.break : '00:30');
+    const m = document.getElementById('addStandardShiftModal');
+    m.classList.remove('hidden'); m.classList.add('flex');
     lucide.createIcons();
 }
-
+function openAddStandardShift() { _stdEditIdx = null; _openStdModal(null); }
+function editStdShift(i) { _stdEditIdx = i; _openStdModal(stdShiftsData[i]); }
 function closeAddStandardShift() {
-    const modal = document.getElementById('addStandardShiftModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    const m = document.getElementById('addStandardShiftModal');
+    m.classList.add('hidden'); m.classList.remove('flex');
+}
+function saveStandardShift() {
+    const s = document.querySelector('#stdStart .tc-value').value, e = document.querySelector('#stdEnd .tc-value').value;
+    const err = document.getElementById('stdError');
+    if (!s || !e || s === e) {
+        err.innerText = !s || !e ? 'Enter both a start and an end time.' : 'Start and end time cannot be the same.';
+        err.classList.remove('hidden');
+        return;
+    }
+    const row = { shift: `${_stdFmt(s)} to ${_stdFmt(e)}`, position: document.getElementById('stdShiftPosition').value || 'No Position',
+        break: _stdBreakVal(), notes: document.getElementById('stdShiftNotes').value.trim() };
+    if (_stdEditIdx === null) stdShiftsData.push(row); else stdShiftsData[_stdEditIdx] = row;
+    showToast(`Standard shift ${_stdEditIdx === null ? 'added' : 'updated'}: ${row.shift}.`, 'info');
+    closeAddStandardShift();
+    renderStdShiftsTable();
+}
+function deleteStdShift(i) {
+    const row = stdShiftsData.splice(i, 1)[0];
+    renderStdShiftsTable();
+    showToast(`Deleted standard shift ${row.shift} (${row.position}).`, 'info');
 }
 
 function _breakTimeOptions(sel='') {
@@ -6028,64 +6748,6 @@ function _checkBreakEmpty() {
     }
     if (container.closest('#assignModal')) checkDuration();
 }
-function addBreakRow() {
-    breakCount++;
-    const container = document.getElementById('breakRowsContainer');
-    // Remove placeholder text
-    if (container.querySelector('.italic')) container.innerHTML = '';
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2';
-    row.innerHTML = `
-        <input type="text" placeholder="Start time" class="w-1/3 border border-slate-200 rounded px-2 py-1 text-[12px] focus:outline-none focus:ring-1 focus:ring-blue-400">
-        <span class="text-slate-400 text-[11px] font-bold">–</span>
-        <input type="text" placeholder="End time" class="w-1/3 border border-slate-200 rounded px-2 py-1 text-[12px] focus:outline-none focus:ring-1 focus:ring-blue-400">
-        <button onclick="this.closest('div').remove()" class="ml-auto text-slate-400 hover:text-rose-500 transition-colors">
-            <i data-lucide="x" class="w-3.5 h-3.5"></i>
-        </button>
-    `;
-    container.appendChild(row);
-    lucide.createIcons();
-}
-
-function saveStandardShift() {
-    const time = document.getElementById('stdShiftTime').value.trim();
-    const pos  = document.getElementById('stdShiftPosition').value;
-    if (!time) { document.getElementById('stdShiftTime').focus(); return; }
-    // Collect break duration from rows
-    const breakRows = document.getElementById('breakRowsContainer').querySelectorAll('div.flex');
-    let breakVal = breakRows.length > 0 ? '00:30' : '00:00';
-    stdShiftsData.push({ shift: time, position: pos || 'No Position', break: breakVal });
-    closeAddStandardShift();
-    renderStdShiftsTable();
-}
-
-function editStdShift(i) {
-    const row = stdShiftsData[i];
-    document.getElementById('stdShiftTime').value = row.shift;
-    document.getElementById('stdShiftPosition').value = row.position;
-    document.getElementById('breakRowsContainer').innerHTML = '<div class="text-[12px] text-slate-400 italic">No break added.</div>';
-    breakCount = 0;
-    const modal = document.getElementById('addStandardShiftModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    // Change Add button to Update for this session
-    modal.querySelector('button[onclick="saveStandardShift()"]').onclick = function() {
-        const t = document.getElementById('stdShiftTime').value.trim();
-        const p = document.getElementById('stdShiftPosition').value;
-        if (!t) return;
-        stdShiftsData[i] = { shift: t, position: p || 'No Position', break: row.break };
-        closeAddStandardShift();
-        renderStdShiftsTable();
-        modal.querySelector('button').onclick = saveStandardShift;
-    };
-    lucide.createIcons();
-}
-
-function deleteStdShift(i) {
-    stdShiftsData.splice(i, 1);
-    renderStdShiftsTable();
-}
-
 // ── Filters ───────────────────────────────────────────────────────────────
 let activeFilterDept = 'all';
 let activeFilterPos  = 'all';
