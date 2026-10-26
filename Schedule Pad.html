@@ -1152,6 +1152,51 @@ body.density-compact .ua-stack { gap: 2px; padding: 2px 0; }
 body.density-compact .shiftBox.ua-mini { flex-direction: row; align-items: center; gap: 6px; padding: 2px 6px; }
 body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 1 auto; }
 
+/* Day view: week day switcher */
+.day-strip { display: grid; grid-template-columns: repeat(7, 1fr); border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.day-strip.hidden { display: none; }
+.day-strip button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 9px; border-right: 1px solid #e9edf2; transition: background .15s ease; }
+.day-strip button:last-child { border-right: 0; }
+.day-strip button:hover { background: #eff6ff; }
+.day-strip .ds-day { font-size: 13px; font-weight: 700; color: #1e293b; }
+.day-strip .ds-day span { font-weight: 500; color: #64748b; margin-left: 3px; }
+.day-strip .ds-hrs { font-size: 12px; font-weight: 600; color: #15803d; }
+.day-strip .ds-hrs.under { color: #b45309; }
+.day-strip button.active { background: #fff; }
+.day-strip button.active::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #2563eb; }
+.day-strip button.active .ds-day { color: #1d4ed8; }
+.day-strip .ds-today { display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #2563eb; margin-left: 5px; vertical-align: middle; }
+body.density-compact .day-strip button { padding: 5px 4px 6px; flex-direction: row; justify-content: center; gap: 8px; }
+html.dark .day-strip { background: #162032; border-color: #2d3f55; }
+html.dark .day-strip button { border-color: #2d3f55; }
+html.dark .day-strip button.active { background: #1e293b; }
+html.dark .day-strip .ds-day { color: #e2e8f0; }
+
+/* Assign / Offer unassigned shift drawer */
+#uaPickDrawer .pk-backdrop { opacity: 0; transition: opacity .2s ease; }
+#uaPickDrawer .pk-panel { transform: translateX(100%); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+#uaPickDrawer.pk-open .pk-backdrop { opacity: 1; }
+#uaPickDrawer.pk-open .pk-panel { transform: none; }
+.pk-tabs { display: flex; gap: 2px; padding: 3px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; }
+.pk-tabs button { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #64748b; }
+.pk-tabs button.active { background: #fff; color: #1e3a8a; box-shadow: 0 1px 2px rgba(15,23,42,.1); }
+.pk-count { min-width: 20px; padding: 0 6px; border-radius: 9999px; background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 700; text-align: center; }
+.pk-tabs button.active .pk-count { background: #dbeafe; color: #1e40af; }
+.pk-search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; }
+.pk-search input { border: 0; outline: 0; background: transparent; font-size: 13px; width: 100%; color: #1e293b; }
+.pk-emp { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all .15s ease; }
+.pk-emp:hover { border-color: #93c5fd; background: #f8fbff; }
+.pk-emp.selected { border-color: #2563eb; background: #eff6ff; box-shadow: 0 0 0 1px #2563eb inset; }
+.pk-emp input { width: 16px; height: 16px; accent-color: #2563eb; flex-shrink: 0; }
+.pk-emp img { width: 36px; height: 36px; border-radius: 9999px; object-fit: cover; border: 2px solid #fff; box-shadow: 0 0 0 1px #e2e8f0; flex-shrink: 0; }
+.pk-name { font-size: 13.5px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 4px; }
+.pk-sub { font-size: 12px; color: #64748b; }
+.pk-tag { flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.pk-tag-ok { background: #f0fdf4; color: #15803d; }
+.pk-tag-warn { background: #fffbeb; color: #b45309; }
+.pk-tag-bad { background: #fef2f2; color: #b91c1c; }
+.ua-offered { margin-left: 4px; padding: 0 5px; border-radius: 9999px; background: #ede9fe; color: #6d28d9; font-size: 8px; font-weight: 700; }
+
 .ua-mini .shift-actions { border-radius: 6px; gap: 6px; }
 .ua-mini .action-icon { width: 22px; height: 22px; }
 td.ua-cell { position: relative; }
@@ -1648,6 +1693,8 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
             <!-- WORKSPACE -->
             <div id="workspaceWrap" class="flex-1 flex gap-5 min-w-0 items-start overflow-hidden">
                 <div class="card overflow-hidden flex-1 min-w-0 h-full flex flex-col bg-white">
+                    <!-- Day view: week day switcher above the hour bar -->
+                    <div id="dayStrip" class="day-strip hidden shrink-0"></div>
                     <div id="tableScrollContainer" class="flex-1 overflow-auto w-full relative">
                         <!-- Added min-width to prevent blank screens on zoom out -->
                         <table id="mainScheduleTable" class="text-[13px] border-collapse table-fixed w-full">
@@ -2085,6 +2132,69 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     @keyframes uaDropIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
 </style>
 
+<!-- ASSIGN / OFFER UNASSIGNED SHIFT — side drawer -->
+<div id="uaPickDrawer" class="hidden fixed inset-0 z-[160]">
+    <span class="pk-backdrop absolute inset-0 block bg-slate-900/30" onclick="closeUaPick()"></span>
+    <aside class="pk-panel absolute top-0 right-0 h-full w-full max-w-[540px] bg-white shadow-2xl flex flex-col">
+        <div class="flex items-center justify-between px-6 h-14 bg-white border-b border-slate-200 shrink-0">
+            <span id="pkTitle" class="text-[17px] font-bold text-slate-900">Assign Shift</span>
+            <button onclick="closeUaPick()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close (Esc)">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- shift being assigned / offered -->
+        <div class="px-6 py-3.5 bg-slate-50 border-b border-slate-100 shrink-0">
+            <div class="flex items-center gap-3">
+                <span class="w-11 h-11 rounded-full bg-blue-50 text-blue-600 border-2 border-dashed border-blue-300 flex items-center justify-center shrink-0">
+                    <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                </span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span id="pkPosition" class="text-[15px] font-bold text-slate-900"></span>
+                        <span id="pkDept" class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold"></span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-[12.5px] text-slate-600">
+                        <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i><span id="pkDate"></span></span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i><span id="pkTime"></span></span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i><span id="pkDur"></span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- tabs + search -->
+        <div class="px-6 pt-4 pb-3 border-b border-slate-100 shrink-0 space-y-3">
+            <div class="flex items-center justify-between gap-3">
+                <span id="pkPrompt" class="text-[13px] font-semibold text-slate-700">Assign this shift to</span>
+                <div class="pk-tabs">
+                    <button type="button" data-tab="eligible" onclick="setUaPickTab('eligible')">Eligible <span id="pkEligibleCount" class="pk-count">0</span></button>
+                    <button type="button" data-tab="others" onclick="setUaPickTab('others')">Others <span id="pkOthersCount" class="pk-count">0</span></button>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="pk-search flex-1">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    <input id="pkSearch" type="text" placeholder="Search employee" oninput="renderUaPickList()">
+                </div>
+                <label id="pkSelectAllWrap" class="hidden items-center gap-2 text-[12.5px] font-semibold text-slate-600 cursor-pointer whitespace-nowrap">
+                    <input type="checkbox" id="pkSelectAll" class="w-4 h-4 accent-blue-600" onchange="toggleUaPickAll(this.checked)"> Select all
+                </label>
+            </div>
+            <p id="pkTabHint" class="text-[12px] text-slate-500"></p>
+        </div>
+
+        <div id="pkList" class="flex-1 overflow-y-auto px-6 py-3 space-y-2"></div>
+
+        <div class="px-6 py-3 border-t border-slate-100 bg-white flex items-center gap-3 shrink-0">
+            <span id="pkSelectedInfo" class="mr-auto text-[12.5px] text-slate-500">No employee selected</span>
+            <button id="pkConfirm" onclick="confirmUaPick()" disabled class="px-5 py-2 rounded-lg bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                <i data-lucide="user-check" class="w-4 h-4"></i><span>Assign</span>
+            </button>
+        </div>
+    </aside>
+</div>
+
 <!-- ADD / EDIT SHIFT — side drawer -->
 <div id="assignModal" class="hidden fixed inset-0 z-[150]">
     <!-- span, not div: tasksy-skin.css paints every "#assignModal > div" as a white card -->
@@ -2092,9 +2202,9 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     <aside class="sd-panel absolute top-0 right-0 h-full w-full max-w-[580px] bg-white shadow-2xl flex flex-col">
 
         <!-- HEADER: drawer title on top, employee underneath -->
-        <div class="flex items-center justify-between px-6 h-14 bg-[#0b2545] shrink-0">
-            <span id="modalTitle" class="text-[16px] font-bold text-white">Add Shift</span>
-            <button onclick="closeAssignModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition" title="Close (Esc)">
+        <div class="flex items-center justify-between px-6 h-14 bg-white border-b border-slate-200 shrink-0">
+            <span id="modalTitle" class="text-[17px] font-bold text-slate-900">Add Shift</span>
+            <button onclick="closeAssignModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close (Esc)">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
@@ -2654,10 +2764,11 @@ function uaFmtDur(s) {
 function uaShiftBox(s, dayIdx, style = '') {
     return `<div class="shiftBox unassigned-shift ua-mini" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})">
         <div class="flex items-center justify-between gap-1 w-full"><span class="font-bold text-[9.5px] truncate">${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}</span><span class="ua-dur">${uaFmtDur(s)}</span></div>
-        <div class="text-[8.5px] opacity-75 truncate">${s.position} · ${s.dept}</div>
+        <div class="text-[8.5px] truncate"><span class="opacity-75">${s.position} · ${s.dept}</span>${s.offeredTo && s.offeredTo.length ? `<span class="ua-offered">Offered · ${s.offeredTo.length}</span>` : ''}</div>
         <div class="shift-actions">
             <div class="action-icon" title="Edit unassigned shift" onclick="event.stopPropagation(); openUnassignedShift(${dayIdx}, ${s.id})"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></div>
             <div class="action-icon" title="Delete unassigned shift" onclick="event.stopPropagation(); askDeleteUnassigned(${dayIdx}, ${s.id})"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></div>
+            <div class="action-icon" title="More options" onclick="openUaMoreMenu(event, ${dayIdx}, ${s.id})"><i data-lucide="more-horizontal" class="w-3.5 h-3.5"></i></div>
         </div>
     </div>`;
 }
@@ -3683,6 +3794,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
     });
     gridBody.innerHTML = html;
     renderStatsFooter(columns, cellWidth);
+    renderDayStrip();
     requestAnimationFrame(syncFooterToTable);
 	const tableContainer = document.getElementById('tableScrollContainer');
     const footerScroll = document.getElementById('footerScroll');
@@ -3698,6 +3810,37 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
         if(input) input.value = prevSearch;
     },0);
     lucide.createIcons();
+}
+
+// Day view: the 7 days of the active week; clicking one switches the day without the calendar.
+// Hours use the same Sun..Sat scheduled / forecast figures as the stats footer.
+const _dayStripSch = [48, 72, 68, 74, 80, 92, 84];
+const _dayStripFct = [50, 76, 72, 74, 82, 94, 88];
+function renderDayStrip() {
+    const strip = document.getElementById('dayStrip');
+    if (!strip) return;
+    strip.classList.toggle('hidden', activeView !== 'day');
+    if (activeView !== 'day') return;
+    const ws = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay());
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let html = '';
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + i);
+        const active = d.getDate() === activeDate.getDate() && d.getMonth() === activeDate.getMonth();
+        const sch = _dayStripSch[i], fct = _dayStripFct[i];
+        html += `<button type="button" class="${active ? 'active' : ''}" onclick="selectStripDay(${i})" title="${d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}">
+            <span class="ds-day">${d.toLocaleDateString('en-US', { weekday: 'short' })}<span>${d.getDate()}</span>${d.getTime() === today.getTime() ? '<i class="ds-today"></i>' : ''}</span>
+            <span class="ds-hrs${sch < fct ? ' under' : ''}">${sch.toFixed(2)}h / ${fct.toFixed(2)}h</span>
+        </button>`;
+    }
+    strip.innerHTML = html;
+}
+function selectStripDay(i) {
+    activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay() + i);
+    calendarViewDate = new Date(activeDate);
+    updateDateRangeLabel();
+    renderCalendar();
+    renderScheduleTable();
 }
 
 // Footer cells are built with a nominal cellWidth, but the table (table-fixed, w-full)
@@ -4118,6 +4261,172 @@ function closeUaDelete() {
     const m = document.getElementById('uaDeleteModal');
     m.classList.add('hidden'); m.classList.remove('flex');
 }
+// ── Unassigned shift ⋯ menu: Assign / Offer / Add More ──────────────────────
+function openUaMoreMenu(e, dayIdx, id) {
+    e.stopPropagation();
+    closeShiftMoreMenu();
+    const item = (action, icon, color, hover, label) => `
+        <div onclick="handleUaMore('${action}', ${dayIdx}, ${id})" style="display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:12.5px;color:#334155;cursor:pointer;" onmouseover="this.style.background='${hover}';this.style.color='${color}'" onmouseout="this.style.background='';this.style.color='#334155'">
+            <i data-lucide="${icon}" style="width:15px;height:15px;color:${color}"></i>${label}
+        </div>`;
+    const menu = document.createElement('div');
+    menu.id = 'shiftMoreMenu'; // shares the outside-click close handler with the employee shift menu
+    menu.innerHTML = `
+        <div style="padding:6px 14px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;background:#f8fafc;border-bottom:1px solid #f1f5f9;">Unassigned Shift</div>
+        <div style="padding:4px 0;">
+            ${item('assign', 'user-check', '#2563eb', '#eff6ff', 'Assign Shift')}
+            ${item('offer', 'send', '#7c3aed', '#f5f3ff', 'Offer Shift')}
+            ${item('add', 'plus-circle', '#059669', '#ecfdf5', 'Add More Shift')}
+        </div>`;
+    menu.style.cssText = 'position:fixed;top:' + e.clientY + 'px;left:' + Math.min(e.clientX, window.innerWidth - 210) + 'px;z-index:99999;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.16);overflow:hidden;min-width:195px;';
+    document.body.appendChild(menu);
+    lucide.createIcons();
+}
+function handleUaMore(action, dayIdx, id) {
+    closeShiftMoreMenu();
+    if (action === 'add') openUnassignedShift(dayIdx, null);
+    else openUaPick(action, dayIdx, id);
+}
+
+// Which positions each employee can work (their own + related skills)
+const _skillsByPosition = {
+    'General Manager':   ['General Manager', 'Assistant Manager', 'Shift Leader', 'Cashier', 'Crew'],
+    'Assistant Manager': ['Assistant Manager', 'Shift Leader', 'Cashier', 'Crew'],
+    'Shift Leader':      ['Shift Leader', 'Cashier', 'Crew'],
+    'Line Cook':         ['Line Cook', 'Prep Cook', 'Dishwasher'],
+    'Prep Cook':         ['Prep Cook', 'Line Cook', 'Dishwasher'],
+    'Cashier':           ['Cashier', 'Crew'],
+    'Crew':              ['Crew', 'Cashier'],
+    'Dishwasher':        ['Dishwasher', 'Prep Cook'],
+};
+// The employee's shift on a weekday, using the same rules the week view renders with
+function _empShiftOn(emp, c) {
+    const a = shiftAssignments[`w_${emp.id}_${c}`];
+    if (a === null) return null;
+    if (a) return { start: _hhmmToMin(a.startHHMM || `${a.start}:00`) / 60, end: _hhmmToMin(a.endHHMM || `${a.end}:00`) / 60 };
+    if ((emp.id * 3 + c * 7) % 4 === 0) return null;
+    return { start: emp.shift.start, end: emp.shift.end };
+}
+function _uaEligibility(emp, s, dayIdx) {
+    if (emp.unavailableDays && emp.unavailableDays.includes(dayIdx)) return { ok: false, tone: 'bad', note: 'Unavailable' };
+    const skills = _skillsByPosition[emp.position] || [emp.position];
+    if (!skills.includes(s.position)) return { ok: false, tone: 'warn', note: `Not trained: ${s.position}` };
+    const cur = _empShiftOn(emp, dayIdx);
+    if (cur && s.start < cur.end && s.end > cur.start) return { ok: false, tone: 'warn', note: `Busy ${uaFmtTime(cur.start)}–${uaFmtTime(cur.end)}` };
+    return { ok: true, tone: 'ok', note: emp.position === s.position ? 'Position match' : 'Skill match' };
+}
+
+let _uaPick = null; // { mode, dayIdx, id, tab, selected:Set }
+function openUaPick(mode, dayIdx, id) {
+    const s = _uaFind(dayIdx, id);
+    if (!s) return;
+    _uaPick = { mode, dayIdx, id, tab: 'eligible', selected: new Set(s.offeredTo && mode === 'offer' ? s.offeredTo : []) };
+    const offer = mode === 'offer';
+    document.getElementById('pkTitle').innerText = offer ? 'Offer Shift' : 'Assign Shift';
+    document.getElementById('pkPrompt').innerText = offer ? 'Offer this shift to' : 'Assign this shift to';
+    document.getElementById('pkPosition').innerText = s.position;
+    document.getElementById('pkDept').innerText = s.dept;
+    document.getElementById('pkDate').innerText = _uaWeekDate(dayIdx).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('pkTime').innerText = `${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}`;
+    document.getElementById('pkDur').innerText = uaFmtDur(s);
+    const sa = document.getElementById('pkSelectAllWrap');
+    sa.classList.toggle('hidden', !offer); sa.style.display = offer ? 'flex' : '';
+    document.getElementById('pkConfirm').innerHTML = offer
+        ? '<i data-lucide="send" class="w-4 h-4"></i><span>Send Offer</span>'
+        : '<i data-lucide="user-check" class="w-4 h-4"></i><span>Assign</span>';
+    document.getElementById('pkSearch').value = '';
+    setUaPickTab('eligible');
+    const d = document.getElementById('uaPickDrawer');
+    d.classList.remove('hidden');
+    d._openFrame = requestAnimationFrame(() => d.classList.add('pk-open'));
+    document.addEventListener('keydown', _uaPickKey);
+    lucide.createIcons();
+}
+function _uaPickKey(e) { if (e.key === 'Escape') closeUaPick(); }
+function closeUaPick() {
+    const d = document.getElementById('uaPickDrawer');
+    cancelAnimationFrame(d._openFrame);
+    d.classList.remove('pk-open');
+    document.removeEventListener('keydown', _uaPickKey);
+    setTimeout(() => { if (!d.classList.contains('pk-open')) d.classList.add('hidden'); }, 220);
+}
+function setUaPickTab(tab) {
+    _uaPick.tab = tab;
+    document.querySelectorAll('#uaPickDrawer .pk-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('pkTabHint').innerText = tab === 'eligible'
+        ? 'Available that day, trained for this position and free during the shift.'
+        : 'Everyone else: different position, unavailable or already scheduled at this time.';
+    renderUaPickList();
+}
+function _uaPickRows() {
+    const s = _uaFind(_uaPick.dayIdx, _uaPick.id);
+    return employeeData.map(emp => ({ emp, el: _uaEligibility(emp, s, _uaPick.dayIdx) }));
+}
+function renderUaPickList() {
+    const rows = _uaPickRows();
+    const eligible = rows.filter(r => r.el.ok), others = rows.filter(r => !r.el.ok);
+    document.getElementById('pkEligibleCount').innerText = eligible.length;
+    document.getElementById('pkOthersCount').innerText = others.length;
+    const q = document.getElementById('pkSearch').value.trim().toLowerCase();
+    const list = (_uaPick.tab === 'eligible' ? eligible : others).filter(r => !q || r.emp.name.toLowerCase().includes(q) || r.emp.position.toLowerCase().includes(q));
+    const offer = _uaPick.mode === 'offer';
+    document.getElementById('pkList').innerHTML = list.length ? list.map(({ emp, el }) => {
+        const sel = _uaPick.selected.has(emp.id);
+        const badges = (emp.isShared ? `<span class="status-badge shared-badge">S</span>` : '') + (emp.isMinor ? `<span class="status-badge minor-badge">M</span>` : '');
+        return `<label class="pk-emp${sel ? ' selected' : ''}">
+            <input type="${offer ? 'checkbox' : 'radio'}" name="pkEmp" ${sel ? 'checked' : ''} onchange="toggleUaPickEmp(${emp.id}, this.checked)">
+            <img src="${emp.avatar}" alt="">
+            <div class="flex-1 min-w-0">
+                <div class="pk-name"><span class="truncate">${emp.name}</span>${badges}</div>
+                <div class="pk-sub">${emp.position} · Week ${fmtHrs(emp.totalHours)} hrs</div>
+            </div>
+            <span class="pk-tag pk-tag-${el.tone}">${el.note}</span>
+        </label>`;
+    }).join('') : `<div class="py-10 text-center text-[13px] text-slate-500">No employees in this list.</div>`;
+    const all = document.getElementById('pkSelectAll');
+    all.checked = list.length > 0 && list.every(r => _uaPick.selected.has(r.emp.id));
+    _updateUaPickFooter();
+}
+function toggleUaPickEmp(empId, on) {
+    if (_uaPick.mode === 'assign') _uaPick.selected.clear();
+    if (on) _uaPick.selected.add(empId); else _uaPick.selected.delete(empId);
+    renderUaPickList();
+}
+function toggleUaPickAll(on) {
+    const q = document.getElementById('pkSearch').value.trim().toLowerCase();
+    _uaPickRows().filter(r => (_uaPick.tab === 'eligible') === r.el.ok)
+        .filter(r => !q || r.emp.name.toLowerCase().includes(q) || r.emp.position.toLowerCase().includes(q))
+        .forEach(r => on ? _uaPick.selected.add(r.emp.id) : _uaPick.selected.delete(r.emp.id));
+    renderUaPickList();
+}
+function _updateUaPickFooter() {
+    const n = _uaPick.selected.size;
+    const info = document.getElementById('pkSelectedInfo');
+    if (!n) info.innerText = 'No employee selected';
+    else if (_uaPick.mode === 'assign') info.innerHTML = `Assign to <b class="text-slate-800">${employeeData.find(e => e.id === [..._uaPick.selected][0]).name}</b>`;
+    else info.innerHTML = `<b class="text-slate-800">${n}</b> employee${n > 1 ? 's' : ''} selected`;
+    document.getElementById('pkConfirm').disabled = !n;
+}
+function confirmUaPick() {
+    const { mode, dayIdx, id, selected } = _uaPick;
+    const s = _uaFind(dayIdx, id);
+    if (!s || !selected.size) return;
+    if (mode === 'assign') {
+        const emp = employeeData.find(e => e.id === [...selected][0]);
+        const startHHMM = _minToHhmm(Math.round(s.start * 60)), endHHMM = _minToHhmm(Math.round(s.end * 60));
+        const assignment = { start: Math.floor(s.start), end: Math.floor(s.end), startHHMM, endHHMM, time: `${startHHMM} - ${endHHMM}`, position: s.position, notes: s.notes || '', breaks: s.breaks || [] };
+        shiftAssignments[`w_${emp.id}_${dayIdx}`] = assignment;
+        if (activeView === 'day' && activeDate.getDay() === dayIdx) shiftAssignments[`d_${emp.id}`] = assignment;
+        unassignedShifts[dayIdx] = unassignedShifts[dayIdx].filter(x => x.id !== id);
+        showToast(`${s.position} shift (${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}) assigned to ${emp.name}.`, 'info');
+    } else {
+        s.offeredTo = [...selected];
+        showToast(`Shift offered to ${selected.size} employee${selected.size > 1 ? 's' : ''}.`, 'info');
+    }
+    closeUaPick();
+    renderScheduleTable();
+}
+
 function confirmUaDelete() {
     if (_uaPendingDelete) {
         const { dayIdx, id } = _uaPendingDelete;
