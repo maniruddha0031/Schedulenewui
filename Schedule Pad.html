@@ -636,7 +636,7 @@ table td:hover .addShift {
 #createScheduleWrap:has(.cs-menu:not(.hidden)) .cs-btn { background:#dbe7ff; border-color:#93b4fd; }
 #createScheduleWrap:has(.cs-menu:not(.hidden)) .cs-chev { transform:rotate(180deg); }
 .cs-chev { transition:transform .15s; }
-.cs-menu { position:absolute; right:0; top:calc(100% + 6px); width:340px; background:#fff; border:1px solid #e2e8f0; border-radius:14px; box-shadow:0 18px 40px -12px rgba(15,23,42,.28); padding:6px; z-index:300; animation:csIn .14s ease-out; }
+.cs-menu { position:absolute; right:0; top:calc(100% + 6px); width:372px; background:#fff; border:1px solid #e2e8f0; border-radius:14px; box-shadow:0 18px 40px -12px rgba(15,23,42,.28); padding:6px; z-index:300; animation:csIn .14s ease-out; }
 @keyframes csIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
 .cs-head { padding:8px 10px 4px; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#94a3b8; }
 .cs-item, .cs-toggle { width:100%; display:flex; align-items:flex-start; gap:12px; padding:9px 10px; border-radius:10px; text-align:left; cursor:pointer; transition:background .12s; }
@@ -654,6 +654,21 @@ table td:hover .addShift {
 .cs-switch::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s; }
 .cs-toggle input:checked + .cs-switch { background:#4f46e5; }
 .cs-toggle input:checked + .cs-switch::after { transform:translateX(14px); }
+.cs-auto { margin: 0 2px 2px; border: 1px solid #e0e7ff; background: #f8f9ff; border-radius: 12px; }
+.cs-auto .cs-toggle:hover { background: transparent; }
+.cs-auto .cs-txt small b { color: #4338ca; font-weight: 600; }
+.cs-auto-pick { padding: 0 10px 10px 54px; transition: opacity .15s; }
+.cs-auto-pick.off { opacity: .45; }
+.cs-auto-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
+.cs-auto-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.cs-auto-opts button { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; font-size: 11.5px; font-weight: 600; color: #475569; text-align: left; white-space: nowrap; transition: all .12s; }
+.cs-auto-opts button:not(:disabled):hover { border-color: #a5b4fc; color: #4338ca; }
+.cs-auto-opts button.active { border-color: #6366f1; background: #eef2ff; color: #4338ca; box-shadow: inset 0 0 0 1px #6366f1; }
+.cs-auto-opts button:disabled { cursor: not-allowed; }
+.cs-auto-tag { display: none; font-style: normal; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: #4f46e5; color: #fff; }
+.cs-auto-tag.show { display: inline-flex; }
+.cs-btn.cs-has-auto { position: relative; }
+.cs-btn.cs-has-auto::after { content: ''; position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border-radius: 50%; background: #4f46e5; border: 2px solid #fff; }
 .action-dropdown {
     position: absolute;
     right: 0;
@@ -871,7 +886,36 @@ px !important;
 .dcv-insight-blue { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
 
 /* timeline + stats: one scroll area, shared column template keeps hours aligned */
-#dcvGridCard { height: calc(100vh - 172px); min-height: 520px; } /* fills the area under the frozen header bar */
+#dcvGridCard { height: calc(100vh - 172px); min-height: 420px; } /* fills the area under the frozen header bar */
+/* group tabs are short tables — let the card shrink to them instead of leaving empty space */
+#dcvGridCard:has(#dcvGroupPane:not(.hidden)), #dcvGridCard:has(#dcvStatsPane:not(.hidden)) { height: auto; max-height: calc(100vh - 172px); }
+.dcv-scroll { scrollbar-width: thin; }
+.dcv-gtable { width: 100%; min-width: 1280px; border-collapse: separate; border-spacing: 0; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.dcv-gtable th { position: sticky; top: 0; z-index: 2; background: #f8fafc; color: #475569; font-size: 11.5px; font-weight: 700; text-align: right; padding: 10px 12px; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+.dcv-gtable th.dcv-sortable { cursor: pointer; user-select: none; }
+.dcv-gtable th.dcv-sortable:hover { color: #1d4ed8; }
+.dcv-gtable th.sorted { color: #1d4ed8; }
+.dcv-gtable th svg { display: inline; margin-left: 3px; vertical-align: -2px; }
+.dcv-gtable td { padding: 10px 12px; text-align: right; color: #334155; border-bottom: 1px solid #f1f5f9; white-space: nowrap; }
+.dcv-gtable th:first-child, .dcv-gtable td:first-child { padding-left: 20px; }
+.dcv-grow { cursor: pointer; transition: background .12s; }
+.dcv-grow:hover { background: #f5f8ff; }
+.dcv-grow.open { background: #eef4ff; }
+.dcv-grow b { color: #0f172a; font-weight: 600; }
+.dcv-chev { transition: transform .15s; }
+.dcv-grow.open .dcv-chev { transform: rotate(90deg); }
+.dcv-gdot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.dcv-gsub td { background: #fafbff; font-size: 12px; padding-top: 7px; padding-bottom: 7px; color: #475569; }
+.dcv-gap { display: inline-flex; min-width: 22px; justify-content: center; padding: 1px 7px; border-radius: 999px; background: #fef3c7; color: #b45309; font-weight: 700; font-size: 11.5px; }
+.dcv-gtable tfoot td { position: sticky; bottom: 0; background: #f1f5f9; font-weight: 600; color: #0f172a; border-top: 1px solid #e2e8f0; border-bottom: 0; }
+.dcv-gtable th, .dcv-gtable td { height: auto !important; line-height: 1.3; vertical-align: middle; border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; padding: 10px 12px !important; }
+.dcv-gtable th { border-bottom-color: #e2e8f0 !important; }
+.dcv-gtable th:first-child, .dcv-gtable td:first-child { padding-left: 20px !important; }
+.dcv-gsub td { padding-top: 7px !important; padding-bottom: 7px !important; }
+.dcv-gtable tfoot td { border-top: 1px solid #e2e8f0 !important; }
+.dcv-gtable .text-left { text-align: left; }
+.dcv-spark { display: flex; align-items: flex-end; gap: 2px; height: 26px; width: 216px; padding: 2px 4px; background: #f8fafc; border-radius: 6px; border: 1px solid #eef2f6; }
+.dcv-spark i { flex: 1; border-radius: 2px 2px 0 0; min-width: 4px; }
 .dcv-tabs { display: flex; align-items: center; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 12px; border: 1px solid #e2e8f0; }
 .dcv-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #64748b; transition: all .15s ease; }
 .dcv-tabs button.active { background: #fff; color: #1e3a8a; box-shadow: 0 1px 2px rgba(15,23,42,.08); }
@@ -957,6 +1001,7 @@ html.dark .dcv-track { background-image: linear-gradient(to right, #334155 1px, 
     body.dcv-print #dailyCoverageView, body.dcv-print #dcvContent { overflow: visible !important; padding: 0 !important; }
     body.dcv-print #dcvGridCard { height: auto !important; }
     body.dcv-print .dcv-scroll { overflow: visible !important; }
+    body.dcv-print #dcvTimelinePane, body.dcv-print #dcvStatsPane { display: block !important; }
 }
 
 /* ===== SCHEDULE PAD POLISH — matches Sch_dash.html ===== */
@@ -1178,6 +1223,79 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 
 /* ===== DAY VIEW FOOTER ===== */
 #statsDetails:has(.df-row) { max-height: 48vh; overflow-y: auto !important; }
+/* Standard shift modal: breaks */
+.std-add-break { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 999px; background: #1565d8; color: #fff; font-size: 13px; font-weight: 600; transition: background .12s; }
+.std-add-break:hover { background: #0f52b5; }
+.std-brk-grid { display: grid; grid-template-columns: 1fr 1fr 1.25fr 38px; gap: 10px; align-items: center; }
+.std-brk-head { margin-bottom: 6px; }
+.std-brk-head span { font-size: 12.5px; color: #334155; }
+.std-brk-del { width: 38px; height: 34px; border-radius: 10px; background: #dc2626; color: #fff; display: flex; align-items: center; justify-content: center; transition: background .12s; }
+.std-brk-del:hover { background: #b91c1c; }
+#addStandardShiftModal > section { border-radius: 18px; }
+.ssm-head { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; }
+.ssm-head-ic { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #dbeafe, #eff6ff); color: #2563eb; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ssm-body { padding: 4px 20px 8px; display: flex; flex-direction: column; background: #fff; }
+/* time lists must not be clipped, so the overlay scrolls instead of the dialog body */
+#addStandardShiftModal.flex { align-items: flex-start; overflow-y: auto; padding: 24px 0; }
+#addStandardShiftModal > section.ssm { margin: auto; max-height: none; }
+.ssm-card { padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+.ssm-card:last-of-type { border-bottom: 0; }
+.ssm-card-title { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+.ssm-step { display: none; }
+.ssm-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+.ssm .tc-input, .ssm .std-select { height: 38px !important; font-size: 13.5px !important; }
+.ssm-sum { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid #eef2f6; }
+.ssm-sum .std-preview { background: transparent; padding: 0; margin: 0; font-size: 12.5px; }
+.ssm-sum-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.ssm-track { position: relative; height: 10px; border-radius: 999px; background: repeating-linear-gradient(90deg, #e2e8f0 0 1px, transparent 1px calc(100% / 24)), #f1f5f9; overflow: hidden; }
+.ssm-track i { position: absolute; top: 0; bottom: 0; }
+.ssm-track .ssm-shift { background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 999px; }
+.ssm-track .ssm-meal { background: repeating-linear-gradient(45deg, #f97316 0 3px, #fdba74 3px 6px); }
+.ssm-track .ssm-rest { background: #a5f3fc; }
+.ssm-ticks { display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-top: 3px; }
+.ssm-stats { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.ssm-stats > div { display: flex; align-items: baseline; gap: 5px; }
+.ssm-stats > div + div { padding-left: 14px; border-left: 1px solid #e2e8f0; }
+.ssm-stats span { font-size: 11.5px; color: #64748b; }
+.ssm-stats b { font-size: 13px; font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+.ssm-empty { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px dashed #cbd5e1; border-radius: 10px; color: #94a3b8; font-size: 12.5px; }
+.ssm-empty b { color: #2563eb; }
+.ssm-error { padding: 10px 14px; border-radius: 10px; background: #fff1f2; border: 1px solid #fecdd3; color: #be123c; font-size: 12.5px; font-weight: 600; }
+.ssm-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; border-top: 1px solid #e2e8f0; background: #fff; border-radius: 0 0 18px 18px; }
+
+/* Date control: < [calendar label] > */
+.date-nav { display: flex; align-items: stretch; height: 40px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.date-nav > button { width: 36px; display: flex; align-items: center; justify-content: center; color: #475569; transition: background .12s, color .12s; }
+.date-nav > button:hover { background: #eff6ff; color: #1d4ed8; }
+.date-nav > button:first-child { border-right: 1px solid #e2e8f0; }
+.date-nav > button:last-child { border-left: 1px solid #e2e8f0; }
+.date-nav-label { display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 14px; cursor: pointer; min-width: 228px; white-space: nowrap; transition: background .12s; }
+.date-nav-label:hover { background: #f8fafc; }
+
+/* Reports screen */
+.rpt-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+.rpt-card { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-height: 132px; padding: 24px 24px; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; cursor: pointer; transition: transform .15s, box-shadow .15s, border-color .15s; overflow: hidden; outline: none; }
+.rpt-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--rc); opacity: 0; transition: opacity .15s; }
+.rpt-card:hover, .rpt-card:focus-visible { transform: translateY(-2px); border-color: color-mix(in srgb, var(--rc) 35%, #e2e8f0); box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--rc) 55%, transparent); }
+.rpt-card:hover::before, .rpt-card:focus-visible::before { opacity: 1; }
+.rpt-ic { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--rc); background: linear-gradient(135deg, color-mix(in srgb, var(--rc) 16%, #fff), color-mix(in srgb, var(--rc) 6%, #fff)); border: 1px solid color-mix(in srgb, var(--rc) 18%, #fff); }
+.rpt-ic-sm { width: 40px; height: 40px; border-radius: 11px; }
+.rpt-name { font-size: 16.5px; font-weight: 700; color: #0f172a; line-height: 1.3; }
+.rpt-desc { font-size: 13.5px; color: #64748b; line-height: 1.5; margin-top: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rpt-seg { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: #f1f5f9; border-radius: 10px; }
+.rpt-seg button { flex: 1; height: 30px; border-radius: 7px; font-size: 12.5px; font-weight: 600; color: #64748b; white-space: nowrap; padding: 0 8px; }
+.rpt-seg button.active { background: #fff; color: #1d4ed8; box-shadow: 0 1px 3px rgba(15,23,42,.15); }
+.rpt-fmt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.rpt-fmt button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; text-align: left; transition: all .12s; }
+.rpt-fmt button span { display: flex; flex-direction: column; line-height: 1.2; }
+.rpt-fmt button b { font-size: 13px; color: #0f172a; }
+.rpt-fmt button small { font-size: 11px; color: #64748b; }
+.rpt-fmt button:hover { border-color: #bfdbfe; }
+.rpt-fmt button.active { border-color: #2563eb; background: #eff6ff; box-shadow: inset 0 0 0 1px #2563eb; }
+.rpt-summary { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 12.5px; color: #475569; }
+.rpt-summary b { color: #0f172a; }
+.rpt-summary-err { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+
 /* Month view footer + day details popup */
 .mf-cell { cursor: pointer; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; transition: background .12s; }
 .mf-cell sup { font-size: 8.5px; margin-left: 1px; }
@@ -1433,7 +1551,15 @@ html.dark .day-strip .ds-day { color: #e2e8f0; }
 #uoSummary .uo-total { font-size: 11.5px; font-weight: 700; color: #334155; margin-right: 2px; }
 .uo-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
 .uo-amber { background: #fef3c7; color: #b45309; }
-.uo-blue { background: #dbeafe; color: #1d4ed8; }
+.uo-green { background: #dcfce7; color: #15803d; }
+.pk-offer-chip { height: 18px; padding: 0 7px; gap: 3px; font-size: 10px; margin-left: 2px; }
+.pk-offer-list { display: flex; flex-wrap: wrap; gap: 6px; max-height: 76px; overflow-y: auto; }
+.pk-oc { display: inline-flex; align-items: center; gap: 6px; max-width: 220px; height: 30px; padding: 0 4px 0 3px; border-radius: 999px; background: #fff; border: 1px solid #e9e5f5; font-size: 12px; font-weight: 500; color: #334155; }
+.pk-oc img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.pk-oc-dot { flex-shrink: 0; height: 18px; padding: 0 7px; border-radius: 999px; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; }
+.pk-oc-green { background: #dcfce7; color: #15803d; } .pk-oc-amber { background: #fef3c7; color: #b45309; } .pk-oc-rose { background: #ffe4e6; color: #be123c; }
+.pk-oc button { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; flex-shrink: 0; }
+.pk-oc button:hover { background: #ffe4e6; color: #e11d48; }
 .uo-rose { background: #ffe4e6; color: #be123c; }
 #uoList { max-height: 260px; overflow-y: auto; padding: 4px 6px; }
 .uo-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; transition: background .12s, opacity .18s, transform .18s; }
@@ -1634,6 +1760,8 @@ body.select-mode .shiftBox { cursor: pointer; }
 body.select-mode .addShift { cursor: default; opacity: 0 !important; pointer-events: none; }
 td.shift-cell-selected { background: rgba(37,99,235,0.08) !important; box-shadow: inset 0 0 0 2px #2563eb; border-radius: 4px; }
 td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
+.shiftBox.ua-mini.ua-selected { box-shadow: 0 0 0 2px #2563eb, 0 2px 6px -2px rgba(37,99,235,.45) !important; background: #eff6ff !important; position: relative; }
+.shiftBox.ua-mini.ua-selected::after { content: '✓'; position: absolute; top: 3px; right: 3px; width: 14px; height: 14px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; z-index: 7; }
 #selectModeBtn.active { background:#2563eb !important; color:#fff !important; border-color:#2563eb !important; }
 #selectModeBtn.active svg { color:#fff !important; stroke:#fff !important; }
 
@@ -1777,7 +1905,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     <span class="label">Team Center</span>
 </a>
 
-<a href="#" class="menu-item px-4 py-3 opacity-90 block">
+<a href="#" onclick="openReports(); return false;" class="menu-item px-4 py-3 opacity-90 block" id="navReports">
     <i data-lucide="file-text"></i>
     <span class="label">Reports</span>
 </a>
@@ -1803,10 +1931,14 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
             <div class="card py-3 px-5 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-4">
                     <div class="relative">
-                        <div onclick="toggleCalendarMenu()" class="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-4 py-2 text-[14px] cursor-pointer hover:shadow-sm transition-all min-w-[240px]">
-    <i data-lucide="calendar" class="w-5 h-5 text-slate-400"></i>
-    <span id="dateRangeText" class="font-semibold text-[#1e3a8a]">Week: 02/16/2026 - 02/22/2026</span>
-</div>
+                        <div class="date-nav">
+                            <button type="button" onclick="stepActiveDate(-1)" id="dateNavPrev" title="Previous week"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <div onclick="toggleCalendarMenu()" class="date-nav-label">
+                                <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                                <span id="dateRangeText" class="font-semibold text-[#1e3a8a]">Week: 02/16/2026 - 02/22/2026</span>
+                            </div>
+                            <button type="button" onclick="stepActiveDate(1)" id="dateNavNext" title="Next week"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
                         <div id="calendarMenu" class="hidden absolute left-0 mt-2 w-[280px] bg-white border border-slate-200 rounded-2xl shadow-lg p-4 z-50">
                             <div class="flex justify-between items-center mb-5 px-1">
                                 <div id="calendarMonthTitle" class="font-bold text-slate-800 tracking-tight">February 2026</div>
@@ -1911,11 +2043,11 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                             <div class="cs-head">Fill this week</div>
                             <button class="cs-item" onclick="csPick('copy')">
                                 <span class="cs-ic" style="background:#eff6ff;color:#2563eb"><i data-lucide="copy" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>Copy Schedule</b><small>Duplicate a previous week's schedule</small></span>
+                                <span class="cs-txt"><b>Copy Schedule <em class="cs-auto-tag" data-auto="copy">Auto</em></b><small>Duplicate a previous week's schedule</small></span>
                             </button>
                             <button class="cs-item" onclick="csPick('template')">
                                 <span class="cs-ic" style="background:#ecfdf5;color:#059669"><i data-lucide="file-text" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>Load Template</b><small>Apply a saved staffing structure</small></span>
+                                <span class="cs-txt"><b>Load Template <em class="cs-auto-tag" data-auto="template">Auto</em></b><small>Apply a saved staffing structure</small></span>
                             </button>
                             <button class="cs-item" onclick="csPick('scratch')">
                                 <span class="cs-ic" style="background:#fffbeb;color:#d97706"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
@@ -1925,19 +2057,31 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                             <div class="cs-head">AI scheduling</div>
                             <button class="cs-item" onclick="csPick('aiStd')">
                                 <span class="cs-ic" style="background:#f5f3ff;color:#7c3aed"><i data-lucide="calendar-clock" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>AI Scheduling Using Standard Shift</b><small>Build an AI roster from your standard shifts</small></span>
+                                <span class="cs-txt"><b>AI Scheduling Using Standard Shift <em class="cs-auto-tag" data-auto="aiStd">Auto</em></b><small>Build an AI roster from your standard shifts</small></span>
                             </button>
                             <button class="cs-item" onclick="csPick('ai')">
                                 <span class="cs-ic cs-ic-ai"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>AI Scheduling <em class="cs-tag">Recommended</em></b><small>Build shifts from the forecast and assign them</small></span>
+                                <span class="cs-txt"><b>AI Scheduling <em class="cs-tag">Recommended</em> <em class="cs-auto-tag" data-auto="ai">Auto</em></b><small>Build shifts from the forecast and assign them</small></span>
                             </button>
                             <div class="cs-sep"></div>
-                            <label class="cs-toggle">
-                                <span class="cs-ic" style="background:#eef2ff;color:#4f46e5"><i data-lucide="wand-2" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>Auto-create shifts from preferences</b><small>Build the roster from saved availability</small></span>
-                                <input type="checkbox" id="csAutoCreate" class="sr-only peer" checked>
-                                <span class="cs-switch"></span>
-                            </label>
+                            <!-- Auto-create: on/off + which option builds new weeks automatically -->
+                            <div class="cs-auto">
+                                <label class="cs-toggle">
+                                    <span class="cs-ic" style="background:#eef2ff;color:#4f46e5"><i data-lucide="wand-2" class="w-4 h-4"></i></span>
+                                    <span class="cs-txt"><b>Auto-create shifts from preferences</b><small id="csAutoDesc"></small></span>
+                                    <input type="checkbox" id="csAutoCreate" class="sr-only peer" onchange="setCsAuto(this.checked)">
+                                    <span class="cs-switch"></span>
+                                </label>
+                                <div id="csAutoPick" class="cs-auto-pick">
+                                    <div class="cs-auto-lbl">Auto-create using</div>
+                                    <div class="cs-auto-opts">
+                                        <button type="button" data-v="copy" onclick="setCsAutoMethod('copy')"><i data-lucide="copy" class="w-3.5 h-3.5"></i>Copy Schedule</button>
+                                        <button type="button" data-v="template" onclick="setCsAutoMethod('template')"><i data-lucide="file-text" class="w-3.5 h-3.5"></i>Load Template</button>
+                                        <button type="button" data-v="aiStd" onclick="setCsAutoMethod('aiStd')"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>AI · Standard Shift</button>
+                                        <button type="button" data-v="ai" onclick="setCsAutoMethod('ai')"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i>AI Scheduling</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1954,9 +2098,6 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     <div class="px-4 py-1.5 text-[11px] font-semibold text-slate-500 bg-slate-50/50">Action Items</div>
     <div class="action-dropdown-item" onclick="customTogglePopover('actionDropdown'); openAddEmployeeModal();">
         <i data-lucide="user-plus" class="w-3.5 h-3.5 text-blue-500"></i> Add Employee
-    </div>
-    <div class="action-dropdown-item" onclick="event.stopPropagation(); customTogglePopover('createScheduleMenu');">
-        <i data-lucide="settings-2" class="w-3.5 h-3.5 text-indigo-500"></i> Schedule preference
     </div>
     <div class="action-dropdown-item" onclick="customTogglePopover('actionDropdown'); openSaveTemplateModal();">
         <i data-lucide="bookmark" class="w-3.5 h-3.5 text-emerald-500"></i> Save As Template
@@ -2097,14 +2238,20 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
             <div id="dcvGridCard" class="card overflow-hidden flex flex-col shrink-0">
                 <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-slate-100 dcv-noprint">
                     <div id="dcvTabs" class="dcv-tabs">
-                        <button data-sec="timeline" class="active" onclick="scrollCoverageTo('timeline')">
+                        <button data-sec="timeline" class="active" onclick="setCoverageTab('timeline')">
                             <i data-lucide="calendar-range" class="w-4 h-4"></i> Shift Timeline <span id="dcvRowCount" class="dcv-count">0</span>
                         </button>
-                        <button data-sec="stats" onclick="scrollCoverageTo('stats')">
-                            <i data-lucide="table" class="w-4 h-4"></i> Daily Stats
+                        <button data-sec="stats" onclick="setCoverageTab('stats')">
+                            <i data-lucide="table" class="w-4 h-4"></i> Hourly Stats
+                        </button>
+                        <button data-sec="position" onclick="setCoverageTab('position')">
+                            <i data-lucide="briefcase" class="w-4 h-4"></i> By Position <span id="dcvPosCount" class="dcv-count">0</span>
+                        </button>
+                        <button data-sec="dept" onclick="setCoverageTab('dept')">
+                            <i data-lucide="building-2" class="w-4 h-4"></i> By Department <span id="dcvDeptCount" class="dcv-count">0</span>
                         </button>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3">
+                    <div id="dcvTimelineTools" class="flex flex-wrap items-center gap-3">
                         <div class="dcv-search">
                             <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
                             <input id="dcvSearch" type="text" placeholder="Search employee" oninput="renderCoverageEmployeeRows()">
@@ -2119,20 +2266,34 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                 </div>
 
                 <!-- legend -->
-                <div class="flex flex-wrap items-center gap-4 px-5 py-2 border-b border-slate-100 text-[11.5px] text-slate-500 font-medium">
+                <div id="dcvLegend" class="flex flex-wrap items-center gap-4 px-5 py-2 border-b border-slate-100 text-[11.5px] text-slate-500 font-medium">
                     <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#7c3aed"></span>General Manager</span>
                     <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#d97706"></span>Shift Leader</span>
                     <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#16a34a"></span>Line Cook</span>
                     <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#e11d48"></span>Cashier</span>
                     <span class="flex items-center gap-1.5"><span class="dcv-swatch dcv-swatch-break"></span>Meal Break</span>
-                    <span class="ml-auto flex items-center gap-1.5 text-slate-400"><i data-lucide="mouse-pointer-2" class="w-3.5 h-3.5"></i>Scroll down for hourly Daily Stats</span>
+                </div>
+                <!-- hint for the group tabs -->
+                <div id="dcvGroupHint" class="hidden flex flex-wrap items-center gap-4 px-5 py-2 border-b border-slate-100 text-[11.5px] text-slate-500 font-medium">
+                    <span class="flex items-center gap-1.5"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-slate-400"></i>Click a row to see its employees · click a column header to sort</span>
+                    <span class="ml-auto flex items-center gap-3">
+                        <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#2563eb"></span>On target</span>
+                        <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#f59e0b"></span>Under</span>
+                        <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#ef4444"></span>Critical</span>
+                        <span class="flex items-center gap-1.5"><span class="dcv-swatch" style="background:#10b981"></span>Over</span>
+                    </span>
                 </div>
 
                 <div id="dcvScroll" class="dcv-scroll">
-                    <div id="dcvHead" class="dcv-grid dcv-head"></div>
-                    <div id="coverageEmployeeBody"></div>
-                    <div id="dcvStatsHead" class="dcv-grid dcv-band"></div>
-                    <div id="coverageStatsBody"></div>
+                    <div id="dcvTimelinePane">
+                        <div id="dcvHead" class="dcv-grid dcv-head"></div>
+                        <div id="coverageEmployeeBody"></div>
+                    </div>
+                    <div id="dcvStatsPane" class="hidden">
+                        <div id="dcvStatsHead" class="dcv-grid dcv-band"></div>
+                        <div id="coverageStatsBody"></div>
+                    </div>
+                    <div id="dcvGroupPane" class="hidden"></div>
                 </div>
             </div>
             </div>
@@ -2497,6 +2658,9 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                 </div>
             </div>
         </div>
+
+        <!-- who this shift is already offered to -->
+        <div id="pkOffers" class="hidden px-6 py-3 border-b border-slate-100 shrink-0 bg-violet-50/40"></div>
 
         <!-- tabs + search -->
         <div class="px-6 pt-4 pb-3 border-b border-slate-100 shrink-0 space-y-3">
@@ -2951,16 +3115,72 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 <!-- ══════════════════════════════════════════════════════════════
      STANDARD SHIFTS VIEW  (fixed overlay, shows right of sidebar)
      ══════════════════════════════════════════════════════════════ -->
+<!-- REPORTS (left sidebar → Reports) -->
+<div id="reportsView" style="display:none; position:fixed; top:56px; left:72px; right:0; bottom:0; background:#eef2f6; z-index:200; overflow-y:auto;">
+    <div class="p-6">
+        <div id="rptGrid" class="rpt-grid"></div>
+    </div>
+</div>
+
+<!-- GENERATE REPORT -->
+<div id="rptGenModal" class="hidden fixed inset-0 bg-slate-900/40 items-center justify-center z-[300] backdrop-blur-[2px]" onclick="if(event.target===this) closeReportGen()">
+    <section class="bg-white rounded-2xl shadow-2xl w-[520px] max-w-[94vw] overflow-hidden">
+        <header class="flex items-center gap-3 px-6 py-4 border-b border-slate-200">
+            <span id="rgIcon" class="rpt-ic rpt-ic-sm"></span>
+            <div class="min-w-0 flex-1">
+                <h2 id="rgTitle" class="text-[15.5px] font-bold text-slate-900 truncate"></h2>
+                <p id="rgDesc" class="text-[12px] text-slate-500 truncate"></p>
+            </div>
+            <button onclick="closeReportGen()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </header>
+        <div class="px-6 py-5 space-y-4">
+            <div>
+                <label class="input-label">Date range</label>
+                <div id="rgRange" class="rpt-seg">
+                    <button type="button" data-v="today" onclick="setReportRange('today')">Today</button>
+                    <button type="button" data-v="week" onclick="setReportRange('week')">This week</button>
+                    <button type="button" data-v="last" onclick="setReportRange('last')">Last week</button>
+                    <button type="button" data-v="month" onclick="setReportRange('month')">This month</button>
+                    <button type="button" data-v="custom" onclick="setReportRange('custom')">Custom</button>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-2.5">
+                    <input id="rgFrom" type="date" class="form-input" onchange="setReportRange('custom', true)">
+                    <input id="rgTo" type="date" class="form-input" onchange="setReportRange('custom', true)">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="input-label" for="rgLocation">Location</label>
+                    <select id="rgLocation" class="form-input"><option>085 - Del Mar</option><option>215 - Lancaster</option><option>All locations</option></select>
+                </div>
+                <div>
+                    <label class="input-label" for="rgGroup">Group by</label>
+                    <select id="rgGroup" class="form-input"><option>None</option><option>Department</option><option>Position</option><option>Employee</option></select>
+                </div>
+            </div>
+            <div>
+                <label class="input-label">Format</label>
+                <div id="rgFormat" class="rpt-fmt">
+                    <button type="button" data-v="PDF" onclick="setReportFormat('PDF')"><i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i><span><b>PDF</b><small>Print-ready</small></span></button>
+                    <button type="button" data-v="CSV" onclick="setReportFormat('CSV')"><i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i><span><b>CSV</b><small>Open in Excel</small></span></button>
+                    <button type="button" data-v="Print" onclick="setReportFormat('Print')"><i data-lucide="printer" class="w-4 h-4 text-slate-600"></i><span><b>Print</b><small>Send to printer</small></span></button>
+                </div>
+            </div>
+            <p id="rgSummary" class="rpt-summary"></p>
+        </div>
+        <footer class="px-6 py-3 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
+            <button onclick="closeReportGen()" class="px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
+            <button onclick="generateReport()" class="px-5 py-2 rounded-lg bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition flex items-center gap-1.5"><i data-lucide="download" class="w-4 h-4"></i> Generate</button>
+        </footer>
+    </section>
+</div>
+
 <div id="standardShiftsView" style="display:none; position:fixed; top:56px; left:72px; right:0; bottom:0; background:#eef2f6; z-index:200; overflow-y:auto;">
     <div class="p-5 space-y-4">
 
         <!-- Page header -->
         <div class="card py-3 px-5 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0">
-                <button onclick="closeStandardShifts()" class="std-back" title="Back to Schedule">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Schedule</span>
-                </button>
-                <div class="h-8 border-l border-slate-200"></div>
                 <span class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-5 h-5"></i></span>
                 <div class="min-w-0">
                     <div class="flex items-center gap-2">
@@ -3003,59 +3223,88 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 
 <!-- ADD / EDIT STANDARD SHIFT MODAL -->
 <div id="addStandardShiftModal" class="hidden fixed inset-0 bg-slate-900/40 items-center justify-center z-[300] backdrop-blur-[2px]" onclick="if(event.target===this) closeAddStandardShift()">
-    <section class="bg-white rounded-2xl shadow-2xl w-[560px] max-w-[94vw] overflow-hidden">
-        <header class="flex items-center justify-between px-6 h-14 border-b border-slate-200">
-            <h2 id="stdModalTitle" class="text-[16px] font-bold text-slate-900">Add Standard Shift</h2>
-            <button onclick="closeAddStandardShift()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <section class="ssm bg-white shadow-2xl w-[660px] max-w-[95vw] flex flex-col">
+        <header class="ssm-head">
+            <span class="ssm-head-ic"><i data-lucide="clock-3" class="w-[18px] h-[18px]"></i></span>
+            <div class="min-w-0 flex-1">
+                <h2 id="stdModalTitle" class="text-[16px] font-bold text-slate-900 leading-tight">Add Standard Shift</h2>
+                <p class="text-[12px] text-slate-500 mt-0.5">Save a shift you use often so you can assign it in one click.</p>
+            </div>
+            <button onclick="closeAddStandardShift()" class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
         </header>
-        <div class="px-6 py-5 space-y-4">
-            <div class="grid grid-cols-[1fr_1fr_1.3fr] gap-3 items-end">
-                <div>
-                    <label class="input-label" for="stdStartInput">Starts <span class="text-rose-500">*</span></label>
-                    <div class="tc" id="stdStart" data-change="updateStdPreview">
-                        <input type="text" id="stdStartInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
-                        <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
-                        <div class="time-drop"></div>
-                        <input type="hidden" class="tc-value" value="">
+        <div class="ssm-body">
+            <!-- Shift -->
+            <div class="ssm-card">
+                <div class="ssm-card-title"><span class="ssm-step">1</span>Shift details</div>
+                <div class="grid grid-cols-[1fr_1fr_1.35fr] gap-4 items-end">
+                    <div>
+                        <label class="input-label" for="stdStartInput">Starts <span class="text-rose-500">*</span></label>
+                        <div class="tc" id="stdStart" data-change="updateStdPreview">
+                            <input type="text" id="stdStartInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
+                            <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                            <div class="time-drop"></div>
+                            <input type="hidden" class="tc-value" value="">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="input-label" for="stdEndInput">Ends <span class="text-rose-500">*</span></label>
+                        <div class="tc" id="stdEnd" data-change="updateStdPreview">
+                            <input type="text" id="stdEndInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
+                            <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                            <div class="time-drop"></div>
+                            <input type="hidden" class="tc-value" value="">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="input-label" for="stdShiftPosition">Position</label>
+                        <select id="stdShiftPosition" class="form-input std-select" onchange="updateStdPreview()"></select>
                     </div>
                 </div>
-                <div>
-                    <label class="input-label" for="stdEndInput">Ends <span class="text-rose-500">*</span></label>
-                    <div class="tc" id="stdEnd" data-change="updateStdPreview">
-                        <input type="text" id="stdEndInput" class="tc-input" placeholder="hh:mm" autocomplete="off" onfocus="tcOpen(this)" oninput="tcInput(this)" onkeydown="tcKey(event, this)" onblur="tcCommit(this)">
-                        <button type="button" class="tc-toggle" tabindex="-1" onmousedown="event.preventDefault(); tcToggle(this)"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
-                        <div class="time-drop"></div>
-                        <input type="hidden" class="tc-value" value="">
+                <!-- summary: timeline + stats -->
+                <div id="stdSum" class="ssm-sum hidden">
+                    <div class="ssm-sum-top">
+                        <div id="stdPreview" class="std-preview">Pick a start and end time</div>
+                        <div class="ssm-stats">
+                            <div><span>Shift</span><b id="stdStatLen">—</b></div>
+                            <div><span>Unpaid break</span><b id="stdStatBrk">—</b></div>
+                            <div><span>Paid</span><b id="stdStatPaid">—</b></div>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <label class="input-label" for="stdShiftPosition">Position</label>
-                    <select id="stdShiftPosition" class="form-input std-select"></select>
+                    <div class="ssm-track" title="Shift across the day (12a → 12a)"><div id="stdTrack"></div></div>
+                    <div class="ssm-ticks"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>12a</span></div>
                 </div>
             </div>
-            <div class="flex items-center gap-2 text-[12.5px] text-slate-600">
-                <span id="stdPreview" class="std-preview">Pick a start and end time</span>
-            </div>
-            <div>
-                <label class="input-label">Meal break (unpaid)</label>
-                <div id="stdBreakSeg" class="std-seg">
-                    <button type="button" data-v="00:00" onclick="setStdBreak('00:00')">None</button>
-                    <button type="button" data-v="00:15" onclick="setStdBreak('00:15')">15 min</button>
-                    <button type="button" data-v="00:30" onclick="setStdBreak('00:30')">30 min</button>
-                    <button type="button" data-v="00:45" onclick="setStdBreak('00:45')">45 min</button>
-                    <button type="button" data-v="01:00" onclick="setStdBreak('01:00')">1 hr</button>
+
+            <!-- Breaks -->
+            <div class="ssm-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="ssm-card-title !mb-0"><span class="ssm-step">2</span>Breaks <span id="stdBreakCount" class="ssm-count">0</span></div>
+                    <button type="button" onclick="addStdBreak()" class="std-add-break"><i data-lucide="plus" class="w-4 h-4"></i> Add Break</button>
+                </div>
+                <div id="stdBreakHead" class="std-brk-grid std-brk-head">
+                    <span>Start Time</span><span>End Time</span><span>Type</span><span></span>
+                </div>
+                <div id="stdBreaks" class="space-y-2"></div>
+                <div id="stdBreakEmpty" class="ssm-empty">
+                    <i data-lucide="coffee" class="w-5 h-5"></i>
+                    <span>No break added. Click <b>Add Break</b> to add a meal or rest break.</span>
                 </div>
             </div>
-            <div>
-                <label class="input-label" for="stdShiftNotes">Notes</label>
-                <textarea id="stdShiftNotes" rows="3" maxlength="200" placeholder="Optional, e.g. opening shift, covers lunch rush"
-                    class="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none transition"></textarea>
+
+            <!-- Notes -->
+            <div class="ssm-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="ssm-card-title !mb-0"><span class="ssm-step">3</span>Notes <span class="text-[11.5px] font-medium text-slate-400 ml-1">Optional</span></div>
+                    <span id="stdNotesCount" class="text-[11.5px] text-slate-400">0/200</span>
+                </div>
+                <textarea id="stdShiftNotes" rows="2" maxlength="200" placeholder="e.g. opening shift, covers lunch rush" oninput="document.getElementById('stdNotesCount').innerText = this.value.length + '/200'"
+                    class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-[13px] text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none transition"></textarea>
             </div>
-            <p id="stdError" class="hidden text-[12.5px] text-rose-600 font-medium"></p>
+            <p id="stdError" class="hidden ssm-error"></p>
         </div>
-        <footer class="px-6 py-3 border-t border-slate-200 flex justify-end gap-2">
-            <button onclick="closeAddStandardShift()" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition">Cancel</button>
-            <button id="stdSaveBtn" onclick="saveStandardShift()" class="px-5 py-2 rounded-lg bg-blue-600 text-white text-[13px] font-semibold hover:bg-blue-700 transition">Add Shift</button>
+        <footer class="ssm-foot">
+            <button onclick="closeAddStandardShift()" class="px-5 h-9 rounded-lg border border-slate-200 bg-white text-slate-700 text-[13.5px] font-semibold hover:bg-slate-50 transition">Cancel</button>
+            <button id="stdSaveBtn" onclick="saveStandardShift()" class="px-6 h-9 rounded-lg bg-blue-600 text-white text-[13.5px] font-semibold hover:bg-blue-700 transition shadow-sm">Add Shift</button>
         </footer>
     </section>
 </div>
@@ -3115,7 +3364,8 @@ function uaFmtDur(s) {
 }
 function uaShiftBox(s, dayIdx, style = '') {
     const n = (s.offers || []).length;
-    return `<div class="shiftBox unassigned-shift ua-mini${n ? ' ua-is-offered' : ''}" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})${n ? `\nOffered to ${n}` : ''}">
+    const sel = typeof selectedShiftKeys !== 'undefined' && selectedShiftKeys.has(`ua_${dayIdx}_${s.id}`);
+    return `<div class="shiftBox unassigned-shift ua-mini${n ? ' ua-is-offered' : ''}${sel ? ' ua-selected' : ''}" data-ua-day="${dayIdx}" data-ua-id="${s.id}" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})${n ? `\nOffered to ${n}` : ''}">
         <div class="flex items-center justify-between gap-1 w-full"><span class="font-bold text-[9.5px] truncate">${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}</span><span class="ua-dur">${uaFmtDur(s)}</span></div>
         <div class="flex items-center gap-1 w-full min-w-0 text-[8.5px]"><span class="opacity-75 truncate">${s.position} · ${s.dept}</span>${n
             ? `<button type="button" class="ua-status ua-status-offered" onclick="event.stopPropagation(); openUaOffers(event, ${dayIdx}, ${s.id})" title="See who it was offered to"><i data-lucide="send" class="w-2.5 h-2.5"></i>Offered · ${n}</button>`
@@ -3401,6 +3651,42 @@ function customTogglePopover(id) {
 function openInitiateModal() { document.getElementById("initiateModal").classList.remove("hidden"); document.getElementById("initiateModal").classList.add("flex"); lucide.createIcons(); }
 function closeInitiateModal() { document.getElementById("initiateModal").classList.add("hidden"); document.getElementById("initiateModal").classList.remove("flex"); }
 function openCopyModal() { closeInitiateModal(); document.getElementById("copyModal").classList.remove("hidden"); document.getElementById("copyModal").classList.add("flex"); lucide.createIcons(); }
+// Auto-create preference: on/off + which option builds new weeks (saved in this browser)
+const _csAutoNames = { copy: 'Copy Schedule', template: 'Load Template', aiStd: 'AI Scheduling Using Standard Shift', ai: 'AI Scheduling' };
+let _csAuto = { on: true, method: 'copy' };
+try { Object.assign(_csAuto, JSON.parse(localStorage.getItem('zipAutoCreate') || '{}')); } catch (e) {}
+function _csAutoSave() { try { localStorage.setItem('zipAutoCreate', JSON.stringify(_csAuto)); } catch (e) {} }
+function renderCsAuto() {
+    const { on, method } = _csAuto;
+    document.getElementById('csAutoCreate').checked = on;
+    document.getElementById('csAutoDesc').innerHTML = on
+        ? `New weeks are created with <b>${_csAutoNames[method]}</b>`
+        : 'Off — new weeks start empty';
+    document.getElementById('csAutoPick').classList.toggle('off', !on);
+    document.querySelectorAll('#csAutoPick button').forEach(b => {
+        b.classList.toggle('active', b.dataset.v === method);
+        b.disabled = !on;
+    });
+    document.querySelectorAll('.cs-auto-tag').forEach(t => t.classList.toggle('show', on && t.dataset.auto === method));
+    const btn = document.getElementById('createScheduleBtn');
+    btn.classList.toggle('cs-has-auto', on);
+    btn.title = on ? `Auto-create: ${_csAutoNames[method]}` : 'Auto-create is off';
+}
+function setCsAuto(on) {
+    _csAuto.on = on;
+    _csAutoSave();
+    renderCsAuto();
+    showToast(on ? `Auto-create on — new weeks will use ${_csAutoNames[_csAuto.method]}.` : 'Auto-create turned off.', 'info');
+}
+function setCsAutoMethod(m) {
+    if (!_csAuto.on || _csAuto.method === m) return;
+    _csAuto.method = m;
+    _csAutoSave();
+    renderCsAuto();
+    showToast(`Auto-create will now use ${_csAutoNames[m]}.`, 'info');
+}
+document.addEventListener('DOMContentLoaded', renderCsAuto);
+
 // Create Schedule menu: same actions as the Schedule preference tiles
 function csPick(kind) {
     document.getElementById('createScheduleMenu').classList.add('hidden');
@@ -4140,6 +4426,19 @@ function renderCalendar() {
         grid.appendChild(div);
     }
 }
+// < > beside the date: one day / week / month back or forward, following the active view
+function stepActiveDate(dir) {
+    const d = new Date(activeDate);
+    if (activeView === 'day') d.setDate(d.getDate() + dir);
+    else if (activeView === 'month') { d.setDate(1); d.setMonth(d.getMonth() + dir); }
+    else d.setDate(d.getDate() + 7 * dir);
+    activeDate = d;
+    calendarViewDate = new Date(d);
+    document.getElementById('calendarMenu').classList.add('hidden');
+    updateDateRangeLabel();
+    renderCalendar();
+    renderScheduleTable();
+}
 function prevCalendarMonth(e) { e.stopPropagation(); calendarViewDate.setMonth(calendarViewDate.getMonth() - 1); renderCalendar(); }
 function nextCalendarMonth(e) { e.stopPropagation(); calendarViewDate.setMonth(calendarViewDate.getMonth() + 1); renderCalendar(); }
 
@@ -4742,6 +5041,20 @@ function _weekFooterData(n) {
     const rate = Object.fromEntries(employeeData.map(e => [e.id, +e.payrate || _coverageAvgWage]));
     const shifts = _aiCurrent();
     const avgRate = employeeData.reduce((a, e) => a + rate[e.id], 0) / (employeeData.length || 1);
+    // Overtime per day: hours over 8 in a day, plus regular hours once the week passes 40
+    // (walking Sun → Sat); OT is paid at 1.5× the employee's rate.
+    const otHrs = Array(n).fill(0), otD = Array(n).fill(0);
+    employeeData.forEach(emp => {
+        let reg = 0;
+        for (let c = 0; c < n; c++) {
+            const h = shifts.filter(s => s.empId === emp.id && s.day === c).reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
+            const daily = Math.max(0, h - 8), regToday = h - daily;
+            const weekly = Math.max(0, reg + regToday - 40);
+            reg = Math.min(40, reg + regToday);
+            otHrs[c] += daily + weekly;
+            otD[c] += (daily + weekly) * rate[emp.id] * 1.5;
+        }
+    });
     const cols = Array.from({ length: n }, (_, c) => {
         const day = shifts.filter(s => s.day === c);
         const sch = day.reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
@@ -4751,10 +5064,10 @@ function _weekFooterData(n) {
         const labour = fSales ? schD / fSales * 100 : 0;
         const budgetPct = wBudget[dow], budgetHrs = fSales * budgetPct / 100 / avgRate;
         return { sch, schD, fSales, fTxn, fItems: Math.round(fTxn * 2.3), fct, variance: sch - fct, labour, budgetPct, budgetHrs,
-            bVarHrs: sch - budgetHrs, bVarPct: labour - budgetPct };
+            bVarHrs: sch - budgetHrs, bVarPct: labour - budgetPct, otHrs: otHrs[c], otD: otD[c] };
     });
     const sum = k => cols.reduce((a, c) => a + c[k], 0);
-    const tot = { sch: sum('sch'), schD: sum('schD'), fSales: sum('fSales'), fTxn: sum('fTxn'), fItems: sum('fItems'), fct: sum('fct'), budgetHrs: sum('budgetHrs') };
+    const tot = { sch: sum('sch'), schD: sum('schD'), otHrs: sum('otHrs'), otD: sum('otD'), fSales: sum('fSales'), fTxn: sum('fTxn'), fItems: sum('fItems'), fct: sum('fct'), budgetHrs: sum('budgetHrs') };
     tot.variance = tot.sch - tot.fct;
     tot.labour = tot.fSales ? tot.schD / tot.fSales * 100 : 0;
     tot.budgetPct = tot.fSales ? cols.reduce((a, c) => a + c.fSales * c.budgetPct, 0) / tot.fSales : 0;
@@ -4804,6 +5117,8 @@ function renderWeekFooter(n, cellWidth) {
         row('No Of Items Sold', cols.map(c => c.fItems), tot.fItems) +
         row('Forecast Hrs', cols.map(c => f2(c.fct)), f2(tot.fct)) +
         row('Variance Hrs', cols.map(c => neg(c.variance, f2(c.variance))), neg(tot.variance, f2(tot.variance))) +
+        row('Sch OT Hrs', cols.map(c => f2(c.otHrs)), f2(tot.otHrs)) +
+        row('Sch OT $', cols.map(c => money(c.otD)), money(tot.otD)) +
         row('Sch $', cols.map(c => money(c.schD)), money(tot.schD)) +
         row('Budget (By Configured Forecast Percentage)', cols.map(() => 'Hrs. | %'), 'Hrs. | %', 'wf-head') +
         row('Budget', cols.map(c => hp(c.budgetHrs, c.budgetPct)), hp(tot.budgetHrs, tot.budgetPct)) +
@@ -5356,6 +5671,7 @@ function openUaPick(mode, dayIdx, id) {
         ? '<i data-lucide="send" class="w-4 h-4"></i><span>Send Offer</span>'
         : '<i data-lucide="user-check" class="w-4 h-4"></i><span>Assign</span>';
     document.getElementById('pkSearch').value = '';
+    _renderPkOffers();
     setUaPickTab('eligible');
     const d = document.getElementById('uaPickDrawer');
     d.classList.remove('hidden');
@@ -5383,6 +5699,43 @@ function _uaPickRows() {
     const s = _uaFind(_uaPick.dayIdx, _uaPick.id);
     return employeeData.map(emp => ({ emp, el: _uaEligibility(emp, s, _uaPick.dayIdx) }));
 }
+// Offer status strip in the Assign/Offer drawer: who already has the offer, with withdraw
+function _renderPkOffers() {
+    const box = document.getElementById('pkOffers');
+    const s = _uaFind(_uaPick.dayIdx, _uaPick.id);
+    const offers = (s && s.offers) || [];
+    box.classList.toggle('hidden', !offers.length);
+    if (!offers.length) { box.innerHTML = ''; return; }
+    const counts = { Accepted: 0, Pending: 0, Declined: 0 };
+    offers.forEach(o => counts[o.status]++);
+    const order = { Accepted: 0, Pending: 1, Declined: 2 };
+    box.innerHTML = `
+        <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-800"><i data-lucide="send" class="w-3.5 h-3.5 text-violet-600"></i>Already offered to ${offers.length}</span>
+            <span class="flex items-center gap-1.5">${Object.entries(counts).filter(([, v]) => v).map(([k, v]) => `<span class="uo-chip uo-${_uaOfferTone[k]}">${v} ${k.toLowerCase()}</span>`).join('')}</span>
+        </div>
+        <div class="pk-offer-list">${[...offers].sort((a, b) => order[a.status] - order[b.status]).map(o => {
+            const emp = employeeData.find(x => x.id === o.empId) || { name: 'Employee', avatar: '' };
+            return `<span class="pk-oc" title="${emp.name} · ${o.status}">
+                <img src="${emp.avatar}" alt=""><span class="truncate">${emp.name}</span>
+                <span class="pk-oc-dot pk-oc-${_uaOfferTone[o.status]}">${o.status}</span>
+                <button type="button" onclick="pkWithdrawOffer(${o.empId})" title="Withdraw the offer from ${emp.name}"><i data-lucide="x" class="w-3 h-3"></i></button>
+            </span>`;
+        }).join('')}</div>
+        ${counts.Accepted && _uaPick.mode === 'assign' ? `<p class="mt-2 text-[11.5px] text-emerald-700 flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>${counts.Accepted === 1 ? 'One employee has' : `${counts.Accepted} employees have`} accepted — pick them below to assign.</p>` : ''}`;
+    lucide.createIcons();
+}
+function pkWithdrawOffer(empId) {
+    const s = _uaFind(_uaPick.dayIdx, _uaPick.id);
+    if (!s) return;
+    const emp = employeeData.find(x => x.id === empId);
+    s.offers = (s.offers || []).filter(o => o.empId !== empId);
+    if (_uaPick.mode === 'offer') _uaPick.selected.delete(empId);
+    showToast(`Offer withdrawn from ${emp ? emp.name : 'employee'}.`, 'info');
+    _renderPkOffers();
+    renderUaPickList();
+    renderScheduleTable();
+}
 function renderUaPickList() {
     const rows = _uaPickRows();
     const eligible = rows.filter(r => r.el.ok), others = rows.filter(r => !r.el.ok);
@@ -5391,9 +5744,16 @@ function renderUaPickList() {
     const q = document.getElementById('pkSearch').value.trim().toLowerCase();
     const list = (_uaPick.tab === 'eligible' ? eligible : others).filter(r => !q || r.emp.name.toLowerCase().includes(q) || r.emp.position.toLowerCase().includes(q));
     const offer = _uaPick.mode === 'offer';
+    // people who already have the offer come first (accepted on top)
+    const offers = (_uaFind(_uaPick.dayIdx, _uaPick.id) || {}).offers || [];
+    const offerOf = id => offers.find(o => o.empId === id);
+    const rank = r => { const o = offerOf(r.emp.id); return o ? { Accepted: 0, Pending: 1, Declined: 2 }[o.status] : 3; };
+    list.sort((a, b) => rank(a) - rank(b));
     document.getElementById('pkList').innerHTML = list.length ? list.map(({ emp, el }) => {
         const sel = _uaPick.selected.has(emp.id);
-        const badges = (emp.isShared ? `<span class="status-badge shared-badge">S</span>` : '') + (emp.isMinor ? `<span class="status-badge minor-badge">M</span>` : '');
+        const o = offerOf(emp.id);
+        const badges = (emp.isShared ? `<span class="status-badge shared-badge">S</span>` : '') + (emp.isMinor ? `<span class="status-badge minor-badge">M</span>` : '')
+            + (o ? `<span class="uo-chip uo-${_uaOfferTone[o.status]} pk-offer-chip"><i data-lucide="send" class="w-2.5 h-2.5"></i>Offered · ${o.status}</span>` : '');
         return `<label class="pk-emp${sel ? ' selected' : ''}">
             <input type="${offer ? 'checkbox' : 'radio'}" name="pkEmp" ${sel ? 'checked' : ''} onchange="toggleUaPickEmp(${emp.id}, this.checked)">
             <img src="${emp.avatar}" alt="">
@@ -5407,6 +5767,7 @@ function renderUaPickList() {
     const all = document.getElementById('pkSelectAll');
     all.checked = list.length > 0 && list.every(r => _uaPick.selected.has(r.emp.id));
     _updateUaPickFooter();
+    lucide.createIcons();
 }
 function toggleUaPickEmp(empId, on) {
     if (_uaPick.mode === 'assign') _uaPick.selected.clear();
@@ -5455,18 +5816,14 @@ function confirmUaPick() {
 
 // ── Offer status: who an unassigned shift was offered to, with withdraw ──
 let _uaOffersAt = null; // { dayIdx, id }
-const _uaOfferTone = { Pending: 'amber', Seen: 'blue', Declined: 'rose' };
-function _uaAgo(d) {
-    const m = Math.max(0, Math.round((Date.now() - d) / 60000));
-    return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.floor(m / 60)}h ago` : `${Math.floor(m / 1440)}d ago`;
-}
+const _uaOfferTone = { Accepted: 'green', Pending: 'amber', Declined: 'rose' };
 // mock: a few shifts start out already offered to eligible people
 function _seedUaOffers() {
     unassignedShifts.forEach((day, c) => day.forEach((s, k) => {
         if ((s.id + c) % 3 !== 0 || s.offers) return;
         const pool = employeeData.filter(e => _uaEligibility(e, s, c).ok).slice(k % 2, (k % 2) + 2 + (s.id % 3));
         s.offers = pool.map((e, i) => ({ empId: e.id, at: new Date(Date.now() - (i * 47 + s.id * 13) * 60000),
-            status: ['Pending', 'Seen', 'Pending', 'Declined'][(i + s.id) % 4] }));
+            status: ['Pending', 'Accepted', 'Pending', 'Declined'][(i + s.id) % 4] }));
     }));
 }
 function openUaOffers(e, dayIdx, id) {
@@ -5481,7 +5838,7 @@ function openUaOffers(e, dayIdx, id) {
     wa.innerHTML = '<i data-lucide="undo-2" class="w-3.5 h-3.5"></i>Withdraw all';
     const date = _uaWeekDate(dayIdx).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     document.getElementById('uoShift').innerHTML = `<b>${s.position}</b> · ${date} · ${uaFmtTime(s.start)} – ${uaFmtTime(s.end)}`;
-    const counts = { Pending: 0, Seen: 0, Declined: 0 };
+    const counts = { Accepted: 0, Pending: 0, Declined: 0 };
     s.offers.forEach(o => counts[o.status]++);
     document.getElementById('uoSummary').innerHTML = `<span class="uo-total">${s.offers.length} offered</span>` +
         Object.entries(counts).filter(([, v]) => v).map(([k, v]) => `<span class="uo-chip uo-${_uaOfferTone[k]}">${v} ${k.toLowerCase()}</span>`).join('');
@@ -5491,7 +5848,7 @@ function openUaOffers(e, dayIdx, id) {
             <img src="${emp.avatar}" alt="">
             <div class="flex-1 min-w-0">
                 <div class="uo-name truncate">${emp.name}</div>
-                <div class="uo-sub truncate">${emp.position} · sent ${_uaAgo(o.at)}</div>
+                <div class="uo-sub truncate">${emp.position}</div>
             </div>
             <span class="uo-chip uo-${_uaOfferTone[o.status]}">${o.status}</span>
             <button type="button" class="uo-withdraw" onclick="withdrawUaOffer(${o.empId})" title="Withdraw the offer from ${emp.name}"><i data-lucide="undo-2" class="w-3.5 h-3.5"></i>Withdraw</button>
@@ -5766,6 +6123,10 @@ function updateDateRangeLabel() {
         const end = new Date(activeDate.getFullYear(), activeDate.getMonth() + 1, 0);
         label.innerText = `Month: ${f(start)} - ${f(end)}`;
     }
+    const unit = activeView === 'day' ? 'day' : activeView === 'month' ? 'month' : 'week';
+    const p = document.getElementById('dateNavPrev'), n = document.getElementById('dateNavNext');
+    if (p) p.title = `Previous ${unit}`;
+    if (n) n.title = `Next ${unit}`;
 }
 function handleMoreOption(type) { document.getElementById('moreOptionsMenu').classList.add('hidden'); }
 function handleAction(type) { if(type==='edit') openAssignModal(activeCell); closeActionModal(); }
@@ -6581,6 +6942,9 @@ function renderDailyCoverage() {
     renderCoverageEmployeeRows();
     renderCoverageStats();
     renderCoverageChart();
+    document.getElementById('dcvPosCount').innerText = new Set(_coverageRows.map(r => r.position)).size;
+    document.getElementById('dcvDeptCount').innerText = new Set(_coverageRows.map(r => _coverageDeptOf(r.position))).size;
+    if (_coverageTab === 'position' || _coverageTab === 'dept') renderCoverageGroups();
     lucide.createIcons();
 }
 
@@ -6595,19 +6959,124 @@ function setCoverageDate(val) {
     renderDailyCoverage();
 }
 
-// Timeline / Daily Stats tabs jump within the shared scroll area and follow the scroll position
-function scrollCoverageTo(sec) {
-    const sc = document.getElementById('dcvScroll');
-    const top = sec === 'stats' ? document.getElementById('dcvStatsHead').offsetTop : 0;
-    sc.scrollTo({ top, behavior: 'smooth' });
+// Tabs: Shift Timeline | Hourly Stats | By Position | By Department — one pane at a time
+let _coverageTab = 'timeline';
+function setCoverageTab(tab) {
+    _coverageTab = tab;
+    document.querySelectorAll('#dcvTabs button').forEach(b => b.classList.toggle('active', b.dataset.sec === tab));
+    const isGroup = tab === 'position' || tab === 'dept';
+    document.getElementById('dcvTimelinePane').classList.toggle('hidden', tab !== 'timeline');
+    document.getElementById('dcvStatsPane').classList.toggle('hidden', tab !== 'stats');
+    document.getElementById('dcvGroupPane').classList.toggle('hidden', !isGroup);
+    document.getElementById('dcvTimelineTools').classList.toggle('hidden', tab !== 'timeline');
+    document.getElementById('dcvLegend').classList.toggle('hidden', tab !== 'timeline');
+    document.getElementById('dcvGroupHint').classList.toggle('hidden', !isGroup);
+    if (isGroup) renderCoverageGroups();
+    document.getElementById('dcvScroll').scrollTop = 0;
 }
-function _coverageSyncTabs() {
-    const sc = document.getElementById('dcvScroll');
-    const inStats = sc.scrollTop + 4 >= document.getElementById('dcvStatsHead').offsetTop
-        || sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2;
-    document.querySelectorAll('#dcvTabs button').forEach(b => b.classList.toggle('active', (b.dataset.sec === 'stats') === inStats));
+// Scrolling: the page (KPIs, chart) scrolls first; once the table card reaches the top,
+// the wheel moves the table. Scrolling up past the table's top hands back to the page.
+function _coverageWheel(e) {
+    const page = document.getElementById('dcvContent');
+    const inner = document.getElementById('dcvScroll');
+    if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;           // horizontal: let the table pan
+    const pageLeft = page.scrollHeight - page.clientHeight - page.scrollTop;
+    if (e.deltaY > 0 && pageLeft > 1) { e.preventDefault(); page.scrollTop += e.deltaY; }
+    else if (e.deltaY < 0 && inner.scrollTop <= 0 && page.scrollTop > 0) { e.preventDefault(); page.scrollTop += e.deltaY; }
 }
 let _coverageScrollBound = false;
+
+// ── Group by Position / Department ──
+let _coverageSort = { key: 'sch', dir: -1 };
+const _coverageOpen = new Set();
+const _coverageDeptOf = p => _coverageGroups.mgmt.includes(p) ? 'Management' : _coverageGroups.kitchen.includes(p) ? 'Kitchen' : 'Front of House';
+const _coverageDeptColor = { 'Management': '#7c3aed', 'Kitchen': '#16a34a', 'Front of House': '#e11d48' };
+function _coverageGroupStats(by) {
+    const keyOf = r => by === 'dept' ? _coverageDeptOf(r.position) : r.position;
+    const curveMax = Math.max(..._coverageSalesCurve);
+    const rate = id => +((employeeData.find(e => e.id === id) || {}).payrate) || _coverageAvgWage;
+    const daySales = _coverageStats.total.fSales;
+    const map = new Map();
+    _coverageRows.forEach(r => { const k = keyOf(r); if (!map.has(k)) map.set(k, []); map.get(k).push(r); });
+    return [...map.entries()].map(([name, rows]) => {
+        const hourly = _coverageHourly(rows);
+        // forecast need per hour follows demand, same rule as the day chart
+        const fct = hourly.map((v, h) => _coverageSalesCurve[h] ? v * (0.8 + 0.4 * _coverageSalesCurve[h] / curveMax) : 0);
+        const sch = rows.reduce((a, r) => a + _coverageRowHours(r), 0);
+        const fctHrs = fct.reduce((a, b) => a + b, 0);
+        const cost = rows.reduce((a, r) => a + _coverageRowHours(r) * rate(r.id), 0);
+        const peak = Math.max(...hourly), peakH = hourly.indexOf(peak);
+        const levels = hourly.map((v, h) => _coverageLevel({ sched: v, forecast: fct[h], variance: v - fct[h] }));
+        return {
+            name, rows, hourly, levels, staff: rows.length, sch, fct: fctHrs, variance: sch - fctHrs, cost,
+            labour: daySales ? cost / daySales * 100 : 0, avg: rows.length ? sch / rows.length : 0,
+            start: Math.min(...rows.map(r => r.start)), end: Math.max(...rows.map(r => r.end)),
+            peak, peakH, gaps: levels.filter(l => l === 'critical' || l === 'under').length,
+            ot: rows.filter(r => r.week > 40).length,
+            color: by === 'dept' ? _coverageDeptColor[name] : (_coverageColors[name] || '#475569'),
+        };
+    });
+}
+function sortCoverageGroups(key) {
+    _coverageSort = { key, dir: _coverageSort.key === key ? -_coverageSort.dir : (key === 'name' ? 1 : -1) };
+    renderCoverageGroups();
+}
+function toggleCoverageGroup(name) {
+    _coverageOpen.has(name) ? _coverageOpen.delete(name) : _coverageOpen.add(name);
+    renderCoverageGroups();
+}
+function renderCoverageGroups() {
+    const by = _coverageTab === 'dept' ? 'dept' : 'position';
+    const pane = document.getElementById('dcvGroupPane');
+    const groups = _coverageGroupStats(by);
+    const { key, dir } = _coverageSort;
+    groups.sort((a, b) => (key === 'name' ? a.name.localeCompare(b.name) : a[key] - b[key]) * dir);
+    const n2 = v => v.toFixed(2), money = v => '$' + Math.round(v).toLocaleString();
+    const signed = v => `<span class="${v < -0.005 ? 'dcv-neg' : v > 0.005 ? 'dcv-pos-v' : 'dcv-zero'}">${v > 0.005 ? '+' : ''}${n2(v)}</span>`;
+    const lvlColor = { critical: '#ef4444', under: '#f59e0b', over: '#10b981', ok: '#2563eb' };
+    const spark = g => {
+        const max = Math.max(...g.hourly, 1);
+        return `<div class="dcv-spark" title="Scheduled staff by hour (12a → 11p)">${g.hourly.map((v, h) =>
+            `<i style="height:${v ? Math.max(8, v / max * 100) : 0}%;background:${v ? lvlColor[g.levels[h]] : 'transparent'}" title="${_coverageHourLabel(h)} · ${n2(v)} staff"></i>`).join('')}</div>`;
+    };
+    const cols = [
+        ['name', by === 'dept' ? 'Department' : 'Position', 'l'], ['staff', 'Staff'], ['sch', 'Sch Hrs'], ['fct', 'Fct Hrs'],
+        ['variance', 'Variance'], ['cost', 'Labour $'], ['labour', 'Labour %'], ['avg', 'Avg Shift'],
+        [null, 'Coverage'], ['peak', 'Peak'], ['gaps', 'Gap Hrs'], [null, 'Hourly Coverage', 'l'],
+    ];
+    const th = cols.map(([k, t, al]) => `<th class="${al === 'l' ? 'text-left' : ''}${k ? ' dcv-sortable' : ''}${k === key ? ' sorted' : ''}"${k ? ` onclick="sortCoverageGroups('${k}')"` : ''}>${t}${k === key ? `<i data-lucide="${dir > 0 ? 'arrow-up' : 'arrow-down'}" class="w-3 h-3"></i>` : ''}</th>`).join('');
+    const tot = groups.reduce((t, g) => { ['staff', 'sch', 'fct', 'variance', 'cost', 'labour', 'gaps'].forEach(k => t[k] += g[k]); return t; },
+        { staff: 0, sch: 0, fct: 0, variance: 0, cost: 0, labour: 0, gaps: 0 });
+    const body = groups.map(g => {
+        const open = _coverageOpen.has(g.name);
+        const emps = open ? g.rows.map(r => `<tr class="dcv-gsub">
+            <td colspan="2"><div class="flex items-center gap-2 pl-7"><img src="${r.avatar}" alt="" class="w-6 h-6 rounded-full object-cover"><span class="truncate">${r.name}</span>${by === 'dept' ? `<span class="text-slate-400">· ${r.position}</span>` : ''}</div></td>
+            <td>${n2(_coverageRowHours(r))}</td><td></td><td></td><td>${money(_coverageRowHours(r) * (+((employeeData.find(e => e.id === r.id) || {}).payrate) || _coverageAvgWage))}</td><td></td><td></td>
+            <td>${_coverageFmtTime(r.start)} – ${_coverageFmtTime(r.end)}</td><td></td><td></td>
+            <td class="text-left text-slate-500">${r.brk ? `Break ${_coverageFmtTime(r.brk[0])}` : 'No break'}${r.week > 40 ? ' · <span class="text-amber-600 font-semibold">OT risk</span>' : ''}</td>
+        </tr>`).join('') : '';
+        return `<tr class="dcv-grow${open ? ' open' : ''}" onclick="toggleCoverageGroup('${g.name.replace(/'/g, "\\'")}')">
+            <td class="text-left"><div class="flex items-center gap-2.5"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 dcv-chev"></i><span class="dcv-gdot" style="background:${g.color}"></span><b>${g.name}</b></div></td>
+            <td>${g.staff}</td><td><b>${n2(g.sch)}</b></td><td>${n2(g.fct)}</td><td>${signed(g.variance)}</td>
+            <td>${money(g.cost)}</td><td>${g.labour.toFixed(1)}%</td><td>${n2(g.avg)}</td>
+            <td>${_coverageFmtTime(g.start)} – ${_coverageFmtTime(g.end)}</td>
+            <td>${n2(g.peak)} <span class="text-slate-400">@ ${_coverageHourLabel(g.peakH)}</span></td>
+            <td>${g.gaps ? `<span class="dcv-gap">${g.gaps}</span>` : '<span class="dcv-zero">0</span>'}</td>
+            <td class="text-left">${spark(g)}</td>
+        </tr>${emps}`;
+    }).join('');
+    pane.innerHTML = `<table class="dcv-gtable">
+        <thead><tr>${th}</tr></thead>
+        <tbody>${body}</tbody>
+        <tfoot><tr>
+            <td class="text-left"><b>Total · ${groups.length} ${by === 'dept' ? 'departments' : 'positions'}</b></td>
+            <td>${tot.staff}</td><td><b>${n2(tot.sch)}</b></td><td>${n2(tot.fct)}</td><td>${signed(tot.variance)}</td>
+            <td>${money(tot.cost)}</td><td>${tot.labour.toFixed(1)}%</td><td>${n2(tot.staff ? tot.sch / tot.staff : 0)}</td>
+            <td></td><td></td><td>${tot.gaps}</td><td></td>
+        </tr></tfoot>
+    </table>`;
+    lucide.createIcons();
+}
 
 function _coverageOnKey(e) {
     if (e.key === 'Escape' && !document.getElementById('dailyCoverageView').classList.contains('hidden')) closeDailyCoverage();
@@ -6622,7 +7091,7 @@ function openDailyCoverage(){
     view.classList.add('flex');
     document.getElementById('dcvContent').scrollTop = 0;
     if (!_coverageScrollBound) {
-        document.getElementById('dcvScroll').addEventListener('scroll', _coverageSyncTabs, { passive: true });
+        document.getElementById('dcvGridCard').addEventListener('wheel', _coverageWheel, { passive: false });
         _coverageScrollBound = true;
     }
     document.getElementById('dcvScroll').scrollTop = 0;
@@ -6970,6 +7439,7 @@ function toggleSelectMode() {
     selectedShiftKeys.clear();
     document.body.classList.toggle('select-mode', selectMode);
     document.querySelectorAll('.shift-cell-selected').forEach(td => td.classList.remove('shift-cell-selected'));
+    document.querySelectorAll('.ua-selected').forEach(b => b.classList.remove('ua-selected'));
     const btn = document.getElementById('selectModeBtn');
     if (btn) btn.classList.toggle('active', selectMode);
     updateBulkBar();
@@ -6988,6 +7458,14 @@ function shiftKeyFromCell(td) {
 }
 
 function toggleShiftSelection(boxEl) {
+    // unassigned shifts: several per cell, so the box itself is the unit
+    if (boxEl.dataset.uaId) {
+        const key = `ua_${boxEl.dataset.uaDay}_${boxEl.dataset.uaId}`;
+        if (selectedShiftKeys.has(key)) selectedShiftKeys.delete(key); else selectedShiftKeys.add(key);
+        boxEl.classList.toggle('ua-selected', selectedShiftKeys.has(key));
+        updateBulkBar();
+        return;
+    }
     const td = boxEl.closest('td');
     if (!td) return;
     const key = shiftKeyFromCell(td);
@@ -7032,16 +7510,37 @@ function updateBulkBar() {
 function clearBulkSelection() {
     selectedShiftKeys.clear();
     document.querySelectorAll('.shift-cell-selected').forEach(td => td.classList.remove('shift-cell-selected'));
+    document.querySelectorAll('.ua-selected').forEach(b => b.classList.remove('ua-selected'));
     updateBulkBar();
 }
 
+// "ua_<day>_<id>" → { day, id } for selected unassigned shifts
+const _uaKey = key => { const [, d, id] = key.split('_'); return { day: +d, id: +id }; };
+
 function bulkDeleteSelected() {
-    const n = selectedShiftKeys.size;
-    selectedShiftKeys.forEach(key => { shiftAssignments[key] = null; });
+    let emp = 0, ua = 0;
+    selectedShiftKeys.forEach(key => {
+        if (key.startsWith('ua_')) {
+            const { day, id } = _uaKey(key);
+            unassignedShifts[day] = (unassignedShifts[day] || []).filter(s => s.id !== id);
+            ua++;
+        } else { shiftAssignments[key] = null; emp++; }
+    });
     selectedShiftKeys.clear();
     renderScheduleTable();
     updateBulkBar();
-    showToast(`Deleted ${n} shift${n > 1 ? 's' : ''}.`, 'info');
+    const parts = [emp && `${emp} shift${emp > 1 ? 's' : ''}`, ua && `${ua} unassigned shift${ua > 1 ? 's' : ''}`].filter(Boolean);
+    showToast(`Deleted ${parts.join(' and ')}.`, 'info');
+}
+// copy / move unassigned shifts to another weekday (new ids, offers are not carried over)
+function _uaBulkTo(key, targetDay, move) {
+    const { day, id } = _uaKey(key);
+    const s = (unassignedShifts[day] || []).find(x => x.id === id);
+    if (!s) return 0;
+    if (move) unassignedShifts[day] = unassignedShifts[day].filter(x => x.id !== id);
+    const copy = Object.assign({}, s, { id: _uaNextId++, offers: move ? s.offers : undefined });
+    unassignedShifts[targetDay] = [...(unassignedShifts[targetDay] || []), copy].sort((a, b) => a.start - b.start);
+    return 1;
 }
 
 function bulkCopySelected() {
@@ -7052,6 +7551,7 @@ function bulkCopySelected() {
     let copied = 0;
     Array.from(selectedShiftKeys).forEach(key => {
         const parts = key.split('_');
+        if (parts[0] === 'ua') { copied += _uaBulkTo(key, (+parts[1] + 1) % 7, false); return; }
         if (parts[0] !== 'w') return;
         const empId = parseInt(parts[1]);
         const colIdx = parseInt(parts[2]);
@@ -7087,6 +7587,7 @@ function bulkMoveToDay(targetColIdx) {
     let moved = 0;
     Array.from(selectedShiftKeys).forEach(key => {
         const parts = key.split('_');
+        if (parts[0] === 'ua') { if (+parts[1] !== targetColIdx) moved += _uaBulkTo(key, targetColIdx, true); return; }
         if (parts[0] !== 'w') return;
         const empId = parseInt(parts[1]);
         const emp = employeeData.find(e => e.id === empId);
@@ -7178,6 +7679,7 @@ function renderStdShiftsTable() {
 }
 
 function openStandardShifts() {
+    if (document.getElementById('reportsView').style.display === 'block') closeReports();
     document.getElementById('standardShiftsView').style.display = 'block';
     document.getElementById('navStdShifts').classList.add('bg-[#1d3b6a]');
     document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.remove('bg-[#1d3b6a]');
@@ -7195,20 +7697,177 @@ function closeStandardShifts() {
 document.addEventListener('DOMContentLoaded', () => { if (location.hash === '#standard-shifts') openStandardShifts(); });
 window.addEventListener('hashchange', () => { if (location.hash === '#standard-shifts') openStandardShifts(); });
 
-function setStdBreak(v) {
-    document.querySelectorAll('#stdBreakSeg button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+// ── Reports (left sidebar) ──
+const RPTS = [
+    { id: 'schedule', name: 'Schedule Report', desc: "Generate Schedule Reports to print your site's schedule.", cat: 'Schedule', icon: 'clipboard-list', color: '#2563eb', freq: 'Weekly' },
+    { id: 'coverage', name: 'Daily Coverage Report', desc: 'See if you have the right amount of staff scheduled for every hour of the day.', cat: 'Schedule', icon: 'layout-dashboard', color: '#ea580c', freq: 'Daily', live: true },
+    { id: 'weekly', name: 'Weekly Schedule Summary Report', desc: 'Scheduled hours, labor cost and coverage for each day of the week in one summary.', cat: 'Schedule', icon: 'calendar-range', color: '#7c3aed', freq: 'Weekly' },
+    { id: 'timeoff', name: 'Time Off Report', desc: "Track and take action on your employees' time off requests.", cat: 'Time & Attendance', icon: 'calendar-x', color: '#db2777', freq: 'Any range', live: true },
+    { id: 'monthly', name: 'Monthly Schedule Report', desc: "Generate Monthly Schedule Reports to print your site's schedule.", cat: 'Schedule', icon: 'calendar-days', color: '#0891b2', freq: 'Monthly' },
+    { id: 'notes', name: 'Notes and Broadcast Report', desc: 'Print the manager notes and broadcast messages sent to the team.', cat: 'Communication', icon: 'megaphone', color: '#d97706', freq: 'Any range' },
+    { id: 'cert', name: 'Employee Certification Report', desc: 'Print employee certifications with their status and expiry dates.', cat: 'Employee', icon: 'badge-check', color: '#059669', freq: 'Current' },
+    { id: 'avail', name: 'Employee Availability Report', desc: 'An overview of when each employee is available to work.', cat: 'Employee', icon: 'user-check', color: '#4f46e5', freq: 'Weekly' },
+    { id: 'timeloss', name: 'Employee Time Loss Report', desc: 'Late clock-ins, early outs and missed punches compared with the schedule.', cat: 'Time & Attendance', icon: 'timer-off', color: '#dc2626', freq: 'Weekly' },
+];
+function renderReports() {
+    document.getElementById('rptGrid').innerHTML = RPTS.map(r => `
+        <div class="rpt-card" style="--rc:${r.color}" onclick="openReport('${r.id}')" tabindex="0" onkeydown="if(event.key==='Enter') openReport('${r.id}')">
+            <div class="flex items-center gap-5">
+                <span class="rpt-ic"><i data-lucide="${r.icon}" class="w-7 h-7"></i></span>
+                <div class="min-w-0 flex-1">
+                    <div class="rpt-name">${r.name}</div>
+                    <div class="rpt-desc">${r.desc}</div>
+                </div>
+            </div>
+        </div>`).join('');
+    lucide.createIcons();
+}
+function openReports() {
+    if (document.getElementById('standardShiftsView').style.display === 'block') closeStandardShifts();
+    document.getElementById('reportsView').style.display = 'block';
+    document.getElementById('navReports').classList.add('bg-[#1d3b6a]');
+    document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.remove('bg-[#1d3b6a]');
+    if (location.hash !== '#reports') history.replaceState(null, '', '#reports');
+    renderReports();
+}
+function closeReports() {
+    document.getElementById('reportsView').style.display = 'none';
+    document.getElementById('navReports').classList.remove('bg-[#1d3b6a]');
+    document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.add('bg-[#1d3b6a]');
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+}
+document.addEventListener('DOMContentLoaded', () => { if (location.hash === '#reports') openReports(); });
+window.addEventListener('hashchange', () => { if (location.hash === '#reports') openReports(); });
+
+// interactive reports open their own screen; the rest open the generate dialog
+let _rptGen = null;
+function openReport(id) {
+    const r = RPTS.find(x => x.id === id);
+    if (id === 'coverage') { closeReports(); openDailyCoverage(); return; }
+    if (id === 'timeoff') { openTimeoffReport(); return; }
+    _rptGen = { r, range: r.freq === 'Monthly' ? 'month' : r.freq === 'Daily' ? 'today' : 'week', format: 'PDF' };
+    const ic = document.getElementById('rgIcon');
+    ic.style.setProperty('--rc', r.color);
+    ic.innerHTML = `<i data-lucide="${r.icon}" class="w-5 h-5"></i>`;
+    document.getElementById('rgTitle').innerText = r.name;
+    document.getElementById('rgDesc').innerText = r.desc;
+    setReportRange(_rptGen.range);
+    setReportFormat('PDF');
+    const m = document.getElementById('rptGenModal');
+    m.classList.remove('hidden'); m.classList.add('flex');
+    lucide.createIcons();
+}
+function closeReportGen() { const m = document.getElementById('rptGenModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+const _rptIso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+function setReportRange(v, fromInputs) {
+    _rptGen.range = v;
+    document.querySelectorAll('#rgRange button').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+    if (!fromInputs) {
+        const base = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate());
+        let from = new Date(base), to = new Date(base);
+        if (v === 'week' || v === 'last') { from.setDate(base.getDate() - base.getDay() - (v === 'last' ? 7 : 0)); to = new Date(from); to.setDate(from.getDate() + 6); }
+        if (v === 'month') { from = new Date(base.getFullYear(), base.getMonth(), 1); to = new Date(base.getFullYear(), base.getMonth() + 1, 0); }
+        if (v !== 'custom') { document.getElementById('rgFrom').value = _rptIso(from); document.getElementById('rgTo').value = _rptIso(to); }
+    }
+    _rptSummary();
+}
+function setReportFormat(f) {
+    _rptGen.format = f;
+    document.querySelectorAll('#rgFormat button').forEach(b => b.classList.toggle('active', b.dataset.v === f));
+    _rptSummary();
+}
+function _rptRangeText() {
+    const fmt = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); };
+    const a = document.getElementById('rgFrom').value, b = document.getElementById('rgTo').value;
+    return a && b ? (a === b ? fmt(a) : `${fmt(a)} – ${fmt(b)}`) : '';
+}
+function _rptSummary() {
+    const a = document.getElementById('rgFrom').value, b = document.getElementById('rgTo').value;
+    const el = document.getElementById('rgSummary');
+    if (a && b && a > b) { el.className = 'rpt-summary rpt-summary-err'; el.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4"></i>The start date is after the end date.'; }
+    else { el.className = 'rpt-summary'; el.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i><span><b>${_rptGen.r.name}</b> · ${_rptRangeText() || 'pick a date range'} · ${_rptGen.format}</span>`; }
+    lucide.createIcons();
+}
+function generateReport() {
+    const a = document.getElementById('rgFrom').value, b = document.getElementById('rgTo').value;
+    if (!a || !b || a > b) { _rptSummary(); return; }
+    showToast(`${_rptGen.r.name} (${_rptGen.format}) for ${_rptRangeText()} is being generated.`, 'info');
+    closeReportGen();
+}
+
+// Breaks: rows of Start / End / Type, like the shift drawer. Meal breaks are unpaid.
+const _stdBrkMin = b => { const s = _hhmmToMin(b.start), e = _hhmmToMin(b.end); return (e - s + 1440) % 1440; };
+function _stdBreakRowHTML(b = {}) {
+    const type = b.type || 'Meal';
+    return `<div class="std-brk-grid std-brk-row">
+        ${timeComboHTML('updateStdPreview', b.start || '')}
+        ${timeComboHTML('updateStdPreview', b.end || '')}
+        <select class="form-input std-select" onchange="updateStdPreview()">
+            <option value="Meal"${type === 'Meal' ? ' selected' : ''}>Meal (Unpaid)</option>
+            <option value="Rest"${type === 'Rest' ? ' selected' : ''}>Rest (Paid)</option>
+        </select>
+        <button type="button" class="std-brk-del" title="Remove break" onclick="removeStdBreak(this)"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+    </div>`;
+}
+function _stdBreakSync() {
+    const n = document.querySelectorAll('#stdBreaks .std-brk-row').length;
+    document.getElementById('stdBreakHead').style.display = n ? '' : 'none';
+    document.getElementById('stdBreakEmpty').style.display = n ? 'none' : '';
+    document.getElementById('stdBreakCount').innerText = n;
+}
+function setStdBreaks(list) {
+    document.getElementById('stdBreaks').innerHTML = list.map(_stdBreakRowHTML).join('');
+    _stdBreakSync();
+    lucide.createIcons();
+}
+// new break: 30 min near the middle of the shift (or 12:00 if no times yet), after any existing break
+function addStdBreak() {
+    const s = document.querySelector('#stdStart .tc-value').value, e = document.querySelector('#stdEnd .tc-value').value;
+    const rows = _stdBreaksVal();
+    let start = 12 * 60;
+    if (s && e) { const r = _stdRange(`${s} to ${e}`); start = Math.round((r.s + (r.e - r.s) / 2) * 4) / 4 * 60; }
+    if (rows.length) start = _hhmmToMin(rows[rows.length - 1].end) + 60;
+    start = ((start % 1440) + 1440) % 1440;
+    document.getElementById('stdBreaks').insertAdjacentHTML('beforeend', _stdBreakRowHTML({ start: _minToHhmm(start), end: _minToHhmm((start + 30) % 1440), type: 'Meal' }));
+    _stdBreakSync();
+    lucide.createIcons();
     updateStdPreview();
 }
-function _stdBreakVal() { return document.querySelector('#stdBreakSeg button.active')?.dataset.v || '00:00'; }
+function removeStdBreak(btn) { btn.closest('.std-brk-row').remove(); _stdBreakSync(); updateStdPreview(); }
+function _stdBreaksVal() {
+    return [...document.querySelectorAll('#stdBreaks .std-brk-row')].map(row => ({
+        start: row.querySelectorAll('.tc-value')[0].value, end: row.querySelectorAll('.tc-value')[1].value, type: row.querySelector('select').value,
+    })).filter(b => b.start && b.end);
+}
+function _stdMealMin(list) { return list.filter(b => b.type === 'Meal').reduce((a, b) => a + _stdBrkMin(b), 0); }
 function updateStdPreview() {
     const s = document.querySelector('#stdStart .tc-value').value, e = document.querySelector('#stdEnd .tc-value').value;
     const el = document.getElementById('stdPreview');
     document.getElementById('stdError').classList.add('hidden');
-    if (!s || !e) { el.innerText = 'Pick a start and end time'; el.className = 'std-preview'; return; }
+    const track = document.getElementById('stdTrack');
+    const stat = (id, v) => { document.getElementById(id).innerText = v; };
+    const hrs = v => `${(+v.toFixed(2))} h`;
+    document.getElementById('stdSum').classList.toggle('hidden', !s || !e);
+    if (!s || !e) {
+        el.innerText = 'Pick a start and end time'; el.className = 'std-preview';
+        track.innerHTML = ''; ['stdStatLen', 'stdStatBrk', 'stdStatPaid'].forEach(id => stat(id, '—'));
+        return;
+    }
     const r = _stdRange(`${s} to ${e}`), len = r.e - r.s;
-    const [bh, bm] = _stdBreakVal().split(':').map(Number);
-    el.innerHTML = `<b>${_stdFmt(s)} to ${_stdFmt(e)}${r.e > 24 ? ' (+1 day)' : ''}</b> · ${len} h shift · ${(len - (bh * 60 + bm) / 60).toFixed(2).replace(/\.00$/, '')} h paid`;
+    const breaks = _stdBreaksVal(), meal = _stdMealMin(breaks);
+    el.innerHTML = `<b>${_stdFmt(s)} to ${_stdFmt(e)}${r.e > 24 ? ' (+1 day)' : ''}</b>${document.getElementById('stdShiftPosition').value !== 'No Position' ? ` · ${document.getElementById('stdShiftPosition').value}` : ''}`;
     el.className = 'std-preview std-preview-ok';
+    stat('stdStatLen', hrs(len));
+    stat('stdStatBrk', meal ? `${meal} min` : 'None');
+    stat('stdStatPaid', hrs(len - meal / 60));
+    // day bar: shift span (wraps past midnight) with breaks cut in
+    const seg = (a, b, cls, tip) => `<i class="${cls}" style="left:${a / 24 * 100}%;width:${(b - a) / 24 * 100}%" title="${tip}"></i>`;
+    const span = (a, b, cls, tip) => b <= 24 ? seg(a, b, cls, tip) : seg(a, 24, cls, tip) + seg(0, b - 24, cls, tip);
+    track.innerHTML = span(r.s, r.e, 'ssm-shift', `${_stdFmt(s)} – ${_stdFmt(e)}`) + breaks.map(b => {
+        let a = _hhmmToMin(b.start) / 60; if (a < r.s) a += 24;
+        const t = `${b.type === 'Meal' ? 'Meal (Unpaid)' : 'Rest (Paid)'} ${_stdFmt(b.start)} – ${_stdFmt(b.end)}`;
+        return span(a, a + _stdBrkMin(b) / 60, b.type === 'Meal' ? 'ssm-meal' : 'ssm-rest', t);
+    }).join('');
 }
 function _openStdModal(row) {
     const pos = document.getElementById('stdShiftPosition');
@@ -7218,9 +7877,18 @@ function _openStdModal(row) {
     tcSet(document.getElementById('stdEnd'), r[1] || '', true);
     pos.value = row ? row.position : 'No Position';
     document.getElementById('stdShiftNotes').value = row?.notes || '';
+    document.getElementById('stdNotesCount').innerText = `${(row?.notes || '').length}/200`;
     document.getElementById('stdModalTitle').innerText = row ? 'Edit Standard Shift' : 'Add Standard Shift';
     document.getElementById('stdSaveBtn').innerText = row ? 'Save Changes' : 'Add Shift';
-    setStdBreak(row ? row.break : '00:30');
+    // older rows only stored a meal length: place it in the middle of the shift
+    let breaks = row?.breaks || [];
+    if (row && !row.breaks && row.break && row.break !== '00:00' && r[0] && r[1]) {
+        const rg = _stdRange(row.shift), [bh, bm] = row.break.split(':').map(Number);
+        const st = Math.round((rg.s + (rg.e - rg.s) / 2 - (bh + bm / 60) / 2) * 4) / 4 * 60 % 1440;
+        breaks = [{ start: _minToHhmm(st), end: _minToHhmm((st + bh * 60 + bm) % 1440), type: 'Meal' }];
+    }
+    setStdBreaks(breaks);
+    updateStdPreview();
     const m = document.getElementById('addStandardShiftModal');
     m.classList.remove('hidden'); m.classList.add('flex');
     lucide.createIcons();
@@ -7239,8 +7907,21 @@ function saveStandardShift() {
         err.classList.remove('hidden');
         return;
     }
+    // every break needs both times and must sit inside the shift
+    const rows = [...document.querySelectorAll('#stdBreaks .std-brk-row')];
+    const sr = _stdRange(`${s} to ${e}`);
+    const inShift = t => { let h = _hhmmToMin(t) / 60; if (h < sr.s) h += 24; return h >= sr.s && h <= sr.e; };
+    for (const row of rows) {
+        const [bs, be] = [...row.querySelectorAll('.tc-value')].map(i => i.value);
+        const msg = !bs || !be ? 'Enter a start and end time for every break.'
+            : bs === be ? 'A break cannot start and end at the same time.'
+            : !inShift(bs) || !inShift(be) ? `Break ${_stdFmt(bs)} – ${_stdFmt(be)} must be within the shift.` : '';
+        if (msg) { err.innerText = msg; err.classList.remove('hidden'); return; }
+    }
+    const breaks = _stdBreaksVal();
+    const meal = _stdMealMin(breaks);
     const row = { shift: `${_stdFmt(s)} to ${_stdFmt(e)}`, position: document.getElementById('stdShiftPosition').value || 'No Position',
-        break: _stdBreakVal(), notes: document.getElementById('stdShiftNotes').value.trim() };
+        break: _minToHhmm(meal), breaks, notes: document.getElementById('stdShiftNotes').value.trim() };
     if (_stdEditIdx === null) stdShiftsData.push(row); else stdShiftsData[_stdEditIdx] = row;
     showToast(`Standard shift ${_stdEditIdx === null ? 'added' : 'updated'}: ${row.shift}.`, 'info');
     closeAddStandardShift();

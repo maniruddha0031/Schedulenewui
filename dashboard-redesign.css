@@ -457,3 +457,131 @@ html.dark .sd-table-card #mainLaborTable tbody tr:hover { background: #22324b !i
   .sd-icon-btn svg { width: 15px; height: 15px; }
   .sd-pill { padding: 2px 8px; font-size: 11px; }
 }
+
+/* ============================================================
+   Reference skin (TimeKeeping dashboard look): flatter cards,
+   Title Case KPI titles, larger deltas, uppercase KPI footers,
+   taller stat tiles, tinted action buttons, bordered table tools.
+   Styling only — markup, data and handlers are unchanged.
+   ============================================================ */
+html.new-ui body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+:root { --sd-canvas: #eef2f7; --sd-border: #e2e7ef; }
+
+/* toolbar */
+.sd-tabs { border-radius: 8px; padding: 3px; }
+.sd-tabs .view-tab { padding: 6px 18px !important; border-radius: 6px !important; font-size: 14px !important; }
+.sd-tabs .view-tab:not(.active) { color: #6b7280 !important; }
+.sd-date { border-radius: 8px; padding: 7px 12px; }
+.sd-kpi-btn { border-radius: 8px !important; }
+
+/* cards */
+.sd-card { border-radius: 8px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
+
+/* KPI tiles */
+.sd-kpi { padding: 16px 14px 14px; }
+.sd-kpi-icon { width: 32px; height: 32px; border-radius: 8px; }
+.sd-kpi-title { text-transform: none; font-size: 14px; font-weight: 500; letter-spacing: 0; color: #1f2937; }
+.sd-trend-btn { width: 24px; height: 24px; border-radius: 5px; }
+.sd-kpi-value-row { margin-top: 18px; margin-bottom: 14px; align-items: baseline; }
+.sd-kpi-value { font-size: 24px; font-weight: 600; letter-spacing: 0; }
+.sd-kpi-delta { font-size: 14px; font-weight: 500; gap: 4px; }
+.sd-kpi-delta svg { width: 14px; height: 14px; }
+.sd-kpi-foot { border-color: #dfe4ec; border-radius: 6px; }
+.sd-kpi-foot > div { padding: 7px 11px; }
+.sd-kpi-foot > div + div { border-left-color: #dfe4ec; }
+.sd-kpi-foot .sd-lbl { text-transform: uppercase; font-size: 11.5px; font-weight: 500; color: #1f2937; letter-spacing: 0; line-height: 1.25; }
+.sd-kpi-foot .sd-val { font-size: 14px; font-weight: 600; margin-top: 3px; }
+.sd-kpi-row > .ai-insight-tile { border-radius: 8px !important; }
+
+/* stat tiles */
+.sd-stat-row { gap: 16px; }
+.sd-stat { border-radius: 8px; padding: 16px 20px; min-height: 104px; }
+.sd-stat-cell { align-items: flex-start; }
+.sd-stat-cell > div:first-child { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; gap: 18px; }
+.sd-stat-val { font-size: 22px; font-weight: 500; line-height: 1.2; }
+.sd-stat-lbl { font-size: 13px; font-weight: 600; margin-top: 0; letter-spacing: .01em; }
+.sd-stat-ico { width: 46px; height: 46px; box-shadow: 0 1px 2px rgba(16, 24, 40, .06); }
+.sd-stat-ico svg { width: 22px; height: 22px; }
+.sd-stat-divider { width: 2px; margin: 0 20px; background: rgba(255, 255, 255, .9); }
+.sd-stat--green  { background: #bfecd0; }
+.sd-stat--peach  { background: #fdd3c1; }
+.sd-stat--violet { background: #dcdcfb; }
+.sd-stat--blue   { background: #cde3f9; }
+
+/* action panels */
+.sd-panel { padding: 14px 12px 12px; }
+.sd-panel-title { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 12px; gap: 6px; }
+.sd-count { min-width: 21px; height: 21px; font-size: 11.5px; }
+.sd-chips { gap: 6px; padding: 4px; background: #e3ecfb; border-radius: 6px; position: relative; }
+.sd-chips::before { content: ''; width: 3px; align-self: stretch; margin: 3px 2px 3px 0; border-radius: 2px; background: var(--sd-primary); }
+.sd-chip { background: transparent; font-size: 13px; font-weight: 600; color: #1f2937; border-radius: 6px; padding: 5px 6px 5px 10px; }
+.sd-chip:hover { background: rgba(255, 255, 255, .7); }
+.sd-chip.active { background: var(--sd-primary); color: #fff; box-shadow: 0 1px 2px rgba(26, 115, 232, .35); }
+html.dark .sd-chips { background: #1d3a5f; }
+.sd-list { gap: 6px; }
+.sd-row { border-radius: 6px; padding: 8px 10px; border-color: #e5e9f0; }
+.sd-row:hover { border-color: #c9d6ea; box-shadow: none; background: #fafcff; }
+.sd-avatar { width: 34px; height: 34px; }
+.sd-row-name { font-size: 13px; font-weight: 500; color: #111827; }
+.sd-row-sub { font-size: 12.5px; color: #374151; margin-top: 3px; }
+.sd-icon-btn { width: 34px; height: 34px; }
+.sd-icon-btn svg { width: 17px; height: 17px; }
+.sd-icon-btn--ok { background: #e3f6e8; }
+.sd-icon-btn--ok:hover { background: #ccefd6; }
+.sd-icon-btn--no { background: #fde8ec; }
+.sd-icon-btn--no:hover { background: #fbd3db; }
+.sd-icon-btn--blue { background: #e3edfc; }
+.sd-icon-btn--blue:hover { background: #cfe0fb; }
+.sd-pill { font-weight: 600; }
+.sd-list::-webkit-scrollbar { width: 5px; }
+.sd-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+/* weekly table */
+.sd-table-head { padding: 12px 16px; }
+.sd-table-title { font-size: 15px; font-weight: 600; color: #111827; }
+.sd-tools { gap: 8px; }
+.sd-tools button { width: 38px; height: 36px; border: 1px solid #dfe4ec; border-radius: 6px; background: #fff; color: #374151; }
+.sd-tools button:hover { background: var(--sd-primary-soft); border-color: #c5d7f6; }
+.sd-tools svg { width: 16px; height: 16px; }
+.sd-table-card #mainLaborTable { font-size: 13.5px; }
+.sd-table-card #mainLaborTable thead th { background: #f3f6fa !important; font-size: 14px !important; font-weight: 600 !important; color: #111827 !important; padding: 12px 12px !important; border-bottom: 1px solid #e2e7ef !important; }
+.sd-table-card #mainLaborTable tbody td { padding: 11px 12px !important; color: #1f2937 !important; border-bottom-color: #e8ecf2 !important; }
+.sd-table-card #mainLaborTable tbody td + td { border-left-color: #eef1f5; }
+.sd-table-card #mainLaborTable tbody tr:nth-child(even) { background: #fff; }
+.sd-table-card #mainLaborTable tbody tr:hover { background: #f5f8fe !important; }
+html.dark .sd-tools button { background: #1e293b; border-color: #2d3f55; }
+html.dark .sd-table-card #mainLaborTable tbody tr:nth-child(even) { background: transparent; }
+
+@media (max-width: 1480px) {
+  .sd-kpi-title { font-size: 13px; }
+  .sd-kpi-value { font-size: 22px; }
+  .sd-kpi-delta { font-size: 12.5px; }
+  .sd-kpi-foot .sd-lbl { font-size: 10.5px; }
+  .sd-kpi-foot .sd-val { font-size: 12.5px; }
+  .sd-stat { min-height: 92px; padding: 14px 16px; }
+  .sd-stat-val { font-size: 20px; }
+  .sd-stat-lbl { font-size: 11.5px; }
+  .sd-stat-ico { width: 38px; height: 38px; }
+  .sd-stat-ico svg { width: 18px; height: 18px; }
+  .sd-stat-divider { margin: 0 14px; }
+  .sd-icon-btn { width: 30px; height: 30px; }
+}
+@media (max-width: 1500px) {
+  .sd-stat { padding: 12px 12px; }
+  .sd-stat-divider { margin: 0 10px; }
+  .sd-stat-lbl { white-space: normal; line-height: 1.2; }
+  .sd-stat-cell > div:first-child { min-width: 0; gap: 10px; }
+  .sd-stat-ico { width: 32px; height: 32px; }
+  .sd-stat-ico svg { width: 16px; height: 16px; }
+  .sd-stat-val { font-size: 18px; }
+}
+/* KPI footer: every box keeps the same height whether a label fits on one line or wraps
+   to two (browser zoom / narrower cards), so the cards stay level. */
+.sd-kpi-foot { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.sd-kpi-foot > div { padding: 7px 9px; }
+.sd-kpi-foot > div { display: flex; flex-direction: column; justify-content: center; min-height: 68px; }
+@media (max-width: 1480px) { .sd-kpi-foot > div { min-height: 78px; padding: 6px 7px; } }
+.sd-kpi-foot > div + div { align-items: flex-end; }
+.sd-kpi-foot .sd-lbl { font-size: 11px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.sd-kpi-foot > div + div .sd-lbl { text-align: right; }
+.sd-kpi-value-row { min-height: 30px; }

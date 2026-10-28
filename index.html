@@ -383,6 +383,16 @@ body.min-h-screen, .bg-\[\#eef2f6\] {
     font-size: 14.5px !important;
     font-weight: 600;
 }
+/* Week control: < [calendar label] > */
+.date-nav { display: flex !important; align-items: stretch; height: 40px; padding: 0 !important; gap: 0 !important; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.date-nav > button { width: 36px; display: flex; align-items: center; justify-content: center; color: #475569; transition: background .12s, color .12s; }
+.date-nav > button:hover { background: #eff6ff; color: #1d4ed8; }
+.date-nav > button:first-child { border-right: 1px solid #e2e8f0; }
+.date-nav > button:last-child { border-left: 1px solid #e2e8f0; }
+.date-nav-label { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 14px; cursor: pointer; white-space: nowrap; margin: 0; }
+.date-nav-label:hover { background: #f8fafc; }
+html.dark .date-nav { background: #1e293b; border-color: #2d3f55; }
+html.dark .date-nav > button { color: #cbd5e1; border-color: #2d3f55; }
 
 /* ===== DARK THEME ===== */
 html.dark body { background-color: #0f172a !important; color: #e2e8f0; }
@@ -604,10 +614,10 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
                 <span class="label">Team Center</span>
             </div>
 
-            <div class="menu-item px-4 py-3 opacity-90">
+            <a href="Schedule Pad.html#reports" class="menu-item px-4 py-3 opacity-90">
                 <i data-lucide="file-text"></i>
                 <span class="label">Reports</span>
-            </div>
+            </a>
 
             <div class="menu-item px-4 py-3 opacity-90">
 
@@ -651,12 +661,16 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         </div>
 
         <!-- WEEK DISPLAY & CALENDAR -->
-        <div class="sd-date">
-            <span id="weekDisplay">Week: 02/16/2026 - 02/22/2026</span>
-            <div class="relative flex items-center justify-center w-6 h-6">
-                <i data-lucide="calendar-days" class="w-[18px] h-[18px] text-slate-500"></i>
-                <input type="date" id="hiddenDatePicker" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="handleDateSelect(this.value)">
-            </div>
+        <div class="sd-date date-nav">
+            <button type="button" onclick="stepDashWeek(-1)" title="Previous week"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <label class="date-nav-label" onclick="if (event.target.tagName !== 'INPUT') { try { document.getElementById('hiddenDatePicker').showPicker(); } catch (e) {} }">
+                <span class="relative flex items-center justify-center w-5 h-5">
+                    <i data-lucide="calendar-days" class="w-[17px] h-[17px] text-slate-500"></i>
+                    <input type="date" id="hiddenDatePicker" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="handleDateSelect(this.value)">
+                </span>
+                <span id="weekDisplay">Week: 02/16/2026 - 02/22/2026</span>
+            </label>
+            <button type="button" onclick="stepDashWeek(1)" title="Next week"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
         </div>
     </div>
 
@@ -909,11 +923,11 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
 
 <!-- NEEDING ACTION -->
 <div class="sd-card sd-panel draggable-card" draggable="true">
-    <div class="sd-panel-title">Needing Action <span class="sd-count">5</span></div>
+    <div class="sd-panel-title">Needing Action <span class="sd-count">15</span></div>
     <div class="sd-chips">
-        <button class="sd-chip active" onclick="switchActionTab(this, 0)">Time Off <span class="sd-chip-n">2</span></button>
-        <button class="sd-chip" onclick="switchActionTab(this, 1)">Shift Swap <span class="sd-chip-n">2</span></button>
-        <button class="sd-chip" onclick="switchActionTab(this, 2)">Availability Request <span class="sd-chip-n">1</span></button>
+        <button class="sd-chip active" onclick="switchActionTab(this, 0)">Time Off <span class="sd-chip-n">5</span></button>
+        <button class="sd-chip" onclick="switchActionTab(this, 1)">Shift Swap <span class="sd-chip-n">5</span></button>
+        <button class="sd-chip" onclick="switchActionTab(this, 2)">Availability Request <span class="sd-chip-n">5</span></button>
     </div>
 
     <!-- TIME OFF -->
@@ -949,6 +963,63 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
                     <span class="sd-doc"><i data-lucide="clipboard-list"></i></span>
                     <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-slate-800 text-white text-[11px] rounded shadow-lg invisible group-hover:visible z-50 pointer-events-none transition-all">
                         Reason: Routine health checkup.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=45" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Emily Carter</div>
+                <div class="sd-row-sub">14th Feb 2026 • 02:00 PM - 06:00 PM</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <div class="relative group">
+                    <span class="sd-doc"><i data-lucide="clipboard-list"></i></span>
+                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-slate-800 text-white text-[11px] rounded shadow-lg invisible group-hover:visible z-50 pointer-events-none transition-all">
+                        Reason: Dentist appointment.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=59" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Kevin Brooks</div>
+                <div class="sd-row-sub">18th Feb 2026 - 20th Feb 2026</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <div class="relative group">
+                    <span class="sd-doc"><i data-lucide="clipboard-list"></i></span>
+                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-slate-800 text-white text-[11px] rounded shadow-lg invisible group-hover:visible z-50 pointer-events-none transition-all">
+                        Reason: Attending a family wedding.
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800"></div>
+                    </div>
+                </div>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=32" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Nina Patel</div>
+                <div class="sd-row-sub">22nd Feb 2026 • All Day</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <div class="relative group">
+                    <span class="sd-doc"><i data-lucide="clipboard-list"></i></span>
+                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-slate-800 text-white text-[11px] rounded shadow-lg invisible group-hover:visible z-50 pointer-events-none transition-all">
+                        Reason: College exam.
                         <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-800"></div>
                     </div>
                 </div>
@@ -992,6 +1063,54 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
                 <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
             </div>
         </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=44" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-pre">Offered By:</div>
+                <div class="sd-row-name">Sara Nguyen</div>
+                <div class="sd-row-sub">Crew • 17th Feb 2026 • 10:00 AM - 06:00 PM</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openSwapApprovalModal('Sara Nguyen', 'sara.nguyen', 'Crew', 'Tue, Feb 17', '10:00 AM - 06:00 PM', 'Aisha Khan', 'aisha.khan')" class="sd-icon-btn sd-icon-btn--blue" title="View Swap Approval">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=15" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-pre">Offered By:</div>
+                <div class="sd-row-name">Tom Reyes</div>
+                <div class="sd-row-sub">Prep Cook • 19th Feb 2026 • 06:00 AM - 02:00 PM</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openSwapApprovalModal('Tom Reyes', 'tom.reyes', 'Prep Cook', 'Thu, Feb 19', '06:00 AM - 02:00 PM', 'Ben Carter', 'ben.carter')" class="sd-icon-btn sd-icon-btn--blue" title="View Swap Approval">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=33" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-pre">Offered By:</div>
+                <div class="sd-row-name">Luis Ortega</div>
+                <div class="sd-row-sub">Dishwasher • 21st Feb 2026 • 04:00 PM - 10:00 PM</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openSwapApprovalModal('Luis Ortega', 'luis.ortega', 'Dishwasher', 'Sat, Feb 21', '04:00 PM - 10:00 PM', 'Omar Haddad', 'omar.haddad')" class="sd-icon-btn sd-icon-btn--blue" title="View Swap Approval">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
     </div>
 
     <!-- AVAILABILITY REQUEST -->
@@ -1005,6 +1124,66 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <div class="sd-row-actions">
                 <span class="sd-pill sd-pill--pending">Pending</span>
                 <button onclick="openAvailabilityModal('Sarah Jenkins', 'sarah.jenkins')" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=8" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Ben Carter</div>
+                <div class="sd-row-sub">Availability Update Request</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openAvailabilityModal('Ben Carter', 'ben.carter')" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=49" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Maria Lopez</div>
+                <div class="sd-row-sub">Availability Update Request</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openAvailabilityModal('Maria Lopez', 'maria.lopez')" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=53" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Omar Haddad</div>
+                <div class="sd-row-sub">Availability Update Request</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openAvailabilityModal('Omar Haddad', 'omar.haddad')" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid">
+                    <i data-lucide="layout-grid"></i>
+                </button>
+                <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
+                <button class="sd-icon-btn sd-icon-btn--no" title="Decline"><i data-lucide="x"></i></button>
+            </div>
+        </div>
+        <div class="sd-row">
+            <img src="https://i.pravatar.cc/40?img=26" class="sd-avatar">
+            <div class="sd-row-main">
+                <div class="sd-row-name">Aisha Khan</div>
+                <div class="sd-row-sub">Availability Update Request</div>
+            </div>
+            <div class="sd-row-actions">
+                <span class="sd-pill sd-pill--pending">Pending</span>
+                <button onclick="openAvailabilityModal('Aisha Khan', 'aisha.khan')" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid">
                     <i data-lucide="layout-grid"></i>
                 </button>
                 <button class="sd-icon-btn sd-icon-btn--ok" title="Approve"><i data-lucide="check"></i></button>
@@ -1237,12 +1416,16 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         </div>
 
         <!-- WEEK DISPLAY & CALENDAR -->
-        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm relative overflow-hidden">
-            <div class="relative flex items-center justify-center w-6 h-6">
-                <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
-                <input type="date" id="hiddenDatePicker" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="handleDateSelect(this.value)">
-            </div>
-            <span id="weekDisplay" class="text-[14px] font-semibold text-slate-700">Week: 02/16/2026 - 02/22/2026</span>
+        <div class="date-nav shadow-sm">
+            <button type="button" onclick="stepDashWeek(-1)" title="Previous week"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            <label class="date-nav-label" onclick="if (event.target.tagName !== 'INPUT') { try { document.getElementById('hiddenDatePicker').showPicker(); } catch (e) {} }">
+                <span class="relative flex items-center justify-center w-5 h-5">
+                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                    <input type="date" id="hiddenDatePicker" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="handleDateSelect(this.value)">
+                </span>
+                <span id="weekDisplay" class="text-[14px] font-semibold text-slate-700">Week: 02/16/2026 - 02/22/2026</span>
+            </label>
+            <button type="button" onclick="stepDashWeek(1)" title="Next week"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
         </div>
 
         <!-- KPI BUTTON -->
@@ -3098,9 +3281,56 @@ function openAssignModal(shiftId, filterDept, filterPos){
     if(!modal) return;
     modal.classList.remove("hidden");
     modal.classList.add("flex");
-    
+    _amShift = shiftId; _amDept = filterDept; _amPos = filterPos;
+    // the shift that was clicked + who already has the offer
+    const meta = typeof _duMeta === 'function' && shiftId ? _duMeta(shiftId) : null;
+    const offers = (typeof dashUaOffers !== 'undefined' && dashUaOffers[shiftId]) || [];
+    const order = { Accepted: 0, Pending: 1, Declined: 2 };
+    const sorted = [...offers].sort((a, b) => order[a.status] - order[b.status]);
+    const counts = {};
+    offers.forEach(o => counts[o.status] = (counts[o.status] || 0) + 1);
+    const [when = '', time = ''] = meta ? meta.when.split('•').map(s => s.trim()) : [];
+    const shiftCard = meta && meta.role ? `
+        <div class="am-shift">
+            <span class="am-shift-ic"><i data-lucide="calendar-clock" class="w-5 h-5"></i></span>
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[15px] font-bold text-slate-900">${meta.role}</span>
+                    ${meta.dept ? `<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold">${meta.dept}</span>` : ''}
+                    <span class="du-status ${offers.length ? 'du-offered' : 'du-open'}" style="margin-left:0;cursor:default">${offers.length ? `<i data-lucide="send"></i>Offered · ${offers.length}` : 'Open'}</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-[12.5px] text-slate-600">
+                    ${when ? `<span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>${when}</span>` : ''}
+                    ${time ? `<span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>${time}</span>` : ''}
+                    ${time && uaShiftDuration(time) ? `<span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i>${uaShiftDuration(time)}</span>` : ''}
+                </div>
+            </div>
+        </div>
+        ${offers.length ? `
+        <div class="am-offers">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-800"><i data-lucide="send" class="w-3.5 h-3.5 text-violet-600"></i>Already offered to ${offers.length}</span>
+                <span class="flex items-center gap-1.5">${['Accepted', 'Pending', 'Declined'].filter(k => counts[k]).map(k => `<span class="du-chip du-${_duTone[k]}">${counts[k]} ${k.toLowerCase()}</span>`).join('')}</span>
+            </div>
+            <div class="flex flex-wrap gap-2">${sorted.map(o => `
+                <span class="am-oc" title="${o.name} · ${o.status}">
+                    <img src="https://i.pravatar.cc/80?img=${o.img}" alt=""><span class="truncate">${o.name}</span>
+                    <span class="du-chip du-${_duTone[o.status]}" style="height:18px;font-size:10px">${o.status}</span>
+                    <button type="button" onclick="amWithdrawOffer('${o.name.replace(/'/g, "\\'")}')" title="Withdraw the offer from ${o.name}"><i data-lucide="x" class="w-3 h-3"></i></button>
+                </span>`).join('')}
+            </div>
+            ${counts.Accepted ? `<p class="mt-2 text-[11.5px] text-emerald-700 flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>${counts.Accepted === 1 ? 'One employee has' : `${counts.Accepted} employees have`} accepted — select them below to assign.</p>` : ''}
+        </div>` : ''}` : '';
+    // employee cards: people with the offer first (checked, with their status), then the rest
+    const others = ['Margaret Davis', 'Joseph Smith', 'Charles Wilson', 'Christopher Moore', 'Susan Anderson', 'Emily Clark', 'William Brown', 'Linda Jones']
+        .filter(n => !offers.some(o => o.name === n)).slice(0, Math.max(4, 8 - offers.length));
+    const cardPos = (meta && meta.role) || 'Crew';
+    const empCards = sorted.map(o => ({ name: o.name, pos: o.pos, img: o.img, status: o.status }))
+        .concat(others.map(n => ({ name: n, pos: cardPos })));
+
     document.getElementById("assignModalBody").innerHTML = `
         <div class="space-y-4">
+            ${shiftCard}
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Unassigned Shifts</span>
@@ -3155,18 +3385,19 @@ function openAssignModal(shiftId, filterDept, filterPos){
                 </div>
 
                 <div class="grid grid-cols-4 gap-4">
-                    ${['Margaret Davis', 'Joseph Smith', 'Charles Wilson', 'Christopher Mo...', 'Susan Anderson', 'Emily Clark', 'William Brown', 'Linda Jones'].map(name => `
-                    <div class="border border-slate-200 rounded-xl p-4 bg-white hover:border-indigo-300 hover:shadow-md transition-all group">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm">${name.split(' ').map(n=>n[0]).join('')}</div>
-                                <div>
-                                    <h4 class="text-[13px] font-bold text-slate-800">${name}</h4>
-                                    <p class="text-[11px] font-bold text-slate-400 uppercase">Crew</p>
+                    ${empCards.map(c => `
+                    <div class="border ${c.status ? 'border-violet-200 bg-violet-50/40' : 'border-slate-200 bg-white'} rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <img src="https://i.pravatar.cc/80?${c.img ? `img=${c.img}` : `u=${encodeURIComponent(c.name)}`}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200" alt="">
+                                <div class="min-w-0">
+                                    <h4 class="text-[13px] font-bold text-slate-800 truncate">${c.name}</h4>
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase truncate">${c.pos}</p>
                                 </div>
                             </div>
-                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 shrink-0" ${c.status && c.status !== 'Declined' ? 'checked' : ''}>
                         </div>
+                        ${c.status ? `<div class="mt-2"><span class="du-chip du-${_duTone[c.status]}" style="height:19px;font-size:10px;gap:3px"><i data-lucide="send" style="width:10px;height:10px"></i>Offered · ${c.status}</span></div>` : ''}
                     </div>`).join('')}
                 </div>
             </div>
@@ -3174,6 +3405,20 @@ function openAssignModal(shiftId, filterDept, filterPos){
 
     document.body.style.overflow = "hidden";
     setTimeout(() => { lucide.createIcons(); }, 10);
+}
+
+let _amShift = null, _amDept = '', _amPos = '';
+// Withdraw from inside the Offer modal: update the shared offer data, the panel pill and the modal
+function amWithdrawOffer(name) {
+    const list = dashUaOffers[_amShift] || [];
+    const i = list.findIndex(o => o.name === name);
+    if (i < 0) return;
+    list.splice(i, 1);
+    renderDashUaStatus();
+    _duToast(`Offer withdrawn from ${name}.`);
+    const scroll = document.getElementById('assignModalBody').scrollTop;
+    openAssignModal(_amShift, _amDept, _amPos);
+    document.getElementById('assignModalBody').scrollTop = scroll;
 }
 
 function closeAssignModal(){
@@ -3198,6 +3443,15 @@ function handleDateSelect(dateStr) {
         return (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getDate().toString().padStart(2, '0') + '/' + d.getFullYear();
     };
     document.getElementById("weekDisplay").innerText = `Week: ${formatDate(monday)} - ${formatDate(sunday)}`;
+}
+// < > beside the week: move the shown week back / forward by 7 days
+function stepDashWeek(dir) {
+    const m = document.getElementById('weekDisplay').innerText.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if (!m) return;
+    const start = new Date(+m[3], +m[1] - 1, +m[2] + 7 * dir);
+    const iso = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+    document.getElementById('hiddenDatePicker').value = iso;
+    handleDateSelect(iso + 'T00:00');
 }
 
 function openKpiStatsModal() {
@@ -4266,7 +4520,14 @@ function switchTab(tab) {
   .du-total { font-size: 11.5px; font-weight: 700; color: #334155; margin-right: 2px; }
   .du-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
   .du-amber { background: #fef3c7; color: #b45309; }
-  .du-blue { background: #dbeafe; color: #1d4ed8; }
+  .du-green { background: #dcfce7; color: #15803d; }
+  .am-shift { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; }
+  .am-shift-ic { width: 42px; height: 42px; border-radius: 50%; background: #eff6ff; color: #2563eb; border: 2px dashed #93c5fd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .am-offers { padding: 12px 14px; border-radius: 12px; background: #faf8ff; border: 1px solid #ede9fe; }
+  .am-oc { display: inline-flex; align-items: center; gap: 6px; max-width: 240px; height: 30px; padding: 0 4px 0 3px; border-radius: 999px; background: #fff; border: 1px solid #e9e5f5; font-size: 12px; font-weight: 500; color: #334155; }
+  .am-oc img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .am-oc button { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; flex-shrink: 0; }
+  .am-oc button:hover { background: #ffe4e6; color: #e11d48; }
   .du-rose { background: #ffe4e6; color: #be123c; }
   #duList { max-height: 280px; overflow-y: auto; padding: 4px 6px; }
   .du-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; transition: background .12s, opacity .18s, transform .18s; }
@@ -4422,22 +4683,22 @@ document.addEventListener('click', function(e) {
 // Keyed by the shift id used in each row's Assign button: openAssignModal('ua-1', ...)
 const dashUaOffers = {
     'ua-1': [
-        { name: 'Maria Lopez',   pos: 'Crew',    img: 47, ago: '25m ago', status: 'Pending' },
-        { name: 'Kevin Brooks',  pos: 'Cashier', img: 12, ago: '1h ago',  status: 'Seen' },
-        { name: 'Aisha Khan',    pos: 'Crew',    img: 45, ago: '1h ago',  status: 'Pending' },
+        { name: 'Maria Lopez',   pos: 'Crew',    img: 47, status: 'Pending' },
+        { name: 'Kevin Brooks',  pos: 'Cashier', img: 12,  status: 'Accepted' },
+        { name: 'Aisha Khan',    pos: 'Crew',    img: 45,  status: 'Pending' },
     ],
     'ua-3': [
-        { name: 'Tom Reyes',     pos: 'Cashier', img: 15, ago: '3h ago',  status: 'Declined' },
-        { name: 'Sara Nguyen',   pos: 'Crew',    img: 44, ago: '3h ago',  status: 'Pending' },
+        { name: 'Tom Reyes',     pos: 'Cashier', img: 15,  status: 'Declined' },
+        { name: 'Sara Nguyen',   pos: 'Crew',    img: 44,  status: 'Pending' },
     ],
     'ua-5': [
-        { name: 'Luis Ortega',   pos: 'Dishwasher', img: 33, ago: '20m ago', status: 'Seen' },
-        { name: 'Ben Carter',    pos: 'Prep Cook',  img: 8,  ago: '50m ago', status: 'Pending' },
-        { name: 'Nina Patel',    pos: 'Prep Cook',  img: 32, ago: '2h ago',  status: 'Pending' },
-        { name: 'Omar Haddad',   pos: 'Line Cook',  img: 59, ago: '2h ago',  status: 'Declined' },
+        { name: 'Luis Ortega',   pos: 'Dishwasher', img: 33, status: 'Accepted' },
+        { name: 'Ben Carter',    pos: 'Prep Cook',  img: 8, status: 'Pending' },
+        { name: 'Nina Patel',    pos: 'Prep Cook',  img: 32,  status: 'Pending' },
+        { name: 'Omar Haddad',   pos: 'Line Cook',  img: 59,  status: 'Declined' },
     ],
 };
-const _duTone = { Pending: 'amber', Seen: 'blue', Declined: 'rose' };
+const _duTone = { Accepted: 'green', Pending: 'amber', Declined: 'rose' };
 let _duOpen = null; // shift id whose offer list is open
 function _duRows(key) {
     return [...document.querySelectorAll(`.ua-actions [onclick^="openAssignModal('${key}'"]`)].map(b => b.closest('.ua-actions').parentElement);
@@ -4482,11 +4743,11 @@ function openDashUaOffers(key, anchor) {
     const counts = {};
     list.forEach(o => counts[o.status] = (counts[o.status] || 0) + 1);
     document.getElementById('duSummary').innerHTML = `<span class="du-total">${list.length} offered</span>` +
-        ['Pending', 'Seen', 'Declined'].filter(k => counts[k]).map(k => `<span class="du-chip du-${_duTone[k]}">${counts[k]} ${k.toLowerCase()}</span>`).join('');
+        ['Accepted', 'Pending', 'Declined'].filter(k => counts[k]).map(k => `<span class="du-chip du-${_duTone[k]}">${counts[k]} ${k.toLowerCase()}</span>`).join('');
     document.getElementById('duList').innerHTML = list.map((o, i) => `
         <div class="du-row" data-i="${i}">
             <img src="https://i.pravatar.cc/80?img=${o.img}" alt="">
-            <div class="du-who"><div class="du-name">${o.name}</div><div class="du-sub">${o.pos} · sent ${o.ago}</div></div>
+            <div class="du-who"><div class="du-name">${o.name}</div><div class="du-sub">${o.pos}</div></div>
             <span class="du-chip du-${_duTone[o.status]}">${o.status}</span>
             <button type="button" class="du-withdraw" onclick="withdrawDashUaOffer(${i})" title="Withdraw the offer from ${o.name}"><i data-lucide="undo-2"></i>Withdraw</button>
         </div>`).join('');
