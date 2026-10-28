@@ -630,6 +630,30 @@ table td:hover .addShift {
 }
 
 /* Three Dot Menu */
+/* Create Schedule menu */
+.cs-btn { height:36px; display:inline-flex; align-items:center; gap:7px; padding:0 12px; border:1px solid #c7d7fe; background:#eef4ff; color:#1d4ed8; border-radius:10px; font-size:13px; font-weight:700; white-space:nowrap; transition:background .15s, border-color .15s; }
+.cs-btn:hover { background:#e0eaff; border-color:#a5c0fd; }
+#createScheduleWrap:has(.cs-menu:not(.hidden)) .cs-btn { background:#dbe7ff; border-color:#93b4fd; }
+#createScheduleWrap:has(.cs-menu:not(.hidden)) .cs-chev { transform:rotate(180deg); }
+.cs-chev { transition:transform .15s; }
+.cs-menu { position:absolute; right:0; top:calc(100% + 6px); width:340px; background:#fff; border:1px solid #e2e8f0; border-radius:14px; box-shadow:0 18px 40px -12px rgba(15,23,42,.28); padding:6px; z-index:300; animation:csIn .14s ease-out; }
+@keyframes csIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+.cs-head { padding:8px 10px 4px; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#94a3b8; }
+.cs-item, .cs-toggle { width:100%; display:flex; align-items:flex-start; gap:12px; padding:9px 10px; border-radius:10px; text-align:left; cursor:pointer; transition:background .12s; }
+.cs-item:hover, .cs-toggle:hover { background:#f5f8ff; }
+.cs-item:hover b { color:#1d4ed8; }
+.cs-ic { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cs-ic-ai { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow:0 4px 10px -3px rgba(99,102,241,.5); }
+.cs-txt { display:flex; flex-direction:column; min-width:0; flex:1; }
+.cs-txt b { font-size:13px; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:6px; }
+.cs-txt small { font-size:11.5px; color:#64748b; line-height:1.35; margin-top:2px; }
+.cs-tag { font-style:normal; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:999px; background:#ede9fe; color:#6d28d9; }
+.cs-sep { height:1px; background:#f1f5f9; margin:6px 4px; }
+.cs-toggle { align-items:center; }
+.cs-switch { width:34px; height:20px; border-radius:999px; background:#cbd5e1; position:relative; flex-shrink:0; transition:background .15s; }
+.cs-switch::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s; }
+.cs-toggle input:checked + .cs-switch { background:#4f46e5; }
+.cs-toggle input:checked + .cs-switch::after { transform:translateX(14px); }
 .action-dropdown {
     position: absolute;
     right: 0;
@@ -1154,6 +1178,32 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 
 /* ===== DAY VIEW FOOTER ===== */
 #statsDetails:has(.df-row) { max-height: 48vh; overflow-y: auto !important; }
+/* Month view footer + day details popup */
+.mf-cell { cursor: pointer; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; transition: background .12s; }
+.mf-cell sup { font-size: 8.5px; margin-left: 1px; }
+.mf-cell:hover { background: #eff6ff; }
+.mf-cell.active { background: #dbeafe; box-shadow: inset 0 -2px 0 #2563eb; }
+#monthDayDetails::after { content: ''; position: absolute; bottom: -7px; left: var(--mdd-arrow, 50%); width: 14px; height: 14px; background: #fff; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; transform: rotate(45deg); }
+.mdd-head { position: sticky; top: 0; background: #fff; padding: 10px 0 4px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+.mdd-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+.mdd-row span { color: #64748b; }
+.mdd-row b { color: #0f172a; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mdd-pipe { font-style: normal; color: #cbd5e1; margin: 0 2px; }
+/* Week view footer */
+#statsDetails:has(.wf-row) { max-height: 48vh; overflow-y: auto !important; }
+.wf-row { height: 30px; }
+.wf-row .sticky-footer-label { background: #fff; }
+.wf-row .wf-lbl { font-size: 12.5px; font-weight: 600; color: #1e293b; }
+.wf-row .wf-tot { font-size: 12.5px; font-weight: 600; color: #1e293b; font-variant-numeric: tabular-nums; }
+.wf-val { font-size: 12.5px; color: #334155; font-variant-numeric: tabular-nums; }
+.wf-pipe { color: #94a3b8; margin: 0 3px; }
+.wf-sum { font-size: 13px; font-weight: 700; color: #1e293b; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wf-head, .wf-head .sticky-footer-label, .wf-head .stats-content-area { background: #64748b !important; }
+.wf-head .wf-lbl, .wf-head .wf-tot, .wf-head .wf-val { color: #fff; font-weight: 700; font-size: 12px; }
+.wf-row.wf-head { height: 36px; }
+.wf-head .wf-lbl { font-size: 11.5px; }
+.wf-head .border-r { border-color: rgba(255,255,255,.18) !important; }
+.wf-head .wf-pipe { color: rgba(255,255,255,.7); }
 .df-row { height: 30px; }
 .df-row .df-lbl { font-size: 12.5px; font-style: italic; font-weight: 500; color: #334155; }
 .df-row .df-lbl small { font-size: 10.5px; color: #64748b; margin-left: 3px; font-style: italic; }
@@ -1816,6 +1866,45 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         <i data-lucide="check-square" class="w-5 h-5 text-slate-400"></i> Select
                     </button>
 
+                    <!-- Create Schedule: the schedule preference options as an inline menu -->
+                    <div class="relative" id="createScheduleWrap">
+                        <button id="createScheduleBtn" onclick="customTogglePopover('createScheduleMenu')" class="cs-btn">
+                            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Create Schedule <i data-lucide="chevron-down" class="w-3.5 h-3.5 cs-chev"></i>
+                        </button>
+                        <div id="createScheduleMenu" class="hidden cs-menu">
+                            <div class="cs-head">Fill this week</div>
+                            <button class="cs-item" onclick="csPick('copy')">
+                                <span class="cs-ic" style="background:#eff6ff;color:#2563eb"><i data-lucide="copy" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>Copy Schedule</b><small>Duplicate a previous week's schedule</small></span>
+                            </button>
+                            <button class="cs-item" onclick="csPick('template')">
+                                <span class="cs-ic" style="background:#ecfdf5;color:#059669"><i data-lucide="file-text" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>Load Template</b><small>Apply a saved staffing structure</small></span>
+                            </button>
+                            <button class="cs-item" onclick="csPick('scratch')">
+                                <span class="cs-ic" style="background:#fffbeb;color:#d97706"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>Start from Scratch</b><small>Begin with a blank week roster</small></span>
+                            </button>
+                            <div class="cs-sep"></div>
+                            <div class="cs-head">AI scheduling</div>
+                            <button class="cs-item" onclick="csPick('aiStd')">
+                                <span class="cs-ic" style="background:#f5f3ff;color:#7c3aed"><i data-lucide="calendar-clock" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>AI Scheduling Using Standard Shift</b><small>Build an AI roster from your standard shifts</small></span>
+                            </button>
+                            <button class="cs-item" onclick="csPick('ai')">
+                                <span class="cs-ic cs-ic-ai"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>AI Scheduling <em class="cs-tag">Recommended</em></b><small>Build shifts from the forecast and assign them</small></span>
+                            </button>
+                            <div class="cs-sep"></div>
+                            <label class="cs-toggle">
+                                <span class="cs-ic" style="background:#eef2ff;color:#4f46e5"><i data-lucide="wand-2" class="w-4 h-4"></i></span>
+                                <span class="cs-txt"><b>Auto-create shifts from preferences</b><small>Build the roster from saved availability</small></span>
+                                <input type="checkbox" id="csAutoCreate" class="sr-only peer" checked>
+                                <span class="cs-switch"></span>
+                            </label>
+                        </div>
+                    </div>
+
                     <button class="bg-green-600 text-white px-5 py-2 h-9 rounded-xl flex items-center gap-2 font-bold shadow-sm transition-all hover:bg-green-700 text-[13px] tracking-tight">
                         <i data-lucide="check" class="w-4"></i> Publish
                     </button>
@@ -1830,7 +1919,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     <div class="action-dropdown-item" onclick="customTogglePopover('actionDropdown'); openAddEmployeeModal();">
         <i data-lucide="user-plus" class="w-3.5 h-3.5 text-blue-500"></i> Add Employee
     </div>
-    <div class="action-dropdown-item" onclick="customTogglePopover('actionDropdown'); openInitiateModal();">
+    <div class="action-dropdown-item" onclick="event.stopPropagation(); customTogglePopover('createScheduleMenu');">
         <i data-lucide="settings-2" class="w-3.5 h-3.5 text-indigo-500"></i> Schedule preference
     </div>
     <div class="action-dropdown-item" onclick="customTogglePopover('actionDropdown'); openSaveTemplateModal();">
@@ -2562,16 +2651,16 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 <div id="empActionOverlay" class="fixed inset-0 bg-transparent hidden z-[200]">
 <div id="empActionCard" class="action-modal-card">
 
-    <!-- Navy Header -->
-    <div class="bg-[#0b2545] px-5 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-white font-bold text-[13px] shrink-0 uppercase">AV</div>
-            <div>
-                <div id="actionModalName" class="text-white font-bold text-[15px] leading-tight">Angie Vasquez</div>
-                <div class="text-white/50 text-[11px] font-medium">Employee</div>
+    <!-- Header -->
+    <div class="bg-white px-5 py-3.5 flex items-center justify-between border-b border-slate-100">
+        <div class="flex items-center gap-3 min-w-0">
+            <img id="actionModalAvatar" src="" alt="" class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0">
+            <div class="min-w-0">
+                <div id="actionModalName" class="text-slate-900 font-bold text-[15px] leading-tight truncate">Angie Vasquez</div>
+                <div id="actionModalRole" class="text-slate-500 text-[11.5px] font-medium">Employee</div>
             </div>
         </div>
-        <button onclick="closeActionModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors">
+        <button onclick="closeActionModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors">
             <i data-lucide="x" class="w-4 h-4"></i>
         </button>
     </div>
@@ -2614,24 +2703,37 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
         <div class="bg-slate-50 rounded-xl border border-slate-100 px-4 py-3 flex items-center justify-between">
             <div class="text-center">
                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Pay Rate</div>
-                <div class="text-[15px] font-bold text-blue-600">$0.00</div>
+                <div id="actionModalPay" class="text-[15px] font-bold text-blue-600">$0.00</div>
             </div>
             <div class="w-px h-10 bg-slate-200"></div>
             <div class="text-center">
                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Min Hrs / Week</div>
-                <div class="text-[15px] font-bold text-blue-600">00:00</div>
+                <div id="actionModalMin" class="text-[15px] font-bold text-blue-600">00:00</div>
             </div>
             <div class="w-px h-10 bg-slate-200"></div>
             <div class="text-center">
                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Week Hours</div>
-                <div class="text-[15px] font-bold text-slate-700">00:00</div>
+                <div id="actionModalWeek" class="text-[15px] font-bold text-slate-700">00:00</div>
             </div>
         </div>
 
         <!-- Employee Notes -->
         <div>
             <div class="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Employee Notes</div>
-            <div class="h-10 bg-slate-50 rounded-xl border border-slate-100"></div>
+            <div class="relative">
+                <input id="actionModalNotes" type="text" maxlength="120" placeholder="Add a note for this employee"
+                    class="w-full h-10 bg-slate-50 rounded-xl border border-slate-100 pl-3 pr-9 text-[12.5px] text-slate-700 focus:bg-white focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-500/15 transition">
+                <i data-lucide="pencil-line" class="w-4 h-4 text-blue-500 absolute right-3 top-3 pointer-events-none"></i>
+            </div>
+        </div>
+
+        <!-- Positions -->
+        <div>
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">Positions</div>
+                <span id="actionModalPosCount" class="text-[10.5px] font-semibold text-slate-400"></span>
+            </div>
+            <div id="actionModalPositions" class="grid grid-cols-2 gap-2"></div>
         </div>
 
     </div>
@@ -3242,7 +3344,7 @@ const offerEmployees = Array.from({length:15},(_,i)=>({
 function customTogglePopover(id) {
     const popover = document.getElementById(id);
     const isHidden = popover.classList.contains('hidden');
-    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup'];
+    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup', 'createScheduleMenu'];
     popovers.forEach(pId => {
         if(pId !== id) {
             const p = document.getElementById(pId);
@@ -3256,6 +3358,19 @@ function customTogglePopover(id) {
 function openInitiateModal() { document.getElementById("initiateModal").classList.remove("hidden"); document.getElementById("initiateModal").classList.add("flex"); lucide.createIcons(); }
 function closeInitiateModal() { document.getElementById("initiateModal").classList.add("hidden"); document.getElementById("initiateModal").classList.remove("flex"); }
 function openCopyModal() { closeInitiateModal(); document.getElementById("copyModal").classList.remove("hidden"); document.getElementById("copyModal").classList.add("flex"); lucide.createIcons(); }
+// Create Schedule menu: same actions as the Schedule preference tiles
+function csPick(kind) {
+    document.getElementById('createScheduleMenu').classList.add('hidden');
+    if (kind === 'copy') openCopyModal();
+    else if (kind === 'template') openTemplateModal();
+    else if (kind === 'aiStd') openAIAgent(true);
+    else if (kind === 'ai') openAIAgent(false);
+    else showToast('Starting from a blank week roster.', 'info');
+}
+document.addEventListener('click', function (e) {
+    const m = document.getElementById('createScheduleMenu');
+    if (m && !m.classList.contains('hidden') && !e.target.closest('#createScheduleWrap') && !e.target.closest('#actionDropdown')) m.classList.add('hidden');
+});
 function closeCopyModal() { document.getElementById("copyModal").classList.add("hidden"); document.getElementById("copyModal").classList.remove("flex"); }
 
 /* NOTES FUNCTIONS */
@@ -4548,18 +4663,21 @@ function renderStatsFooter(columns, cellWidth) {
     summaryRow.style.width = rowWidth + "px";
 
     // ── MONTH VIEW: only show Schedule % per day ──
-    if (activeView === 'month') {
-        const _wFS = [4200,8800,8200,8600,9800,11200,9400];
-        const _wSD = [864,1296,1224,1332,1440,1656,1512];
-        summaryRow.innerHTML = columns.map((c, i) => {
-            const dow = new Date(activeDate.getFullYear(), activeDate.getMonth(), i + 1).getDay();
-            const sale = _wFS[dow] || 0;
-            const dollar = _wSD[dow] || 0;
-            const pct = sale > 0 ? ((dollar / sale) * 100).toFixed(2) : "0.00";
-            return `<div class="flex items-center justify-center border-r shrink-0 cursor-pointer hover:bg-slate-50 transition-colors" style="width:${cellWidth}px" onclick="openMonthDayDetails(event,${i})">
-                <span class="text-[11px] font-bold text-red-500">${pct}%</span>
-            </div>`;
-        }).join('');
+    // Month footer is not expandable: per-day Sch Labour %, click a day for its details
+    const isMonth = activeView === 'month';
+    document.getElementById('statsChevron').style.display = isMonth ? 'none' : '';
+    summaryRow.closest('.stats-summary-bar').classList.toggle('cursor-pointer', !isMonth);
+    if (isMonth) {
+        document.getElementById('statsDetails').classList.add('hidden');
+        document.getElementById('statsChevron').classList.remove('rotate-180');
+        const days = columns.map((_, i) => _monthDayData(i));
+        const label = document.getElementById('footerTotalLabel');
+        label.onmouseenter = label.onmouseleave = null;
+        label.innerHTML = `Total Hrs <span class="ml-auto pl-3">${Math.round(days.reduce((a, d) => a + d.sch, 0))}</span>`;
+        summaryRow.innerHTML = days.map((d, i) => `
+            <div class="mf-cell flex items-center justify-center border-r shrink-0" style="width:${cellWidth}px" onclick="openMonthDayDetails(event,${i})" title="Day details">
+                <span class="${d.labour > d.budgetPct ? 'text-red-500' : 'text-slate-700'}">${Math.round(d.labour)}<sup>%</sup></span>
+            </div>`).join('');
         detailsContainer.innerHTML = '';
         return;
     }
@@ -4567,109 +4685,87 @@ function renderStatsFooter(columns, cellWidth) {
     if (activeView === 'day') { renderDayFooter(columns, cellWidth); return; }
     document.getElementById('footerTotalLabel').onmouseenter = document.getElementById('footerTotalLabel').onmouseleave = null;
 
-    // Realistic per-day weekly data (Sun–Sat cycle)
-    const wFctSales  = [4200, 8800, 8200, 8600, 9800, 11200, 9400];
-    const wFctTxns   = [210,  440,  410,  430,  490,   560,   470];
-    const wFctHrs    = [50.0, 76.0, 72.0, 74.0, 82.0,  94.0,  88.0];
-    const wSchHrs    = [48.0, 72.0, 68.0, 74.0, 80.0,  92.0,  84.0];
-    const wSchDollar = [864, 1296, 1224, 1332, 1440,  1656,  1512];
-    const wBudgetPct = [19,    20,   20,   20,   21,    18,    19];
+    renderWeekFooter(n, cellWidth);
+}
 
-    // Day view: hourly distribution (24 cols from 4AM) — dynamically computed from employeeData
-    const startOfMockF = new Date(2026, 1, 2);
-    const activeDayIdxF = Math.floor(Math.abs(activeDate - startOfMockF) / (1000 * 60 * 60 * 24));
-    const daySchHrs = Array.from({length:24}, (_,colIdx) => {
-        const hour = (4 + colIdx) % 24;
-        return employeeData.filter(emp => {
-            if (emp.unavailableDays && emp.unavailableDays.includes(activeDayIdxF)) return false;
-            if (emp.shift && hour >= emp.shift.start && hour < emp.shift.end) return true;
-            if (emp.additionalShifts) return emp.additionalShifts.some(s => hour >= s.start && hour < s.end);
-            return false;
-        }).length;
+// ── Week view footer: per-day hours | labour %, sales, forecast, Sch $ and budget ──
+// Scheduled hours and Sch $ come from the week's shifts (and each employee's pay rate);
+// sales, transactions, forecast factor and budget % are mock per weekday.
+function _weekFooterData(n) {
+    const wFctSales = [16800, 17900, 19400, 18300, 19800, 22600, 20100];
+    const wFctFact  = [1.05, 0.97, 1.08, 1.03, 0.96, 1.07, 1.04];   // forecast hrs vs scheduled
+    const wBudget   = [36, 37, 37, 37, 38, 35, 36];
+    const rate = Object.fromEntries(employeeData.map(e => [e.id, +e.payrate || _coverageAvgWage]));
+    const shifts = _aiCurrent();
+    const avgRate = employeeData.reduce((a, e) => a + rate[e.id], 0) / (employeeData.length || 1);
+    const cols = Array.from({ length: n }, (_, c) => {
+        const day = shifts.filter(s => s.day === c);
+        const sch = day.reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
+        const schD = day.reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start) * rate[s.empId], 0);
+        const dow = c % 7, fSales = wFctSales[dow], fTxn = Math.round(fSales / _coverageAvgTicket);
+        const fct = Math.round(sch * wFctFact[dow] * 2) / 2;
+        const labour = fSales ? schD / fSales * 100 : 0;
+        const budgetPct = wBudget[dow], budgetHrs = fSales * budgetPct / 100 / avgRate;
+        return { sch, schD, fSales, fTxn, fItems: Math.round(fTxn * 2.3), fct, variance: sch - fct, labour, budgetPct, budgetHrs,
+            bVarHrs: sch - budgetHrs, bVarPct: labour - budgetPct };
     });
-    const dayFctHrs    = daySchHrs.map(h => +(h * 1.05).toFixed(2));
-    const dayFctSales  = daySchHrs.map(h => h > 0 ? Math.round(h * 190) : 0);
-    const dayFctTxns   = daySchHrs.map(h => h > 0 ? Math.round(h * 9) : 0);
-    const daySchDollar = daySchHrs.map(h => +(h * 18).toFixed(2));
-    const dayBudgetPct = Array(24).fill(19);
+    const sum = k => cols.reduce((a, c) => a + c[k], 0);
+    const tot = { sch: sum('sch'), schD: sum('schD'), fSales: sum('fSales'), fTxn: sum('fTxn'), fItems: sum('fItems'), fct: sum('fct'), budgetHrs: sum('budgetHrs') };
+    tot.variance = tot.sch - tot.fct;
+    tot.labour = tot.fSales ? tot.schD / tot.fSales * 100 : 0;
+    tot.budgetPct = tot.fSales ? cols.reduce((a, c) => a + c.fSales * c.budgetPct, 0) / tot.fSales : 0;
+    tot.bVarHrs = tot.sch - tot.budgetHrs;
+    tot.bVarPct = tot.labour - tot.budgetPct;
+    return { cols, tot };
+}
 
-    const isDay = activeView === 'day';
+function renderWeekFooter(n, cellWidth) {
+    const rowWidth = n * cellWidth;
+    const { cols, tot } = _weekFooterData(n);
+    const f2 = v => v.toFixed(2);
+    const money = v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const neg = (v, txt) => `<span class="${v < -0.005 ? 'text-red-500' : ''}">${txt}</span>`;
+    const hp = (h, p) => `${f2(h)} <span class="wf-pipe">|</span> ${neg(p, f2(p))}`;
 
-    const schHrsArr    = Array.from({length:n},(_,i) => (isDay ? daySchHrs[i%24]    : wSchHrs[i%7]).toFixed(2));
-    const fctHrsArr    = Array.from({length:n},(_,i) => (isDay ? dayFctHrs[i%24]    : wFctHrs[i%7]).toFixed(2));
-    const fctSalesArr  = Array.from({length:n},(_,i) => isDay ? dayFctSales[i%24]   : wFctSales[i%7]);
-    const fctTxnsArr   = Array.from({length:n},(_,i) => isDay ? dayFctTxns[i%24]    : wFctTxns[i%7]);
-    const schDollarArr = Array.from({length:n},(_,i) => (isDay ? daySchDollar[i%24] : wSchDollar[i%7]).toFixed(2));
-    const budgetPctArr = Array.from({length:n},(_,i) => isDay ? dayBudgetPct[i%24]  : wBudgetPct[i%7]);
+    // collapsed bar: "Hrs 408.50 | 38.91%"; hover shows the budget numbers
+    const label = document.getElementById('footerTotalLabel');
+    label.innerHTML = `Hrs ${f2(tot.sch)} <span class="wf-pipe">|</span> <span class="text-red-500">${f2(tot.labour)}%</span>`;
+    label.onmouseenter = e => _dfTip(e.currentTarget, `
+        <div class="df-tip-row"><span>Budget Hours</span><b>${f2(tot.budgetHrs)} Hrs | ${f2(tot.budgetPct)}%</b></div>
+        <div class="df-tip-row"><span>Scheduled Hours</span><b>${f2(tot.sch)} | ${f2(tot.labour)}%</b></div>
+        <div class="df-tip-row"><span>Budget variance</span><b>${f2(tot.bVarHrs)} | ${f2(tot.bVarPct)}%</b></div>`);
+    label.onmouseleave = _dfTipHide;
 
-    // Variance Hrs = Sch Hrs - Forecast Hrs
-    const varHrsArr = Array.from({length:n},(_,i) => {
-        const v = parseFloat(schHrsArr[i]) - parseFloat(fctHrsArr[i]);
-        return (v >= 0 ? "+" : "") + v.toFixed(2);
-    });
+    document.getElementById('summaryStatsRow').innerHTML = cols.map(c => `
+        <div class="flex items-center justify-center border-r shrink-0 wf-sum" style="width:${cellWidth}px">
+            Hrs ${f2(c.sch)} <span class="wf-pipe">|</span> <span class="text-red-500">${f2(c.labour)}%</span>
+        </div>`).join('');
 
-    const totSchHrs = schHrsArr.reduce((s,v) => s + parseFloat(v), 0);
-    const totFctHrs = fctHrsArr.reduce((s,v) => s + parseFloat(v), 0);
-    const totVarHrs = totSchHrs - totFctHrs;
-    const totalLabel = document.getElementById("footerTotalLabel");
-    if (totalLabel) totalLabel.innerText = `Total Scheduled Hours ${totSchHrs.toFixed(2)}`;
-
-    // Summary bar: Sch Hrs | Sch Labor %
-    summaryRow.innerHTML = Array.from({length:n},(_,i) => {
-        const schH = parseFloat(schHrsArr[i]);
-        const sale = fctSalesArr[i] || 0;
-        const schD = parseFloat(schDollarArr[i]);
-        const pct  = sale > 0 ? ((schD / sale) * 100).toFixed(2) : "0.00";
-        return `<div class="flex flex-col items-center justify-center border-r shrink-0" style="width:${cellWidth}px">
-            <span class="text-[14px] font-bold text-slate-800">Hrs ${schH.toFixed(2)}</span>
-            <span class="text-[13px] text-red-500 font-bold">${pct}%</span>
-        </div>`;
-    }).join('');
-
-    // Helper: build a stats detail row
-    const makeRow = (label, values, totalVal, color='text-slate-600') => `
-        <div class="stats-summary-bar border-b border-slate-100 h-9">
-            <div class="sticky-footer-label flex shrink-0 bg-[#f8fafc] z-20">
-                <div class="stats-row-label">${label}</div>
-                <div class="stats-row-total ${color}">${totalVal}</div>
+    const row = (lbl, vals, total, cls = '') => `
+        <div class="stats-summary-bar wf-row ${cls} border-b border-slate-100">
+            <div class="sticky-footer-label flex shrink-0 z-20">
+                <div class="stats-row-label wf-lbl">${lbl}</div>
+                <div class="stats-row-total wf-tot">${total}</div>
             </div>
             <div class="stats-content-area h-full overflow-hidden">
                 <div class="flex h-full" style="width:${rowWidth}px">
-                    ${values.map(v => `<div class="flex items-center justify-center border-r shrink-0 text-center" style="width:${cellWidth}px">
-                        <span class="text-[14px] font-medium ${color} w-full">${v}</span>
-                    </div>`).join('')}
+                    ${vals.map(v => `<div class="flex items-center justify-center border-r shrink-0 text-center" style="width:${cellWidth}px"><span class="wf-val">${v}</span></div>`).join('')}
                 </div>
             </div>
         </div>`;
 
-    // Format currency
-    const fmt$ = v => `$${Number(v).toLocaleString()}`;
-    const totFctSales  = fctSalesArr.reduce((s,v)=>s+(+v||0),0);
-    const totFctTxns   = fctTxnsArr.reduce((s,v)=>s+(+v||0),0);
-    const totSchDollar = schDollarArr.reduce((s,v)=>s+parseFloat(v),0);
-
-    detailsContainer.innerHTML =
-        makeRow("Forecasted Sales",        fctSalesArr.map(v=>fmt$(v)),    fmt$(Math.round(totFctSales))) +
-        makeRow("Forecasted Transactions", fctTxnsArr.map(v=>String(v)),   String(totFctTxns)) +
-        makeRow("Forecast Hrs",            fctHrsArr,                      totFctHrs.toFixed(2)) +
-        makeRow("Variance Hrs",            varHrsArr, (totVarHrs>=0?"+":"")+totVarHrs.toFixed(2), "text-red-500") +
-        makeRow("Sch Hrs.",                schHrsArr,                      totSchHrs.toFixed(2), "text-slate-800 font-semibold") +
-        // Budget section header — dark navy
-        `<div class="stats-summary-bar border-b border-slate-100 h-9">
-            <div class="sticky-footer-label flex shrink-0 bg-[#1e3a5f] z-20">
-                <div class="stats-row-label !text-white font-bold" style="font-size:12px;">Budget (By Configured Labor Budget)</div>
-                <div class="stats-row-total !text-white/70 font-bold">Hrs. | %</div>
-            </div>
-            <div class="stats-content-area h-full overflow-hidden">
-                <div class="flex h-full bg-[#1e3a5f]" style="width:${rowWidth}px">
-                    ${Array.from({length:n},(_,i)=>`<div class="flex items-center justify-center border-r border-white/10 shrink-0" style="width:${cellWidth}px">
-                        <span class="text-[10px] font-bold text-white/70 w-full text-center">Hrs. | %</span>
-                    </div>`).join('')}
-                </div>
-            </div>
-        </div>` +
-        makeRow("Budget",   budgetPctArr.map(p=>`0.00 | ${p}.00`), `0.00 | ${budgetPctArr[0]}.00`) +
-        makeRow("Variance", schHrsArr.map((h,i)=>`-${h} | ${budgetPctArr[i]}.00`), `-${totSchHrs.toFixed(2)} | ${budgetPctArr[0]}.00`, "text-red-500");
+    document.getElementById('detailsRowsContainer').innerHTML =
+        row('Forecasted Sales', cols.map(c => money(c.fSales)), money(tot.fSales)) +
+        row('Forecasted Transactions', cols.map(c => c.fTxn), tot.fTxn) +
+        row('No Of Items Sold', cols.map(c => c.fItems), tot.fItems) +
+        row('Forecast Hrs', cols.map(c => f2(c.fct)), f2(tot.fct)) +
+        row('Variance Hrs', cols.map(c => neg(c.variance, f2(c.variance))), neg(tot.variance, f2(tot.variance))) +
+        row('Sch $', cols.map(c => money(c.schD)), money(tot.schD)) +
+        row('Budget (By Configured Forecast Percentage)', cols.map(() => 'Hrs. | %'), 'Hrs. | %', 'wf-head') +
+        row('Budget', cols.map(c => hp(c.budgetHrs, c.budgetPct)), hp(tot.budgetHrs, tot.budgetPct)) +
+        row('Variance', cols.map(c => `${neg(c.bVarHrs, f2(c.bVarHrs))} <span class="wf-pipe">|</span> ${neg(c.bVarPct, f2(c.bVarPct))}`),
+            `${neg(tot.bVarHrs, f2(tot.bVarHrs))} <span class="wf-pipe">|</span> ${neg(tot.bVarPct, f2(tot.bVarPct))}`);
+    syncFooterToTable();
 }
 
 // ── Day view footer: hourly staffing, productivity, sales + forecast vs scheduled chart ──
@@ -5458,9 +5554,41 @@ function switchView(v){
 }
 function openActionModal(e, id) { 
     const emp = employeeData.find(e => e.id == id); const overlay = document.getElementById("empActionOverlay"); const card = document.getElementById("empActionCard");
-    if (emp && overlay && card) { document.getElementById("actionModalName").innerText = emp.name; const rect = e.currentTarget.getBoundingClientRect(); card.style.top = (rect.top - 10) + "px"; card.style.left = (rect.right + 20) + "px"; overlay.classList.remove("hidden"); }
+    if (!emp || !overlay || !card) return;
+    _empNoteSave();
+    _empActionId = emp.id;
+    document.getElementById("actionModalName").innerText = emp.name;
+    document.getElementById("actionModalRole").innerText = emp.position || 'Employee';
+    document.getElementById("actionModalAvatar").src = emp.avatar || '';
+    document.getElementById("actionModalPay").innerText = `$${(+emp.payrate || 0).toFixed(2)}`;
+    document.getElementById("actionModalMin").innerText = emp.isMinor ? 'Max 28:00' : '20:00';
+    document.getElementById("actionModalWeek").innerText = fmtHrs(emp.totalHours); // same figure as the row's "Hrs"
+    document.getElementById("actionModalNotes").value = _empNotes[emp.id] || '';
+    // primary position first, then the other positions the employee is trained for
+    const positions = [emp.position, ...(_skillsByPosition[emp.position] || [])].filter((p, i, a) => p && a.indexOf(p) === i);
+    document.getElementById("actionModalPosCount").innerText = `${positions.length} position${positions.length === 1 ? '' : 's'}`;
+    document.getElementById("actionModalPositions").innerHTML = positions.map((p, i) => {
+        const c = _empPosDot[p] || '#64748b';
+        return `<div class="flex items-center gap-2 px-3 py-2 rounded-lg border ${i ? 'border-slate-100 bg-white' : 'border-blue-100 bg-blue-50/50'} min-w-0">
+            <span class="w-2 h-2 rounded-full shrink-0" style="background:${c}"></span>
+            <span class="text-[12.5px] font-medium truncate" style="color:${c}">${p}</span>
+            ${i ? '' : '<span class="ml-auto text-[9.5px] font-bold uppercase tracking-wide text-blue-600 bg-white border border-blue-100 rounded px-1.5 py-px shrink-0">Primary</span>'}
+        </div>`;
+    }).join('');
+    lucide.createIcons();
+    const rect = e.currentTarget.getBoundingClientRect();
+    overlay.classList.remove("hidden");
+    // keep the card on screen
+    const h = card.offsetHeight;
+    card.style.top = Math.max(8, Math.min(rect.top - 10, window.innerHeight - h - 8)) + "px";
+    card.style.left = (rect.right + 20) + "px";
 }
-function closeActionModal() { document.getElementById("empActionOverlay").classList.add("hidden"); }
+const _empPosDot = { 'General Manager': '#7c3aed', 'Assistant Manager': '#7c3aed', 'Shift Leader': '#d97706', 'Line Cook': '#16a34a',
+    'Prep Cook': '#16a34a', 'Dishwasher': '#0d9488', 'Cashier': '#2563eb', 'Crew': '#e11d48' };
+const _empNotes = {};
+let _empActionId = null;
+function _empNoteSave() { const i = document.getElementById("actionModalNotes"); if (i && _empActionId !== null) _empNotes[_empActionId] = i.value.trim(); }
+function closeActionModal() { _empNoteSave(); document.getElementById("empActionOverlay").classList.add("hidden"); }
 function toggleUnassignedDept() { document.getElementById("unassignedDeptMenu").classList.toggle("hidden"); }
 function filterEmployees(){
     const input = document.getElementById("empSearch");
@@ -5572,10 +5700,12 @@ document.addEventListener('click', function(e){
     if (m && !m.classList.contains('hidden') && !m.contains(e.target) && !(b && b.contains(e.target))) m.classList.add('hidden');
 });
 function toggleStatsDetails() {
+    if (activeView === 'month') return; // month footer only opens day details
     document.getElementById("statsDetails").classList.toggle("hidden");
     document.getElementById("statsChevron").classList.toggle("rotate-180");
     // the day-view chart is drawn while hidden (0 px); redraw once visible and line up the columns
     if (activeView === 'day') requestAnimationFrame(() => { syncFooterToTable(); _renderDayFooterChart(); });
+    else requestAnimationFrame(syncFooterToTable);
 }
 
 /* ──────────────────── MONTH VIEW HELPERS ──────────────────── */
@@ -5627,51 +5757,70 @@ function openMonthDayDetails(e, dayIdx) {
     const popup = document.getElementById('monthDayDetails');
     if (!popup) return;
     const d = new Date(activeDate.getFullYear(), activeDate.getMonth(), dayIdx + 1);
-    const dow = d.getDay();
+    const m = _monthDayData(dayIdx);
     document.getElementById('monthDayDetailsTitle').innerText =
         `Day Details - ${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
-    const wFS=[4200,8800,8200,8600,9800,11200,9400];
-    const wFT=[210,440,410,430,490,560,470];
-    const wFH=[50,76,72,74,82,94,88];
-    const wSH=[48,72,68,74,80,92,84];
-    const wSD=[864,1296,1224,1332,1440,1656,1512];
-    const wBP=[19,20,20,20,21,18,19];
-    const sale=wFS[dow], txns=wFT[dow], fctH=wFH[dow], schH=wSH[dow], schD=wSD[dow], budP=wBP[dow];
-    const schPct = sale>0 ? ((schD/sale)*100).toFixed(2) : '0.00';
-    const varH = (schH - fctH).toFixed(2);
-    const fmt$ = v => `$${Number(v).toLocaleString()}`;
-    const row = (label, val, cls='') =>
-        `<div class="flex justify-between py-2 border-b border-slate-50"><span class="text-slate-500">${label}</span><span class="font-bold ${cls||'text-slate-800'}">${val}</span></div>`;
+    const f2 = v => v.toFixed(2);
+    const money = v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const red = v => v < -0.005 ? ' class="text-red-500"' : '';
+    const pair = (h, p) => `<span${red(h)}>${f2(h)}</span> <i class="mdd-pipe">|</i> <span${red(p)}>${f2(p)}%</span>`;
+    const row = (label, val, neg) => `<div class="mdd-row"><span>${label}</span><b${neg !== undefined ? red(neg) : ''}>${val}</b></div>`;
+    // past days show actual sales/transactions, today and later the forecast
     document.getElementById('monthDayDetailsContent').innerHTML =
-        row('Budget Hours', `0.00 | 30.06%`) +
-        row('Scheduled Hours', `${schH.toFixed(2)} | ${schPct}%`) +
-        row('Budget Variance', `0.00 | -2.48%`, 'text-red-500') +
-        row('Total Scheduled Staff', schH.toFixed(2)) +
+        row('Budget Hours', pair(m.budgetHrs, m.budgetPct)) +
+        row('Scheduled Hours', pair(m.sch, m.labour)) +
+        row('Budget Variance', pair(m.sch - m.budgetHrs, m.labour - m.budgetPct)) +
+        row('Total Scheduled Staff', f2(m.sch)) +
         row('Fixed Staff', '0.00') +
-        row('Variable Staff', schH.toFixed(2)) +
-        row('Forecast Staff', (schH * 1.05).toFixed(2)) +
-        row('Staff Variance', (schH - schH * 1.05).toFixed(2), 'text-red-500') +
-        row('Management Coverage', (schH * 0.23).toFixed(2)) +
-        row('Sales ($)', fmt$(sale)) +
-        row('Transactions', String(txns)) +
-        row('Forecasted Sales', fmt$(sale)) +
-        row('Forecasted Transactions', String(txns)) +
-        row('Forecast Hrs', fctH.toFixed(2)) +
-        row('Variance Hrs', (parseFloat(varH)>=0?'+':'')+varH, 'text-red-500') +
-        row('Sch Hrs.', schH.toFixed(2), 'text-slate-800 font-semibold') +
-        `<div class="mt-2 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Budget (By Configured Labor Budget)</div>` +
-        row('Budget', `0.00 | ${budP}.00`) +
-        row('Variance', `-${schH.toFixed(2)} | ${budP}.00`, 'text-red-500');
+        row('Variable Staff', f2(m.sch)) +
+        row('Forecast Staff', f2(m.fct)) +
+        row('Staff Variance', f2(m.sch - m.fct), m.sch - m.fct) +
+        row('Management Coverage', f2(m.mgmt)) +
+        row('Sales ($)', money(m.aSales || m.fSales)) +
+        row('Transactions', m.aTxn || m.fTxn);
     popup.classList.remove('hidden');
     popup.style.display = 'flex';
+    document.getElementById('monthDayDetailsContent').scrollTop = 0;
     const rect = e.currentTarget.getBoundingClientRect();
-    popup.style.left = Math.min(Math.max(8, rect.left), window.innerWidth - 298) + 'px';
-    // Stats bar is at the very bottom — always open the popup above it
-    popup.style.top = Math.max(8, rect.top - popup.offsetHeight - 6) + 'px';
+    const w = popup.offsetWidth;
+    const left = Math.min(Math.max(8, rect.left + rect.width / 2 - w / 2), window.innerWidth - w - 8);
+    popup.style.left = left + 'px';
+    // Stats bar is at the very bottom — always open the popup above it, arrow pointing at the day
+    popup.style.top = Math.max(8, rect.top - popup.offsetHeight - 10) + 'px';
+    popup.style.setProperty('--mdd-arrow', (rect.left + rect.width / 2 - left - 7) + 'px');
+    document.querySelectorAll('.mf-cell.active').forEach(c => c.classList.remove('active'));
+    e.currentTarget.classList.add('active');
 }
 function closeMonthDayDetails() {
     const p = document.getElementById('monthDayDetails');
     if (p) { p.classList.add('hidden'); p.style.display='none'; }
+    document.querySelectorAll('.mf-cell.active').forEach(c => c.classList.remove('active'));
+}
+// One day of the month: hours and Sch $ from that day's shifts (same rules the month grid uses);
+// sales, forecast factor and budget % are mock per weekday, matching the week footer.
+function _monthDayData(i) {
+    const d = new Date(activeDate.getFullYear(), activeDate.getMonth(), i + 1), dow = d.getDay();
+    let sch = 0, schD = 0, mgmt = 0;
+    employeeData.forEach(emp => {
+        if (emp.unavailableDays.includes(i)) return;
+        const a = shiftAssignments[`w_${emp.id}_${i}`];
+        if (a === null || (!a && (emp.id * 3 + i * 7) % 4 === 0)) return;
+        const src = a || { position: emp.position, time: emp.shift.time };
+        const [s, e] = String(src.time).split(' - ').map(t => _hhmmToMin(t.trim()) / 60);
+        if (isNaN(s) || isNaN(e)) return;
+        const h = e > s ? e - s : e + 24 - s;
+        sch += h; schD += h * (+emp.payrate || _coverageAvgWage);
+        if (['General Manager', 'Assistant Manager', 'Shift Leader'].includes(src.position)) mgmt += h;
+    });
+    const fSales = [16800, 17900, 19400, 18300, 19800, 22600, 20100][dow];
+    const fTxn = Math.round(fSales / _coverageAvgTicket);
+    const budgetPct = [36, 37, 37, 37, 38, 35, 36][dow];
+    const avgRate = employeeData.reduce((a, e) => a + (+e.payrate || _coverageAvgWage), 0) / (employeeData.length || 1);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const f = d < today ? 0.9 + ((i * 7) % 9) / 40 : 0;                     // past days get mock actuals
+    return { sch, schD, mgmt, fSales, fTxn, aSales: fSales * f, aTxn: Math.round(fTxn * f),
+        fct: Math.round(sch * [1.05, 0.97, 1.08, 1.03, 0.96, 1.07, 1.04][dow] * 2) / 2,
+        labour: fSales ? schD / fSales * 100 : 0, budgetPct, budgetHrs: fSales * budgetPct / 100 / avgRate };
 }
 /* ──────────────────────────────────────────────────────────── */
 
@@ -7208,14 +7357,14 @@ function closeHelpSupport(){
 </div>
 
 <!-- MONTH DAY DETAILS POPUP -->
-<div id="monthDayDetails" class="hidden fixed z-[9000] bg-white rounded-2xl flex-col overflow-hidden" style="box-shadow:0 8px 40px rgba(0,0,0,.16); max-height:420px;">
-    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100 shrink-0">
+<div id="monthDayDetails" class="hidden fixed z-[9000] bg-white rounded-xl flex-col w-[300px] border border-slate-200" style="box-shadow:0 12px 36px -8px rgba(15,23,42,.28); max-height:340px;">
+    <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-200 bg-slate-50 rounded-t-xl shrink-0">
         <span id="monthDayDetailsTitle" class="font-bold text-[13px] text-slate-800">Day Details</span>
-        <button onclick="closeMonthDayDetails()" class="text-slate-400 hover:text-slate-600 transition-colors">
+        <button onclick="closeMonthDayDetails()" class="w-6 h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-colors">
             <i data-lucide="x" class="w-4 h-4"></i>
         </button>
     </div>
-    <div id="monthDayDetailsContent" class="overflow-y-auto flex-1 px-4 py-2 text-[12px]"></div>
+    <div id="monthDayDetailsContent" class="overflow-y-auto flex-1 px-4 py-1 text-[12px]"></div>
 </div>
 
 <!-- TOAST / INLINE NOTIFICATION STACK -->
