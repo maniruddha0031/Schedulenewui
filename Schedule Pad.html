@@ -1413,7 +1413,43 @@ html.dark .day-strip .ds-day { color: #e2e8f0; }
 .pk-tag-ok { background: #f0fdf4; color: #15803d; }
 .pk-tag-warn { background: #fffbeb; color: #b45309; }
 .pk-tag-bad { background: #fef2f2; color: #b91c1c; }
-.ua-offered { margin-left: 4px; padding: 0 5px; border-radius: 9999px; background: #ede9fe; color: #6d28d9; font-size: 8px; font-weight: 700; }
+/* Unassigned offer status */
+.ua-status { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; padding: 0 6px; height: 14px; border-radius: 9999px; font-size: 8.5px; font-weight: 700; line-height: 1; white-space: nowrap; }
+.ua-status-open { background: #f1f5f9; color: #64748b; }
+.ua-status-offered { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; cursor: pointer; transition: background .12s, color .12s; position: relative; z-index: 6; }
+.ua-status-offered:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+.shiftBox.ua-is-offered { border-left-color: #8b5cf6 !important; background: linear-gradient(90deg, #faf5ff, #fff 70%) !important; }
+.ua-offered-badge { background: #ede9fe !important; color: #6d28d9 !important; margin-left: 4px; }
+.ua-cell-offered { display: inline-flex; align-items: center; gap: 3px; margin-top: 2px; padding: 0 6px; border-radius: 999px; background: #ede9fe; color: #6d28d9; font-size: 9.5px; font-weight: 700; }
+#uaOffersPop { position: fixed; z-index: 99990; width: 360px; max-width: calc(100vw - 16px); background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 18px 44px -12px rgba(15,23,42,.32); overflow: hidden; animation: csIn .14s ease-out; }
+#uaOffersPop .uo-head { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid #f1f5f9; }
+#uaOffersPop .uo-ic { width: 32px; height: 32px; border-radius: 9px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+#uaOffersPop .uo-title { font-size: 13.5px; font-weight: 700; color: #0f172a; }
+#uaOffersPop #uoShift { font-size: 11.5px; color: #64748b; margin-top: 1px; }
+#uaOffersPop #uoShift b { color: #334155; font-weight: 600; }
+#uaOffersPop .uo-x { margin-left: auto; width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+#uaOffersPop .uo-x:hover { background: #f1f5f9; color: #334155; }
+#uoSummary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 14px; background: #fafafa; border-bottom: 1px solid #f1f5f9; }
+#uoSummary .uo-total { font-size: 11.5px; font-weight: 700; color: #334155; margin-right: 2px; }
+.uo-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+.uo-amber { background: #fef3c7; color: #b45309; }
+.uo-blue { background: #dbeafe; color: #1d4ed8; }
+.uo-rose { background: #ffe4e6; color: #be123c; }
+#uoList { max-height: 260px; overflow-y: auto; padding: 4px 6px; }
+.uo-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; transition: background .12s, opacity .18s, transform .18s; }
+.uo-row:hover { background: #f8fafc; }
+.uo-row img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0; flex-shrink: 0; }
+.uo-name { font-size: 12.5px; font-weight: 600; color: #1e293b; }
+.uo-sub { font-size: 11px; color: #64748b; }
+.uo-withdraw { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; border-radius: 7px; border: 1px solid #fecdd3; color: #e11d48; background: #fff; font-size: 11px; font-weight: 600; flex-shrink: 0; transition: background .12s; }
+.uo-withdraw:hover { background: #fff1f2; }
+.uo-row.uo-leaving { opacity: 0; transform: translateX(12px); }
+#uaOffersPop .uo-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-top: 1px solid #f1f5f9; background: #fff; }
+#uoWithdrawAll { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #e11d48; padding: 6px 8px; border-radius: 8px; }
+#uoWithdrawAll:hover { background: #fff1f2; }
+#uoWithdrawAll.armed { background: #e11d48; color: #fff; }
+#uaOffersPop .uo-more { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 8px; background: #7c3aed; color: #fff; font-size: 12px; font-weight: 600; }
+#uaOffersPop .uo-more:hover { background: #6d28d9; }
 
 .ua-mini .shift-actions { border-radius: 6px; gap: 6px; }
 .ua-mini .action-icon { width: 22px; height: 22px; }
@@ -3065,6 +3101,10 @@ function uaPendingCount() {
     if (activeView === 'day') return uaShiftsForDay(activeDate.getDay()).length;
     return unassignedShifts.reduce((n, _, c) => n + uaShiftsForDay(c).length, 0);
 }
+function uaOfferedCount() {
+    const days = activeView === 'day' ? [activeDate.getDay()] : [0, 1, 2, 3, 4, 5, 6];
+    return days.reduce((n, c) => n + uaShiftsForDay(c).filter(s => (s.offers || []).length).length, 0);
+}
 function uaFmtTime(t) {
     const h = Math.floor(t), m = Math.round((t - h) * 60), d = h % 12 === 0 ? 12 : h % 12;
     return `${String(d).padStart(2, '0')}:${String(m).padStart(2, '0')}${h >= 12 ? 'P' : 'A'}`;
@@ -3074,9 +3114,12 @@ function uaFmtDur(s) {
     return mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h${mins % 60 ? ' ' + (mins % 60) + 'm' : ''}`;
 }
 function uaShiftBox(s, dayIdx, style = '') {
-    return `<div class="shiftBox unassigned-shift ua-mini" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})">
+    const n = (s.offers || []).length;
+    return `<div class="shiftBox unassigned-shift ua-mini${n ? ' ua-is-offered' : ''}" style="${style}" title="${s.position} · ${s.dept}\n${uaFmtTime(s.start)} - ${uaFmtTime(s.end)} (${uaFmtDur(s)})${n ? `\nOffered to ${n}` : ''}">
         <div class="flex items-center justify-between gap-1 w-full"><span class="font-bold text-[9.5px] truncate">${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}</span><span class="ua-dur">${uaFmtDur(s)}</span></div>
-        <div class="text-[8.5px] truncate"><span class="opacity-75">${s.position} · ${s.dept}</span>${s.offeredTo && s.offeredTo.length ? `<span class="ua-offered">Offered · ${s.offeredTo.length}</span>` : ''}</div>
+        <div class="flex items-center gap-1 w-full min-w-0 text-[8.5px]"><span class="opacity-75 truncate">${s.position} · ${s.dept}</span>${n
+            ? `<button type="button" class="ua-status ua-status-offered" onclick="event.stopPropagation(); openUaOffers(event, ${dayIdx}, ${s.id})" title="See who it was offered to"><i data-lucide="send" class="w-2.5 h-2.5"></i>Offered · ${n}</button>`
+            : `<span class="ua-status ua-status-open">Open</span>`}</div>
         <div class="shift-actions">
             <div class="action-icon" title="Edit unassigned shift" onclick="event.stopPropagation(); openUnassignedShift(${dayIdx}, ${s.id})"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></div>
             <div class="action-icon" title="Delete unassigned shift" onclick="event.stopPropagation(); askDeleteUnassigned(${dayIdx}, ${s.id})"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></div>
@@ -4356,7 +4399,7 @@ function renderScheduleTable(list=employeeData){
     html += `<tr class="unassigned-summary-row border-b-2 border-slate-200">
         <td class="px-4 py-3 sticky left-0 bg-[#f8fafc] z-[15] shadow-[1px_0_0_#e5e7eb]">
             <div class="flex flex-col items-center justify-center">
-                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">${uaPendingCount()} Pending</span></div>
+                <div class="flex items-center gap-1 mb-1"><span class="font-bold text-[13px] text-slate-800">Unassigned</span><span class="pending-badge">${uaPendingCount()} Pending</span>${uaOfferedCount() ? `<span class="pending-badge ua-offered-badge" title="Shifts offered and waiting for a response">${uaOfferedCount()} Offered</span>` : ''}</div>
                 <div class="flex gap-1.5 w-full">
                     <button onclick="toggleUnassignedVisibility()" class="flex-1 px-1 py-1 bg-white border rounded text-[10px] font-bold text-blue-600 flex items-center justify-center gap-1"><i data-lucide="${isUnassignedVisible ? 'eye-off' : 'eye'}" class="w-2.5 h-2.5"></i> ${isUnassignedVisible ? 'Hide' : 'Show'}</button>
                     <button onclick="openUnassignedModal()" class="flex-1 px-1 py-1 bg-indigo-600 text-white rounded text-[10px] font-bold">Offer</button>
@@ -4388,7 +4431,8 @@ function renderScheduleTable(list=employeeData){
         } else if (isUnassignedVisible && activeView === 'week') {
             html += `<td class="ua-cell dropZone align-top" style="width:${cellWidth}px"><div class="ua-stack">${list.map(s => uaShiftBox(s, dayIdx)).join('')}</div>${uaAddBtn(dayIdx)}</td>`;
         } else {
-            html += `<td class="ua-cell text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${list.length}${activeView === 'month' ? '' : ' Shift(s)'}</span>${uaAddBtn(dayIdx)}</td>`;
+            const off = list.filter(s => (s.offers || []).length).length;
+            html += `<td class="ua-cell text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-bold text-blue-600">${list.length}${activeView === 'month' ? '' : ' Shift(s)'}</span>${off && activeView !== 'month' ? `<div class="ua-cell-offered"><i data-lucide="send" class="w-2.5 h-2.5"></i>${off} offered</div>` : ''}${uaAddBtn(dayIdx)}</td>`;
         }
     });
     html += `</tr>`;
@@ -5238,22 +5282,30 @@ function openUaMoreMenu(e, dayIdx, id) {
         <div onclick="handleUaMore('${action}', ${dayIdx}, ${id})" style="display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:12.5px;color:#334155;cursor:pointer;" onmouseover="this.style.background='${hover}';this.style.color='${color}'" onmouseout="this.style.background='';this.style.color='#334155'">
             <i data-lucide="${icon}" style="width:15px;height:15px;color:${color}"></i>${label}
         </div>`;
+    const n = ((_uaFind(dayIdx, id) || {}).offers || []).length;
     const menu = document.createElement('div');
     menu.id = 'shiftMoreMenu'; // shares the outside-click close handler with the employee shift menu
     menu.innerHTML = `
         <div style="padding:6px 14px;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;background:#f8fafc;border-bottom:1px solid #f1f5f9;">Unassigned Shift</div>
         <div style="padding:4px 0;">
             ${item('assign', 'user-check', '#2563eb', '#eff6ff', 'Assign Shift')}
-            ${item('offer', 'send', '#7c3aed', '#f5f3ff', 'Offer Shift')}
+            ${item('offer', 'send', '#7c3aed', '#f5f3ff', n ? 'Offer to More' : 'Offer Shift')}
+            ${n ? item('offers', 'users', '#7c3aed', '#f5f3ff', `View Offers <span style="margin-left:auto;font-size:10.5px;font-weight:700;color:#6d28d9;background:#ede9fe;border-radius:999px;padding:0 7px;">${n}</span>`) : ''}
             ${item('add', 'plus-circle', '#059669', '#ecfdf5', 'Add More Shift')}
         </div>`;
+    menu._anchor = { x: e.clientX, y: e.clientY };
     menu.style.cssText = 'position:fixed;top:' + e.clientY + 'px;left:' + Math.min(e.clientX, window.innerWidth - 210) + 'px;z-index:99999;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.16);overflow:hidden;min-width:195px;';
     document.body.appendChild(menu);
     lucide.createIcons();
 }
 function handleUaMore(action, dayIdx, id) {
+    const m = document.getElementById('shiftMoreMenu'), at = m && m._anchor;
     closeShiftMoreMenu();
     if (action === 'add') openUnassignedShift(dayIdx, null);
+    else if (action === 'offers') {
+        // open the offer list where the menu was
+        openUaOffers({ stopPropagation() {}, currentTarget: { getBoundingClientRect: () => ({ left: at.x, top: at.y, bottom: at.y }) } }, dayIdx, id);
+    }
     else openUaPick(action, dayIdx, id);
 }
 
@@ -5289,7 +5341,7 @@ let _uaPick = null; // { mode, dayIdx, id, tab, selected:Set }
 function openUaPick(mode, dayIdx, id) {
     const s = _uaFind(dayIdx, id);
     if (!s) return;
-    _uaPick = { mode, dayIdx, id, tab: 'eligible', selected: new Set(s.offeredTo && mode === 'offer' ? s.offeredTo : []) };
+    _uaPick = { mode, dayIdx, id, tab: 'eligible', selected: new Set(mode === 'offer' ? (s.offers || []).map(o => o.empId) : []) };
     const offer = mode === 'offer';
     document.getElementById('pkTitle').innerText = offer ? 'Offer Shift' : 'Assign Shift';
     document.getElementById('pkPrompt').innerText = offer ? 'Offer this shift to' : 'Assign this shift to';
@@ -5389,12 +5441,112 @@ function confirmUaPick() {
         unassignedShifts[dayIdx] = unassignedShifts[dayIdx].filter(x => x.id !== id);
         showToast(`${s.position} shift (${uaFmtTime(s.start)} - ${uaFmtTime(s.end)}) assigned to ${emp.name}.`, 'info');
     } else {
-        s.offeredTo = [...selected];
-        showToast(`Shift offered to ${selected.size} employee${selected.size > 1 ? 's' : ''}.`, 'info');
+        // keep the send time/status of people who already had the offer
+        const prev = s.offers || [];
+        const added = [...selected].filter(e => !prev.some(o => o.empId === e)).length;
+        s.offers = [...selected].map(empId => prev.find(o => o.empId === empId) || { empId, at: new Date(), status: 'Pending' });
+        const removed = prev.length - (s.offers.length - added);
+        showToast(added || !removed ? `Shift offered to ${s.offers.length} employee${s.offers.length > 1 ? 's' : ''}.`
+            : `Offer withdrawn from ${removed} employee${removed > 1 ? 's' : ''}.`, 'info');
     }
     closeUaPick();
     renderScheduleTable();
 }
+
+// ── Offer status: who an unassigned shift was offered to, with withdraw ──
+let _uaOffersAt = null; // { dayIdx, id }
+const _uaOfferTone = { Pending: 'amber', Seen: 'blue', Declined: 'rose' };
+function _uaAgo(d) {
+    const m = Math.max(0, Math.round((Date.now() - d) / 60000));
+    return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.floor(m / 60)}h ago` : `${Math.floor(m / 1440)}d ago`;
+}
+// mock: a few shifts start out already offered to eligible people
+function _seedUaOffers() {
+    unassignedShifts.forEach((day, c) => day.forEach((s, k) => {
+        if ((s.id + c) % 3 !== 0 || s.offers) return;
+        const pool = employeeData.filter(e => _uaEligibility(e, s, c).ok).slice(k % 2, (k % 2) + 2 + (s.id % 3));
+        s.offers = pool.map((e, i) => ({ empId: e.id, at: new Date(Date.now() - (i * 47 + s.id * 13) * 60000),
+            status: ['Pending', 'Seen', 'Pending', 'Declined'][(i + s.id) % 4] }));
+    }));
+}
+function openUaOffers(e, dayIdx, id) {
+    if (e) e.stopPropagation();
+    closeShiftMoreMenu();
+    const s = _uaFind(dayIdx, id);
+    if (!s || !(s.offers || []).length) { closeUaOffers(); return; }
+    _uaOffersAt = { dayIdx, id };
+    const pop = document.getElementById('uaOffersPop');
+    const wa = document.getElementById('uoWithdrawAll');
+    wa.classList.remove('armed');
+    wa.innerHTML = '<i data-lucide="undo-2" class="w-3.5 h-3.5"></i>Withdraw all';
+    const date = _uaWeekDate(dayIdx).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    document.getElementById('uoShift').innerHTML = `<b>${s.position}</b> · ${date} · ${uaFmtTime(s.start)} – ${uaFmtTime(s.end)}`;
+    const counts = { Pending: 0, Seen: 0, Declined: 0 };
+    s.offers.forEach(o => counts[o.status]++);
+    document.getElementById('uoSummary').innerHTML = `<span class="uo-total">${s.offers.length} offered</span>` +
+        Object.entries(counts).filter(([, v]) => v).map(([k, v]) => `<span class="uo-chip uo-${_uaOfferTone[k]}">${v} ${k.toLowerCase()}</span>`).join('');
+    document.getElementById('uoList').innerHTML = s.offers.map(o => {
+        const emp = employeeData.find(x => x.id === o.empId) || { name: 'Employee', position: '', avatar: '' };
+        return `<div class="uo-row" data-emp="${o.empId}">
+            <img src="${emp.avatar}" alt="">
+            <div class="flex-1 min-w-0">
+                <div class="uo-name truncate">${emp.name}</div>
+                <div class="uo-sub truncate">${emp.position} · sent ${_uaAgo(o.at)}</div>
+            </div>
+            <span class="uo-chip uo-${_uaOfferTone[o.status]}">${o.status}</span>
+            <button type="button" class="uo-withdraw" onclick="withdrawUaOffer(${o.empId})" title="Withdraw the offer from ${emp.name}"><i data-lucide="undo-2" class="w-3.5 h-3.5"></i>Withdraw</button>
+        </div>`;
+    }).join('');
+    pop.classList.remove('hidden');
+    lucide.createIcons();
+    // anchor under the badge, kept on screen
+    if (e && e.currentTarget && e.currentTarget.getBoundingClientRect) {
+        const r = e.currentTarget.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+        pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+        pop.style.top = (r.bottom + 6 + h > window.innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6) + 'px';
+    }
+}
+function closeUaOffers() { document.getElementById('uaOffersPop').classList.add('hidden'); _uaOffersAt = null; }
+function withdrawUaOffer(empId) {
+    if (!_uaOffersAt) return;
+    const { dayIdx, id } = _uaOffersAt;
+    const s = _uaFind(dayIdx, id);
+    const emp = employeeData.find(x => x.id === empId);
+    const row = document.querySelector(`#uoList .uo-row[data-emp="${empId}"]`);
+    const done = () => {
+        s.offers = s.offers.filter(o => o.empId !== empId);
+        showToast(`Offer withdrawn from ${emp ? emp.name : 'employee'}.`, 'info');
+        renderScheduleTable();
+        if (s.offers.length) openUaOffers(null, dayIdx, id); else closeUaOffers();
+    };
+    if (row) { row.classList.add('uo-leaving'); setTimeout(done, 180); } else done();
+}
+function withdrawAllUaOffers(btn) {
+    if (!_uaOffersAt) return;
+    // two-step: first click asks, second click withdraws
+    if (btn && !btn.classList.contains('armed')) {
+        btn.classList.add('armed');
+        btn.innerHTML = '<i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>Click again to withdraw all';
+        lucide.createIcons();
+        return;
+    }
+    const s = _uaFind(_uaOffersAt.dayIdx, _uaOffersAt.id);
+    const n = s.offers.length;
+    s.offers = [];
+    closeUaOffers();
+    renderScheduleTable();
+    showToast(`Offer withdrawn from all ${n} employee${n > 1 ? 's' : ''}. The shift is open again.`, 'info');
+}
+function offerUaToMore() {
+    if (!_uaOffersAt) return;
+    const { dayIdx, id } = _uaOffersAt;
+    closeUaOffers();
+    openUaPick('offer', dayIdx, id);
+}
+document.addEventListener('mousedown', e => {
+    const p = document.getElementById('uaOffersPop');
+    if (p && !p.classList.contains('hidden') && !p.contains(e.target) && !e.target.closest('.ua-status-offered')) closeUaOffers();
+});
 
 function confirmUaDelete() {
     if (_uaPendingDelete) {
@@ -5831,8 +5983,9 @@ window.addEventListener('mousedown', function(e) {
     const mdp = document.getElementById('monthDayDetails');
     if (mdp && !mdp.classList.contains('hidden') && !mdp.contains(e.target)) closeMonthDayDetails();
 });
-window.onload = () => { 
-    renderCalendar(); 
+window.onload = () => {
+    _seedUaOffers();
+    renderCalendar();
     updateDateRangeLabel(); 
     switchView('week');   
     lucide.createIcons(); 
@@ -7365,6 +7518,24 @@ function closeHelpSupport(){
         </button>
     </div>
     <div id="monthDayDetailsContent" class="overflow-y-auto flex-1 px-4 py-1 text-[12px]"></div>
+</div>
+
+<!-- UNASSIGNED SHIFT: OFFER STATUS -->
+<div id="uaOffersPop" class="hidden" role="dialog" aria-label="Shift offers">
+    <div class="uo-head">
+        <span class="uo-ic"><i data-lucide="send" class="w-4 h-4"></i></span>
+        <div class="min-w-0">
+            <div class="uo-title">Offered to</div>
+            <div id="uoShift"></div>
+        </div>
+        <button type="button" class="uo-x" onclick="closeUaOffers()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div id="uoSummary"></div>
+    <div id="uoList"></div>
+    <div class="uo-foot">
+        <button type="button" id="uoWithdrawAll" onclick="withdrawAllUaOffers(this)"></button>
+        <button type="button" class="uo-more" onclick="offerUaToMore()"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i>Offer to more</button>
+    </div>
 </div>
 
 <!-- TOAST / INLINE NOTIFICATION STACK -->

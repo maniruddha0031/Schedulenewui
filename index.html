@@ -4228,6 +4228,67 @@ function switchTab(tab) {
   @keyframes uaDropIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
 </style>
 
+<!-- UNASSIGNED SHIFT: OFFER STATUS (dashboard) -->
+<div id="dashUaOffersPop" class="hidden" role="dialog" aria-label="Shift offers">
+  <div class="du-head">
+    <span class="du-ic"><i data-lucide="send"></i></span>
+    <div class="min-w-0">
+      <div class="du-title">Offered to</div>
+      <div id="duShift"></div>
+    </div>
+    <button type="button" class="du-x" onclick="closeDashUaOffers()" title="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div id="duSummary"></div>
+  <div id="duList"></div>
+  <div class="du-foot">
+    <button type="button" id="duWithdrawAll" onclick="withdrawAllDashUaOffers(this)"></button>
+    <button type="button" class="du-more" onclick="offerDashUaToMore()"><i data-lucide="user-plus"></i>Offer to more</button>
+  </div>
+</div>
+<style>
+  .du-status { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; height: 19px; padding: 0 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; line-height: 1; vertical-align: 1px; white-space: nowrap; }
+  .du-status svg { width: 11px; height: 11px; }
+  .du-open { background: #f1f5f9; color: #64748b; cursor: default; }
+  .du-offered { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; cursor: pointer; transition: background .12s, color .12s; }
+  .du-offered:hover { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+  .du-count { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #ede9fe; color: #6d28d9; font-size: 11px; font-weight: 700; }
+  #dashUaOffersPop { position: fixed; z-index: 10000; width: 380px; max-width: calc(100vw - 16px); background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 18px 44px -12px rgba(15,23,42,.32); overflow: hidden; animation: uaDropIn .14s ease-out; font-family: inherit; }
+  #dashUaOffersPop svg { width: 14px; height: 14px; }
+  .du-head { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid #f1f5f9; }
+  .du-ic { width: 32px; height: 32px; border-radius: 9px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .du-ic svg { width: 16px !important; height: 16px !important; }
+  .du-title { font-size: 13.5px; font-weight: 700; color: #0f172a; }
+  #duShift { font-size: 11.5px; color: #64748b; margin-top: 1px; }
+  #duShift b { color: #334155; font-weight: 600; }
+  .du-x { margin-left: auto; width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; flex-shrink: 0; }
+  .du-x:hover { background: #f1f5f9; color: #334155; }
+  #duSummary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 14px; background: #fafafa; border-bottom: 1px solid #f1f5f9; }
+  .du-total { font-size: 11.5px; font-weight: 700; color: #334155; margin-right: 2px; }
+  .du-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+  .du-amber { background: #fef3c7; color: #b45309; }
+  .du-blue { background: #dbeafe; color: #1d4ed8; }
+  .du-rose { background: #ffe4e6; color: #be123c; }
+  #duList { max-height: 280px; overflow-y: auto; padding: 4px 6px; }
+  .du-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; transition: background .12s, opacity .18s, transform .18s; }
+  .du-row:hover { background: #f8fafc; }
+  .du-row img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0; flex-shrink: 0; }
+  .du-who { flex: 1; min-width: 0; }
+  .du-name { font-size: 12.5px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .du-sub { font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .du-withdraw { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; border-radius: 7px; border: 1px solid #fecdd3; color: #e11d48; background: #fff; font-size: 11px; font-weight: 600; flex-shrink: 0; transition: background .12s; }
+  .du-withdraw:hover { background: #fff1f2; }
+  .du-row.du-leaving { opacity: 0; transform: translateX(12px); }
+  .du-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-top: 1px solid #f1f5f9; }
+  #duWithdrawAll { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #e11d48; padding: 6px 8px; border-radius: 8px; }
+  #duWithdrawAll:hover { background: #fff1f2; }
+  #duWithdrawAll.armed { background: #e11d48; color: #fff; }
+  .du-more { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 8px; background: #7c3aed; color: #fff; font-size: 12px; font-weight: 600; }
+  .du-more:hover { background: #6d28d9; }
+  .du-toast { position: fixed; top: 84px; left: 50%; transform: translateX(-50%); z-index: 10001; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px; background: #0f172a; color: #fff; font-size: 13px; font-weight: 500; box-shadow: 0 10px 30px -8px rgba(15,23,42,.45); transition: opacity .3s, transform .3s; }
+  .du-toast svg { width: 16px; height: 16px; color: #4ade80; }
+  .du-toast.out { opacity: 0; transform: translate(-50%, -8px); }
+</style>
+
 <!-- UI SETTINGS MODAL -->
 <div id="uiSettingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[9999]" onclick="if(event.target===this) closeUiSettings()">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
@@ -4357,6 +4418,137 @@ document.addEventListener('click', function(e) {
     }
 });
 
+/* ---- Unassigned shift offer status + withdraw (dashboard panel, both UIs) ---- */
+// Keyed by the shift id used in each row's Assign button: openAssignModal('ua-1', ...)
+const dashUaOffers = {
+    'ua-1': [
+        { name: 'Maria Lopez',   pos: 'Crew',    img: 47, ago: '25m ago', status: 'Pending' },
+        { name: 'Kevin Brooks',  pos: 'Cashier', img: 12, ago: '1h ago',  status: 'Seen' },
+        { name: 'Aisha Khan',    pos: 'Crew',    img: 45, ago: '1h ago',  status: 'Pending' },
+    ],
+    'ua-3': [
+        { name: 'Tom Reyes',     pos: 'Cashier', img: 15, ago: '3h ago',  status: 'Declined' },
+        { name: 'Sara Nguyen',   pos: 'Crew',    img: 44, ago: '3h ago',  status: 'Pending' },
+    ],
+    'ua-5': [
+        { name: 'Luis Ortega',   pos: 'Dishwasher', img: 33, ago: '20m ago', status: 'Seen' },
+        { name: 'Ben Carter',    pos: 'Prep Cook',  img: 8,  ago: '50m ago', status: 'Pending' },
+        { name: 'Nina Patel',    pos: 'Prep Cook',  img: 32, ago: '2h ago',  status: 'Pending' },
+        { name: 'Omar Haddad',   pos: 'Line Cook',  img: 59, ago: '2h ago',  status: 'Declined' },
+    ],
+};
+const _duTone = { Pending: 'amber', Seen: 'blue', Declined: 'rose' };
+let _duOpen = null; // shift id whose offer list is open
+function _duRows(key) {
+    return [...document.querySelectorAll(`.ua-actions [onclick^="openAssignModal('${key}'"]`)].map(b => b.closest('.ua-actions').parentElement);
+}
+function _duMeta(key) {
+    const row = _duRows(key)[0];
+    const btn = row && row.querySelector(`[onclick^="openAssignModal('${key}'"]`);
+    const [, dept = '', role = ''] = (btn && btn.getAttribute('onclick').match(/openAssignModal\('[^']*',\s*'([^']*)',\s*'([^']*)'/)) || [];
+    const when = row && row.querySelector('.sd-row-sub, .text-\\[11px\\]');
+    return { dept, role, when: when ? when.textContent.trim() : '' };
+}
+// Status pill on every unassigned row + "N offered" next to the panel count
+function renderDashUaStatus() {
+    document.querySelectorAll('.ua-actions [onclick^="openAssignModal(\'ua-"]').forEach(btn => {
+        const key = btn.getAttribute('onclick').match(/'(ua-[^']+)'/)[1];
+        const row = btn.closest('.ua-actions').parentElement;
+        const name = row.querySelector('.sd-row-name, .font-bold');
+        if (!name) return;
+        let pill = name.querySelector('.du-status');
+        if (!pill) { pill = document.createElement('button'); pill.type = 'button'; name.appendChild(pill); }
+        const n = (dashUaOffers[key] || []).length;
+        pill.className = `du-status ${n ? 'du-offered' : 'du-open'}`;
+        pill.innerHTML = n ? `<i data-lucide="send"></i>Offered · ${n}` : 'Open';
+        pill.title = n ? 'See who it was offered to' : 'Not offered yet';
+        pill.onclick = n ? (e => { e.stopPropagation(); openDashUaOffers(key, pill); }) : null;
+    });
+    const offered = Object.keys(dashUaOffers).filter(k => dashUaOffers[k].length && _duRows(k).length).length;
+    document.querySelectorAll('.ua-count').forEach(c => {
+        let chip = c.parentElement.querySelector('.du-count');
+        if (!chip) { chip = document.createElement('span'); chip.className = 'du-count'; c.insertAdjacentElement('afterend', chip); }
+        chip.textContent = `${offered} offered`;
+        chip.style.display = offered ? '' : 'none';
+    });
+    if (window.lucide) lucide.createIcons();
+}
+function openDashUaOffers(key, anchor) {
+    const list = dashUaOffers[key] || [];
+    if (!list.length) { closeDashUaOffers(); return; }
+    _duOpen = key;
+    const m = _duMeta(key);
+    document.getElementById('duShift').innerHTML = `<b>${m.role}</b>${m.dept ? ` · ${m.dept}` : ''}${m.when ? ` · ${m.when}` : ''}`;
+    const counts = {};
+    list.forEach(o => counts[o.status] = (counts[o.status] || 0) + 1);
+    document.getElementById('duSummary').innerHTML = `<span class="du-total">${list.length} offered</span>` +
+        ['Pending', 'Seen', 'Declined'].filter(k => counts[k]).map(k => `<span class="du-chip du-${_duTone[k]}">${counts[k]} ${k.toLowerCase()}</span>`).join('');
+    document.getElementById('duList').innerHTML = list.map((o, i) => `
+        <div class="du-row" data-i="${i}">
+            <img src="https://i.pravatar.cc/80?img=${o.img}" alt="">
+            <div class="du-who"><div class="du-name">${o.name}</div><div class="du-sub">${o.pos} · sent ${o.ago}</div></div>
+            <span class="du-chip du-${_duTone[o.status]}">${o.status}</span>
+            <button type="button" class="du-withdraw" onclick="withdrawDashUaOffer(${i})" title="Withdraw the offer from ${o.name}"><i data-lucide="undo-2"></i>Withdraw</button>
+        </div>`).join('');
+    const wa = document.getElementById('duWithdrawAll');
+    wa.classList.remove('armed');
+    wa.innerHTML = '<i data-lucide="undo-2"></i>Withdraw all';
+    const pop = document.getElementById('dashUaOffersPop');
+    pop.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+    if (anchor) {
+        const r = anchor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+        pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+        pop.style.top = (r.bottom + 6 + h > window.innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6) + 'px';
+    }
+}
+function closeDashUaOffers() { document.getElementById('dashUaOffersPop').classList.add('hidden'); _duOpen = null; }
+function _duToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'du-toast';
+    t.innerHTML = `<i data-lucide="check-circle-2"></i>${msg}`;
+    document.body.appendChild(t);
+    if (window.lucide) lucide.createIcons();
+    setTimeout(() => t.classList.add('out'), 2600);
+    setTimeout(() => t.remove(), 3000);
+}
+function withdrawDashUaOffer(i) {
+    const key = _duOpen, list = dashUaOffers[key];
+    if (!list || !list[i]) return;
+    const row = document.querySelector(`#duList .du-row[data-i="${i}"]`);
+    const name = list[i].name;
+    const done = () => {
+        list.splice(i, 1);
+        renderDashUaStatus();
+        _duToast(`Offer withdrawn from ${name}.`);
+        if (list.length) openDashUaOffers(key, null); else closeDashUaOffers();
+    };
+    if (row) { row.classList.add('du-leaving'); setTimeout(done, 180); } else done();
+}
+function withdrawAllDashUaOffers(btn) {
+    if (!btn.classList.contains('armed')) {   // two-step confirm
+        btn.classList.add('armed');
+        btn.innerHTML = '<i data-lucide="alert-triangle"></i>Click again to withdraw all';
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+    const n = dashUaOffers[_duOpen].length;
+    dashUaOffers[_duOpen] = [];
+    closeDashUaOffers();
+    renderDashUaStatus();
+    _duToast(`Offer withdrawn from all ${n} employees. The shift is open again.`);
+}
+function offerDashUaToMore() {
+    const key = _duOpen, m = _duMeta(key);
+    closeDashUaOffers();
+    openAssignModal(key, m.dept, m.role);
+}
+document.addEventListener('mousedown', e => {
+    const p = document.getElementById('dashUaOffersPop');
+    if (p && !p.classList.contains('hidden') && !p.contains(e.target) && !e.target.closest('.du-offered')) closeDashUaOffers();
+});
+document.addEventListener('DOMContentLoaded', renderDashUaStatus);
+
 /* ---- Delete an unassigned shift (dashboard panel, both UIs) ---- */
 let uaPendingRow = null;
 function deleteUnassignedShift(btn, role) {
@@ -4404,6 +4596,7 @@ function confirmUaDelete() {
         uaPendingRow.remove();
         const badge = panel && panel.querySelector('.ua-count');
         if (badge) badge.textContent = Math.max(0, (parseInt(badge.textContent, 10) || 0) - 1);
+        renderDashUaStatus();
     }
     closeUaDelete();
 }
@@ -4424,6 +4617,7 @@ function setNewUiDashboard(enabled) {
     document.documentElement.classList.toggle('new-ui', enabled);
     try { localStorage.setItem('zipNewUiDashboard', enabled ? '1' : '0'); } catch(err) {}
     renderDashboardUI();
+    renderDashUaStatus();
     loadLaborHistory();
     initDragDrop(document.getElementById('dashboardMount'));
     lucide.createIcons();
