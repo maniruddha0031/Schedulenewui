@@ -585,3 +585,44 @@ html.dark .sd-table-card #mainLaborTable tbody tr:nth-child(even) { background: 
 .sd-kpi-foot .sd-lbl { font-size: 11px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .sd-kpi-foot > div + div .sd-lbl { text-align: right; }
 .sd-kpi-value-row { min-height: 30px; }
+
+/* Top KPIs: a little heavier type */
+.sd-kpi-title { font-weight: 600; color: #111827; }
+.sd-kpi-value { font-weight: 700; letter-spacing: -.01em; }
+.sd-kpi-delta { font-weight: 600; }
+.sd-kpi-foot .sd-lbl { font-weight: 600; color: #374151; }
+.sd-kpi-foot .sd-val { font-weight: 700; }
+.sd-stat-val { font-weight: 700; }
+.sd-stat-lbl { font-weight: 700; }
+
+/* KPI footer box: light tinted background, reference-style labels / values */
+.sd-kpi-foot { background: #f2f5f9; border-color: #d9dfe8; border-radius: 8px; }
+.sd-kpi-foot > div + div { border-left-color: #d9dfe8; }
+.sd-kpi-foot .sd-lbl { font-size: 12px; font-weight: 500; color: #1f2937; letter-spacing: .02em; }
+.sd-kpi-foot .sd-val { font-size: 14px; font-weight: 600; color: #111827; margin-top: 4px; letter-spacing: .01em; }
+.sd-kpi-foot .sd-val.sd-neg { color: var(--sd-red) !important; }
+.sd-kpi-foot .sd-val.sd-pos { color: var(--sd-green) !important; }
+html.dark .sd-kpi-foot { background: #162032; border-color: #2d3f55; }
+html.dark .sd-kpi-foot .sd-lbl { color: #cbd5e1; }
+html.dark .sd-kpi-foot .sd-val { color: #f1f5f9; }
+@media (max-width: 1480px) {
+  .sd-kpi-foot .sd-lbl { font-size: 10.5px; }
+  .sd-kpi-foot .sd-val { font-size: 12.5px; }
+}
+
+/* Darker, slightly heavier text: weekly table + panel rows */
+.sd-table-card #mainLaborTable tbody td { color: #0f172a !important; font-weight: 500; font-size: 13.5px; }
+.sd-table-card #mainLaborTable tbody td.sd-warn { color: #ea580c !important; font-weight: 600; }
+.sd-table-card #mainLaborTable tbody td.sd-neg { color: #dc2626 !important; font-weight: 600; }
+.sd-table-card #mainLaborTable .labor-date { color: #1d4ed8 !important; font-weight: 600 !important; }
+.sd-table-card #mainLaborTable .sd-var { font-weight: 600; }
+.sd-table-card #mainLaborTable thead th { color: #0f172a !important; font-weight: 700 !important; }
+.sd-panel-title { font-weight: 700; color: #0f172a; }
+.sd-row-name { font-weight: 600; color: #0f172a; font-size: 13.5px; }
+.sd-row-sub { color: #334155; font-weight: 500; }
+.sd-row-pre { color: #475569; font-weight: 500; }
+.sd-chip { color: #0f172a; }
+.du-name { color: #0f172a; font-weight: 600; }
+html.dark .sd-table-card #mainLaborTable tbody td { color: #e2e8f0 !important; }
+html.dark .sd-row-name, html.dark .sd-panel-title { color: #f1f5f9; }
+html.dark .sd-row-sub { color: #cbd5e1; }

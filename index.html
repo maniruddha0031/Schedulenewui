@@ -37,6 +37,10 @@
       // 'Enable New UI Dashboard' flag — default ON (classic dashboard only when explicitly turned off)
       if (localStorage.getItem('zipNewUiDashboard') !== '0') document.documentElement.classList.add('new-ui');
     } catch(e){}
+    try {
+      // 'Enable KPI' flag — default OFF (KPI's button shows only when explicitly turned on)
+      if (localStorage.getItem('zipKpiEnabled') === '1') document.documentElement.classList.add('kpi-on');
+    } catch(e){}
   })();
 </script>
 
@@ -383,6 +387,8 @@ body.min-h-screen, .bg-\[\#eef2f6\] {
     font-size: 14.5px !important;
     font-weight: 600;
 }
+/* 'Enable KPI' flag: KPI's button hidden unless html.kpi-on */
+html:not(.kpi-on) .kpi-flag { display: none !important; }
 /* Week control: < [calendar label] > */
 .date-nav { display: flex !important; align-items: stretch; height: 40px; padding: 0 !important; gap: 0 !important; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
 .date-nav > button { width: 36px; display: flex; align-items: center; justify-content: center; color: #475569; transition: background .12s, color .12s; }
@@ -675,7 +681,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
     </div>
 
     <!-- KPI BUTTON -->
-    <button onclick="openKpiStatsModal()" class="sd-kpi-btn">
+    <button onclick="openKpiStatsModal()" class="sd-kpi-btn kpi-flag">
         <i data-lucide="box" class="w-[18px] h-[18px]"></i>
         KPI's
     </button>
@@ -1429,7 +1435,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         </div>
 
         <!-- KPI BUTTON -->
-        <button onclick="openKpiStatsModal()" class="bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[14px] shadow-md transition-all tracking-wide">
+        <button onclick="openKpiStatsModal()" class="kpi-flag bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[14px] shadow-md transition-all tracking-wide">
             <div class="border-r border-white/30 pr-2">
                 <i data-lucide="table-properties" class="w-4 h-4"></i>
             </div>
@@ -4580,6 +4586,21 @@ function switchTab(tab) {
           <span class="block w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></span>
         </span>
       </label>
+      <label for="kpiToggle" class="mt-3 flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition cursor-pointer">
+        <div class="flex items-center gap-4">
+          <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+            <i data-lucide="box" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-slate-800 text-[14px]">Enable KPI</div>
+            <div class="text-slate-500 text-[12.5px]">Show the KPI's button on the dashboard</div>
+          </div>
+        </div>
+        <span class="relative inline-flex items-center shrink-0">
+          <input type="checkbox" id="kpiToggle" onchange="setKpiEnabled(this.checked)" class="sr-only peer">
+          <span class="block w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></span>
+        </span>
+      </label>
     </div>
     <div class="px-6 pb-5 flex justify-end">
       <button onclick="closeUiSettings()" class="px-5 py-2 rounded-lg bg-[#0b2545] text-white text-[13px] font-semibold hover:opacity-90 transition">Close</button>
@@ -4866,9 +4887,15 @@ function confirmUaDelete() {
 function openUiSettings() {
     document.getElementById('profilePopup').classList.add('hidden');
     document.getElementById('newUiToggle').checked = document.documentElement.classList.contains('new-ui');
+    document.getElementById('kpiToggle').checked = document.documentElement.classList.contains('kpi-on');
     const m = document.getElementById('uiSettingsModal');
     m.classList.remove('hidden'); m.classList.add('flex');
     lucide.createIcons();
+}
+/* 'Enable KPI' flag (default OFF): shows the KPI's button on the dashboard */
+function setKpiEnabled(enabled) {
+    document.documentElement.classList.toggle('kpi-on', enabled);
+    try { localStorage.setItem('zipKpiEnabled', enabled ? '1' : '0'); } catch (err) {}
 }
 function closeUiSettings() {
     const m = document.getElementById('uiSettingsModal');
