@@ -25,8 +25,8 @@ KPI_REGISTRY['sched-compliance'] = {
   value: '93.3%',
   spark: 'teal',
   cur: { lw: '+2.1%', lwUp: true },
-  footer: [ ['Violating Shifts', '22'], ['Top Issue', 'Meal Break (9)'] ],
-  // "Top Issue" is text, so the trend modal charts its numeric count instead
+  footer: [ ['Violating Shifts', '22'], ['Top Violation', 'Meal Break (9)'] ],
+  // "Top Violation" is text, so the trend modal charts its numeric count instead
   trendFooter: [ ['Violating Shifts', '22'], ['Meal Break Violations', '9'] ],
   // a % of compliant shifts: keep history in a realistic band and never above 100%
   volatility: 0.06,
