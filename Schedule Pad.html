@@ -1328,9 +1328,17 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .df-row .df-tot { font-size: 12.5px; font-weight: 600; font-style: italic; color: #334155; }
 .df-sales .stats-content-area { background: #fdf3dc; }
 .df-sales .stats-content-area .border-r { border-color: #f1e2bd !important; }
-.df-chart-row { height: 210px; border-top: 1px solid #e2e8f0; background: #fff; }
-.df-chart-wrap { height: 100%; padding: 6px 0 4px; }
 .df-leg { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+/* Day footer chart panel: opens above the footer, caret points at the chart icon */
+.dcp { position: fixed; display: flex; gap: 16px; padding: 14px 16px 12px; background: #fff; border-radius: 14px; box-shadow: 0 18px 48px -12px rgba(15,23,42,.35); animation: dcpUp .16s ease-out; }
+@keyframes dcpUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.dcp-caret { position: absolute; bottom: -9px; width: 18px; height: 18px; background: #fff; transform: rotate(45deg); border-radius: 3px; }
+.dcp-tiles { width: 214px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+.dcp-tile { padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; display: flex; flex-direction: column; gap: 2px; }
+.dcp-tile span { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+.dcp-tile b { display: flex; align-items: center; gap: 7px; font-size: 17px; font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+.dcp-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dcp-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
 .df-chart-btn { margin-left: 10px; width: 26px; height: 26px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; color: #64748b; vertical-align: middle; transition: all .15s ease; }
 .df-chart-btn:hover { background: #e2e8f0; }
 .df-chart-btn.on { background: #e0e7ff; color: #4338ca; }
@@ -1338,15 +1346,19 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #dfTip .df-tip-row { display: flex; justify-content: space-between; gap: 16px; padding: 6px 14px; color: #64748b; }
 #dfTip .df-tip-row + .df-tip-row { border-top: 1px solid #f1f5f9; }
 #dfTip .df-tip-row b { color: #0f172a; font-weight: 600; font-variant-numeric: tabular-nums; }
-#overShortPop { position: fixed; z-index: 10000; display: none; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 12px 34px rgba(15,23,42,.18); overflow: hidden; }
-#overShortPop .os-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 12px 9px 14px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; color: #0f172a; }
-#overShortPop .os-head button { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+#overShortPop { position: fixed; z-index: 10000; display: none; min-width: 460px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.2); overflow: hidden; }
+#overShortPop .os-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 14px 12px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 15px; font-weight: 700; color: #0f172a; }
+#overShortPop .os-head .os-sub { display: block; font-style: normal; font-size: 12px; font-weight: 500; color: #64748b; margin-top: 2px; }
+#overShortPop .os-head button { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
 #overShortPop .os-head button:hover { background: #e2e8f0; color: #334155; }
-#overShortPop table { border-collapse: collapse; font-size: 12.5px; }
-#overShortPop th, #overShortPop td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; height: auto !important; padding: 7px 14px !important; text-align: center; font-variant-numeric: tabular-nums; }
-#overShortPop thead th { font-size: 11.5px; font-weight: 600; color: #64748b; }
-#overShortPop tbody th { text-align: left; font-weight: 500; color: #64748b; }
+#overShortPop table { width: 100%; border-collapse: collapse; font-size: 14px; }
+#overShortPop th, #overShortPop td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; height: auto !important; padding: 10px 18px !important; text-align: center; font-variant-numeric: tabular-nums; }
+#overShortPop tbody tr:last-child th, #overShortPop tbody tr:last-child td { border-bottom: 0 !important; }
+#overShortPop thead th { font-size: 12.5px; font-weight: 600; color: #64748b; background: #fff; }
+#overShortPop tbody th { text-align: left; font-weight: 500; color: #475569; }
 #overShortPop td { color: #0f172a; font-weight: 600; }
+#overShortPop td.text-red-500 { color: #dc2626; }
+#overShortPop td.text-emerald-600 { color: #059669; }
 
 /* ===== SIDEBAR + TOP BAR — same look as the dashboard (dashboard-redesign.css, new UI) ===== */
 .h-14.bg-\[\#0b2545\],
@@ -4976,8 +4988,7 @@ function syncFooterToTable() {
     document.querySelectorAll('.stats-footer .sticky-footer-label').forEach(el => {
         el.style.width = el.style.minWidth = el.style.maxWidth = first + 'px';
     });
-    document.querySelectorAll('#detailsRowsContainer .df-chart-wrap').forEach(w => { w.style.width = total + 'px'; });
-    if (_dayFooterChart) _dayFooterChart.resize();
+
     const rows = [document.getElementById('summaryStatsRow'), ...document.querySelectorAll('#detailsRowsContainer .stats-content-area > .flex')];
     rows.forEach(row => {
         if (!row) return;
@@ -5133,7 +5144,6 @@ function renderWeekFooter(n, cellWidth) {
 // the sales curve.
 let _dayFooter = null;        // computed numbers for the popups
 let _dayFooterChart = null;
-let _dayFooterChartOn = true;
 function _dayFooterData(n) {
     const dow = activeDate.getDay();
     const startOfMock = new Date(2026, 1, 2);
@@ -5195,12 +5205,8 @@ function renderDayFooter(columns, cellWidth) {
     // collapsed bar: "Hrs 59.50 | 36.81%" + chart toggle; hover shows budget numbers
     const label = document.getElementById('footerTotalLabel');
     label.innerHTML = `Hrs <span class="text-red-600">${tot.sch.toFixed(2)}</span> | ${tot.labour.toFixed(2)}%
-        <button type="button" class="df-chart-btn${_dayFooterChartOn ? ' on' : ''}" title="Forecast vs scheduled chart" onclick="event.stopPropagation(); toggleDayFooterChart()"><i data-lucide="bar-chart-3" class="w-4 h-4"></i></button>`;
-    label.onmouseenter = e => _dfTip(e.currentTarget, `
-        <div class="df-tip-row"><span>Budget Hours</span><b>0.00 Hrs | ${tot.budgetPct.toFixed(2)}%</b></div>
-        <div class="df-tip-row"><span>Scheduled Hours</span><b>${tot.sch.toFixed(2)} | ${tot.labour.toFixed(2)}%</b></div>
-        <div class="df-tip-row"><span>Budget variance</span><b>0.00 | ${(tot.labour - tot.budgetPct).toFixed(2)}%</b></div>`);
-    label.onmouseleave = _dfTipHide;
+        <button type="button" class="df-chart-btn" title="Forecasted vs scheduled hours chart" onclick="event.stopPropagation(); toggleDayFooterChart()"><i data-lucide="bar-chart-3" class="w-4 h-4"></i></button>`;
+    label.onmouseenter = label.onmouseleave = null;
 
     document.getElementById('summaryStatsRow').innerHTML = cols.map((c, i) => `
         <div class="flex flex-col items-center justify-center border-r shrink-0 cursor-pointer hover:bg-blue-50/60 transition-colors" style="width:${cellWidth}px" onclick="event.stopPropagation(); openOverShort(event, ${i})" title="Shift over/short details">
@@ -5242,59 +5248,77 @@ function renderDayFooter(columns, cellWidth) {
         row('Forecasted Transactions', 'fTxn', ivl, { sales: true }) +
         row('Actual Transactions', 'aTxn', ivl, { sales: true }) +
         row('Forecasted No. of items sold', 'fItems', ivl, { sales: true }) +
-        row('Actual No. of items sold', 'aItems', ivl, { sales: true }) +
-        `<div class="stats-summary-bar df-chart-row${_dayFooterChartOn ? '' : ' hidden'}">
-            <div class="sticky-footer-label flex shrink-0 z-20 bg-white flex-col justify-center gap-2 px-4">
-                <div class="text-[12px] font-bold text-slate-600 uppercase tracking-wide">Hours</div>
-                <div class="flex flex-col gap-1 text-[12px] text-slate-600">
-                    <span class="flex items-center gap-2"><i class="df-leg" style="background:#93c5fd"></i>Forecasted Hours</span>
-                    <span class="flex items-center gap-2"><i class="df-leg" style="background:#8b5cf6"></i>Scheduled Hours</span>
-                </div>
-            </div>
-            <div class="stats-content-area h-full overflow-hidden">
-                <div class="df-chart-wrap" style="width:${rowWidth}px"><canvas id="dayFooterChart"></canvas></div>
-            </div>
-        </div>`;
+        row('Actual No. of items sold', 'aItems', ivl, { sales: true });
     _renderDayFooterChart();
     lucide.createIcons();
 }
 
+// Forecast vs scheduled hours: opened from the chart icon on the footer bar
 function _renderDayFooterChart() {
     const cv = document.getElementById('dayFooterChart');
-    if (!cv || !_dayFooter || typeof Chart === 'undefined' || !_dayFooterChartOn) return;
+    const pop = document.getElementById('dayChartModal');
+    if (!cv || !_dayFooter || typeof Chart === 'undefined' || !pop || pop.classList.contains('hidden')) return;
     if (_dayFooterChart) _dayFooterChart.destroy();
     const cols = _dayFooter.cols;
     _dayFooterChart = new Chart(cv.getContext('2d'), {
         type: 'bar',
         data: {
-            labels: cols.map(c => `${c.h % 12 || 12}${c.h >= 12 ? 'P' : 'A'}`),
+            labels: cols.map(c => `${c.h % 12 || 12}${c.h >= 12 ? 'p' : 'a'}`),
             datasets: [
-                { label: 'Scheduled Hours', data: cols.map(c => +c.sch.toFixed(2)), backgroundColor: '#8b5cf6', barPercentage: 0.4, categoryPercentage: 1, borderRadius: 3, grouped: false, order: 0 },
-                { label: 'Forecasted Hours', data: cols.map(c => c.fct), backgroundColor: '#93c5fd', barPercentage: 0.75, categoryPercentage: 1, borderRadius: 3, grouped: false, order: 1 },
+                { label: 'Scheduled Hours', data: cols.map(c => +c.sch.toFixed(2)), backgroundColor: '#7c3aed', barPercentage: 0.42, categoryPercentage: 1, borderRadius: 4, grouped: false, order: 0 },
+                { label: 'Forecasted Hours', data: cols.map(c => c.fct), backgroundColor: '#60a5fa', barPercentage: 0.78, categoryPercentage: 1, borderRadius: 4, grouped: false, order: 1 },
             ],
         },
         options: {
             responsive: true, maintainAspectRatio: false, animation: { duration: 300 },
-            layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
             interaction: { mode: 'index', intersect: false },
             plugins: { legend: { display: false }, datalabels: { display: false },
-                tooltip: { callbacks: { afterBody: it => { const c = _dayFooter.cols[it[0].dataIndex]; return `Variance ${c.variance > 0 ? '+' : ''}${c.variance.toFixed(2)}`; } } } },
+                tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8,
+                    callbacks: { afterBody: it => { const c = _dayFooter.cols[it[0].dataIndex]; return `Variance ${c.variance > 0 ? '+' : ''}${c.variance.toFixed(2)}`; } } } },
             scales: {
-                x: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 11 }, color: '#64748b' } },
-                y: { beginAtZero: true, grid: { color: '#eef2f6' }, ticks: { display: false }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11.5 }, color: '#64748b' } },
+                y: { beginAtZero: true, grace: '8%', grid: { color: '#f1f5f9' }, border: { display: false }, ticks: { font: { size: 11.5 }, color: '#64748b', precision: 0 } },
             },
         },
     });
 }
 function toggleDayFooterChart() {
-    _dayFooterChartOn = !_dayFooterChartOn;
-    const det = document.getElementById('statsDetails');
-    if (_dayFooterChartOn && det.classList.contains('hidden')) toggleStatsDetails();
-    document.querySelector('.df-chart-row')?.classList.toggle('hidden', !_dayFooterChartOn);
-    document.querySelector('.df-chart-btn')?.classList.toggle('on', _dayFooterChartOn);
+    const pop = document.getElementById('dayChartModal');
+    if (!pop.classList.contains('hidden')) { closeDayFooterChart(); return; }
+    const { tot } = _dayFooter;
+    const tile = (lbl, val, sw, color) => `<div class="dcp-tile"><span>${lbl}</span><b${color ? ` style="color:${color}"` : ''}>${sw ? `<i class="df-leg" style="background:${sw}"></i>` : ''}${val}</b></div>`;
+    document.getElementById('dayChartSub').innerText = activeDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('dayChartTiles').innerHTML =
+        tile('Scheduled', `${tot.sch.toFixed(2)} hrs`, '#7c3aed') +
+        tile('Forecasted', `${tot.fct.toFixed(2)} hrs`, '#60a5fa') +
+        tile('Variance', `${tot.variance > 0 ? '+' : ''}${tot.variance.toFixed(2)} hrs`, '', tot.variance < -0.005 ? '#dc2626' : '#059669') +
+        tile('Scheduled Labor %', `${tot.labour.toFixed(2)}%`);
+    pop.classList.remove('hidden');
+    _placeDayChart();
+    document.querySelector('.df-chart-btn')?.classList.add('on');
+    document.addEventListener('keydown', _dayChartKey);
+    lucide.createIcons();
     _renderDayFooterChart();
 }
-
+function closeDayFooterChart() {
+    const pop = document.getElementById('dayChartModal');
+    pop.classList.add('hidden');
+    document.querySelector('.df-chart-btn')?.classList.remove('on');
+    document.removeEventListener('keydown', _dayChartKey);
+    if (_dayFooterChart) { _dayFooterChart.destroy(); _dayFooterChart = null; }
+}
+function _dayChartKey(e) { if (e.key === 'Escape') closeDayFooterChart(); }
+// sit just above the footer, across the schedule card, with the caret under the chart icon
+function _placeDayChart() {
+    const panel = document.getElementById('dayChartPanel');
+    const card = document.querySelector('.stats-footer').getBoundingClientRect();
+    const btn = document.querySelector('.df-chart-btn').getBoundingClientRect();
+    panel.style.left = (card.left + 8) + 'px';
+    panel.style.width = (card.width - 16) + 'px';
+    panel.style.bottom = (window.innerHeight - card.top + 12) + 'px';
+    document.getElementById('dayChartCaret').style.left = (btn.left + btn.width / 2 - card.left - 8 - 9) + 'px';
+}
+window.addEventListener('resize', () => { const p = document.getElementById('dayChartModal'); if (p && !p.classList.contains('hidden')) _placeDayChart(); });
 // small hover tooltip anchored above an element
 function _dfTip(anchor, html) {
     let t = document.getElementById('dfTip');
@@ -5307,7 +5331,7 @@ function _dfTip(anchor, html) {
 }
 function _dfTipHide() { const t = document.getElementById('dfTip'); if (t) t.style.display = 'none'; }
 
-// "Shift Over/Short Details" for one hour, by quarter hour
+// "Daily Statistics" for one hour, by quarter hour
 function openOverShort(e, i) {
     e.stopPropagation();
     const c = _dayFooter && _dayFooter.cols[i];
@@ -5318,7 +5342,7 @@ function openOverShort(e, i) {
     const r = (lbl, vals, cls = () => '') => `<tr><th>${lbl}</th>${vals.map(v => `<td class="${cls(v)}">${v}</td>`).join('')}</tr>`;
     const varQ = c.q.map(v => v - c.fct);
     p.innerHTML = `
-        <div class="os-head"><span>Shift Over/Short Details</span><button type="button" onclick="closeOverShort()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="os-head"><span>Daily Statistics <em class="os-sub">${c.h % 12 || 12}:00${c.h >= 12 ? 'p' : 'a'} – ${(c.h + 1) % 12 || 12}:00${(c.h + 1) % 24 >= 12 ? 'p' : 'a'} · 15-min intervals</em></span><button type="button" onclick="closeOverShort()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
         <table><thead><tr><th></th>${qt.map(t => `<th>${t}</th>`).join('')}</tr></thead><tbody>
             ${r('Scheduled', c.q)}${r('Forecasted', c.q.map(() => c.fct))}
             ${r('Variance', varQ.map(v => (v > 0 ? '+' : '') + v), v => +v < 0 ? 'text-red-500 font-bold' : +v > 0 ? 'text-emerald-600 font-bold' : '')}
@@ -6216,8 +6240,8 @@ function toggleStatsDetails() {
     if (activeView === 'month') return; // month footer only opens day details
     document.getElementById("statsDetails").classList.toggle("hidden");
     document.getElementById("statsChevron").classList.toggle("rotate-180");
-    // the day-view chart is drawn while hidden (0 px); redraw once visible and line up the columns
-    if (activeView === 'day') requestAnimationFrame(() => { syncFooterToTable(); _renderDayFooterChart(); });
+    // line up the footer columns once visible
+    if (activeView === 'day') requestAnimationFrame(syncFooterToTable);
     else requestAnimationFrame(syncFooterToTable);
 }
 
@@ -8219,8 +8243,28 @@ function closeHelpSupport(){
     </div>
 </div>
 
-<!-- TOAST / INLINE NOTIFICATION STACK -->
-<div id="toastContainer" style="position:fixed; top:88px; right:28px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:380px;"></div>
+<!-- DAY VIEW: FORECASTED vs SCHEDULED HOURS (opens above the footer, pointing at the chart icon) -->
+<div id="dayChartModal" class="hidden fixed inset-0 bg-slate-900/25 z-[900]" onclick="if(event.target===this) closeDayFooterChart()">
+    <section id="dayChartPanel" class="dcp">
+        <span id="dayChartCaret" class="dcp-caret"></span>
+        <div id="dayChartTiles" class="dcp-tiles"></div>
+        <div class="dcp-main">
+            <div class="dcp-head">
+                <div class="flex items-baseline gap-3 min-w-0">
+                    <span class="text-[14.5px] font-bold text-slate-900 whitespace-nowrap">Scheduled vs Forecasted Hours</span>
+                    <span id="dayChartSub" class="text-[12.5px] text-slate-500 truncate"></span>
+                </div>
+                <div class="flex items-center gap-4 text-[12px] text-slate-600 font-medium shrink-0">
+                    <span class="flex items-center gap-1.5"><i class="df-leg" style="background:#7c3aed"></i>Scheduled hours</span>
+                    <span class="flex items-center gap-1.5"><i class="df-leg" style="background:#60a5fa"></i>Forecasted hours</span>
+                    <button onclick="closeDayFooterChart()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500" title="Close (Esc)"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+            <div class="relative h-[250px]"><canvas id="dayFooterChart"></canvas></div>
+        </div>
+    </section>
+</div>
+<!-- TOAST / INLINE NOTIFICATION STACK --><div id="toastContainer" style="position:fixed; top:88px; right:28px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:380px;"></div>
 
 <!-- BULK ACTION BAR (shown when 1+ shifts are selected in Select mode) -->
 <div id="bulkActionBar" class="hidden items-center gap-3 bg-[#0b2545] text-white px-5 py-3 rounded-2xl shadow-2xl" style="position:fixed; z-index:850; bottom:28px; left:50%; transform:translateX(-50%);">
