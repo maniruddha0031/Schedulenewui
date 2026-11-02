@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schedule Insights · 007 Encinitas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>if(window.parent!==window)document.documentElement.classList.add("embed");try{const t=localStorage.getItem("si-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  color-scheme:light;
+  --bg:#F5F6FB; --surface:#FFFFFF; --soft:#F8F9FC; --sunken:#EEF1F7;
+  --line:#E3E6EE; --line-3d:#CBD1DD; --line-2:#EDF0F5;
+  --ink:#141A2B; --ink-2:#434B5E; --ink-3:#6B7385;
+  --side:#14213D; --side-ink:#9FB0D0; --side-active:#2A3C68;
+  --blue:#1F5BD6; --blue-2:#1446B8; --blue-soft:#EAF1FE; --blue-line:#C3D5FA; --blue-ic:#1F5BD6;
+  --green:#1E8A3E; --green-2:#156B2F; --green-soft:#EAF7EE; --green-line:#BFE4C9; --green-ic:#24974A;
+  --red:#C62830; --red-2:#9C1B22; --red-soft:#FDEDEE; --red-line:#F4C3C7; --red-ic:#D63A3A;
+  --orange:#C2560A; --orange-soft:#FFF1E6; --orange-line:#F7D0AE; --orange-ic:#EE7212;
+  --yellow:#8A6400; --yellow-soft:#FEF8DA; --yellow-line:#F0DD8C; --yellow-ic:#E6A30B;
+  --chk:#FFFFFF;
+  --shadow:0 1px 2px rgba(20,26,43,.05),0 10px 28px -18px rgba(20,26,43,.28);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C111C; --surface:#141B2A; --soft:#182033; --sunken:#0F1522;
+    --line:#263049; --line-3d:#1D2639; --line-2:#1E273A;
+    --ink:#EDF1F8; --ink-2:#B7C0D2; --ink-3:#8791A6;
+    --side:#080C15; --side-ink:#7F8BA5; --side-active:#1D2945;
+    --blue:#7EA8FF; --blue-2:#1446B8; --blue-soft:#17264A; --blue-line:#2A4277; --blue-ic:#2F6BE6;
+    --green:#5FD38A; --green-2:#156B2F; --green-soft:#132C21; --green-line:#24503A; --green-ic:#24974A;
+    --red:#FF8088; --red-2:#9C1B22; --red-soft:#341A21; --red-line:#5C2A33; --red-ic:#D63A3A;
+    --orange:#FFA765; --orange-soft:#33220F; --orange-line:#5C3A1C; --orange-ic:#EE7212;
+    --yellow:#F2CA4E; --yellow-soft:#302810; --yellow-line:#5A4A1B; --yellow-ic:#E6A30B;
+    --chk:#141B2A;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -18px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C111C; --surface:#141B2A; --soft:#182033; --sunken:#0F1522;
+  --line:#263049; --line-3d:#1D2639; --line-2:#1E273A;
+  --ink:#EDF1F8; --ink-2:#B7C0D2; --ink-3:#8791A6;
+  --side:#080C15; --side-ink:#7F8BA5; --side-active:#1D2945;
+  --blue:#7EA8FF; --blue-2:#1446B8; --blue-soft:#17264A; --blue-line:#2A4277; --blue-ic:#2F6BE6;
+  --green:#5FD38A; --green-2:#156B2F; --green-soft:#132C21; --green-line:#24503A; --green-ic:#24974A;
+  --red:#FF8088; --red-2:#9C1B22; --red-soft:#341A21; --red-line:#5C2A33; --red-ic:#D63A3A;
+  --orange:#FFA765; --orange-soft:#33220F; --orange-line:#5C3A1C; --orange-ic:#EE7212;
+  --yellow:#F2CA4E; --yellow-soft:#302810; --yellow-line:#5A4A1B; --yellow-ic:#E6A30B;
+  --chk:#141B2A;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -18px rgba(0,0,0,.7);
+}
+/* severity tiers */
+.t-red{--tc:var(--red);--tc-soft:var(--red-soft);--tc-line:var(--red-line);--tc-ic:var(--red-ic)}
+.t-orange{--tc:var(--orange);--tc-soft:var(--orange-soft);--tc-line:var(--orange-line);--tc-ic:var(--orange-ic)}
+.t-yellow{--tc:var(--yellow);--tc-soft:var(--yellow-soft);--tc-line:var(--yellow-line);--tc-ic:var(--yellow-ic)}
+.t-green{--tc:var(--green);--tc-soft:var(--green-soft);--tc-line:var(--green-line);--tc-ic:var(--green-ic)}
+/* depth system: level 1 = page containers, level 2 = items inside them */
+:root{--shadow-lg:0 2px 4px rgba(20,26,43,.05),0 22px 44px -26px rgba(20,26,43,.42);--shadow-sm:0 1px 2px rgba(20,26,43,.06)}
+:root[data-theme="dark"]{--shadow-lg:0 2px 4px rgba(0,0,0,.4),0 22px 44px -22px rgba(0,0,0,.85);--shadow-sm:0 1px 2px rgba(0,0,0,.4)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shadow-lg:0 2px 4px rgba(0,0,0,.4),0 22px 44px -22px rgba(0,0,0,.85);--shadow-sm:0 1px 2px rgba(0,0,0,.4)}}
+.edge-tc{border-bottom-color:color-mix(in srgb,var(--tc-line) 55%,var(--tc-ic))}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 20px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--side)}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ===================== SHELL ===================== */
+/* no rail / top bar of its own: index.html (flag "Enable New Insight design_V2")
+   hosts this page under its Schedule AI Insight sub-header, and the theme
+   comes from the profile menu there */
+.app{min-height:100vh}
+.page{min-width:0}
+.wrap{padding:24px 32px 64px}
+html.embed{color-scheme:normal!important}
+html.embed body{background:transparent}
+html.embed body::before{display:none}
+html.embed .app{min-height:0}
+html.embed .wrap{padding:0 0 10px}
+
+/* "what's in this" breakdown of a grouped problem */
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:16px}
+.part{background:var(--surface);border:1px solid var(--tc-line);border-bottom:3px solid var(--tc-line);border-radius:12px;padding:10px 14px}
+.part small{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.part b{display:block;font-size:19px;font-weight:800;color:var(--tc);line-height:1.3;margin-top:2px}
+.part span{display:block;font-size:12.5px;color:var(--ink-3)}
+.tcap{margin:0 26px 8px;font-size:13px;font-weight:700;color:var(--ink-2)}
+
+/* ===================== BRIEF ===================== */
+.brief{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start;background:var(--surface);border:1px solid var(--line);border-bottom:4px solid var(--line-3d);border-radius:18px;padding:20px 26px;box-shadow:var(--shadow-lg)}
+.crumb{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-3);margin-bottom:6px;flex-wrap:wrap}
+.ai{display:inline-flex;gap:6px;align-items:center;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:12.5px;padding:3px 10px;border-radius:999px}
+.brief h1{font-size:23px;line-height:1.3;letter-spacing:-.015em;margin:0 0 6px;font-weight:700}
+.brief p{margin:0;font-size:15px;color:var(--ink-2);max-width:96ch}
+.hl{font-weight:700}
+.hl.o{color:var(--orange)} .hl.r{color:var(--red)} .hl.y{color:var(--yellow)}
+.tools{display:flex;gap:8px}
+.week{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;border-radius:12px}
+.week button{background:none;border:0;padding:10px 14px;color:var(--ink-2);font-size:18px;line-height:1}
+.week span{font-weight:700;font-size:14.5px}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);border-bottom-width:2px;background:var(--surface);display:grid;place-items:center;color:var(--ink-2)}
+.icon-btn:hover{color:var(--blue);border-color:var(--blue-line)}
+
+/* ===================== 3 STORY TABS ===================== */
+/* compact tiles: icon | title + subtitle on one line, chips / progress below | count | chevron */
+.tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:20px}
+.tc{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr) auto 24px;gap:12px;align-items:center;text-align:left;border-radius:14px;padding:12px 14px;border:1px solid var(--tc-line);border-bottom:4px solid var(--tc-line);background:linear-gradient(180deg,var(--tc-soft),var(--surface) 140%);transition:transform .15s,box-shadow .2s,background .2s}
+.tc:hover{transform:translateY(-1px)}
+.tc-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;background:var(--tc-ic);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.tc-mid{min-width:0;display:block}
+.tc-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.tc-t{font-weight:700;font-size:15.5px;line-height:1.25}
+.tc-s{font-size:12.5px;color:var(--ink-3)}
+.tc-n{font-size:30px;font-weight:800;line-height:1;color:var(--tc)}
+.tc-go{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;border:1px solid var(--tc-line);background:var(--surface);color:var(--tc);transition:transform .2s}
+.tc-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.tc-chips span{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--tc-line);color:var(--tc)}
+.tc-prog{display:flex;align-items:center;gap:10px;margin-top:9px}
+.tc-bar{flex:1;height:7px;border-radius:9px;background:var(--tc-line);overflow:hidden}
+.tc-bar i{display:block;height:100%;width:0;background:var(--tc);border-radius:9px;transition:width .35s}
+.tc-ps{font-size:12.5px;font-weight:700;color:var(--tc);white-space:nowrap}
+/* active (saturated) + pointer to the view below */
+.tc[aria-selected="true"]{color:#fff;border-color:transparent;transform:translateY(-2px)}
+.tc[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;width:12px;height:12px;margin-left:-6px;transform:rotate(45deg);background:var(--tc-pt);border-radius:2px}
+.tc[aria-selected="true"] .tc-s,.tc[aria-selected="true"] .tc-n,.tc[aria-selected="true"] .tc-ps{color:#fff}
+.tc[aria-selected="true"] .tc-s{opacity:.85}
+.tc[aria-selected="true"] .tc-ic{background:rgba(255,255,255,.2);box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+.tc[aria-selected="true"] .tc-chips span{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff}
+.tc[aria-selected="true"] .tc-bar{background:rgba(255,255,255,.25)}
+.tc[aria-selected="true"] .tc-bar i{background:#fff}
+.tc[aria-selected="true"] .tc-go{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45);color:#fff;transform:rotate(90deg)}
+.tc.t-green[aria-selected="true"]{--tc-pt:#125A28;background:linear-gradient(180deg,#2FA552,#1B7A37);border-bottom-color:#125A28;box-shadow:0 14px 26px -16px rgba(27,122,55,.7)}
+.tc.t-red[aria-selected="true"]{--tc-pt:#87161D;background:linear-gradient(180deg,#DB4048,#B4212A);border-bottom-color:#87161D;box-shadow:0 14px 26px -16px rgba(180,33,42,.7)}
+.tc.t-blue{--tc:var(--blue);--tc-soft:var(--blue-soft);--tc-line:var(--blue-line);--tc-ic:var(--blue-ic)}
+.tc.t-blue[aria-selected="true"]{--tc-pt:#0E3388;background:linear-gradient(180deg,#2F6BE6,#1446B8);border-bottom-color:#0E3388;box-shadow:0 14px 26px -16px rgba(20,70,184,.7)}
+
+/* ===================== VIEWS ===================== */
+.view{display:none;padding-top:26px;animation:in .25s ease}
+.view.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.vh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.vh h2{margin:0;font-size:21px;letter-spacing:-.01em}
+.vh p{margin:4px 0 0;color:var(--ink-2);font-size:14.5px}
+.vh-r{font-weight:700;color:var(--blue);font-size:14.5px}
+.lbl{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px}
+
+/* ===================== WENT WELL ===================== */
+.well-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.wc{display:grid;grid-template-columns:34px 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-bottom:3px solid var(--line-3d);border-radius:14px;padding:18px}
+.wc .ck{width:34px;height:34px;border-radius:50%;background:var(--green-soft);color:var(--green);display:grid;place-items:center}
+.wc b{display:block;font-size:15.5px;font-weight:600;line-height:1.35}
+.wc span{display:block;font-size:14px;color:var(--ink-2);margin-top:4px}
+.wc em{display:inline-block;font-style:normal;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--green);background:var(--green-soft);border:1px solid var(--green-line);border-radius:999px;padding:2px 10px}
+
+/* ===================== WENT WRONG ===================== */
+.md{display:grid;grid-template-columns:300px minmax(0,1fr) 360px;gap:18px;align-items:start}
+/* problem list + fix panel scroll inside a fixed height (the page itself is
+   sized to its content by the host, so vh can't be used here) */
+.md{--col-h:780px}
+.list{display:flex;flex-direction:column;gap:10px;max-height:var(--col-h);overflow-y:auto;padding:2px 6px 8px 2px;scrollbar-width:thin}
+.li{text-align:left;background:var(--surface);border:1px solid var(--line);border-bottom:3px solid var(--line-3d);border-radius:14px;padding:11px 12px 10px;transition:border-color .15s,box-shadow .2s,background .2s;flex:none}
+.li:hover{border-color:var(--tc-line);border-bottom-color:var(--tc-line)}
+.li[aria-selected="true"]{border:1.5px solid var(--tc);border-bottom:4px solid var(--tc);background:linear-gradient(180deg,var(--tc-soft),var(--surface) 70%);box-shadow:0 10px 20px -16px var(--tc)}
+.li-top{display:flex;align-items:center;gap:8px}
+.sic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;background:var(--tc-ic);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);flex:none}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--tc-soft);color:var(--tc);white-space:nowrap}
+.days{font-size:13px;color:var(--ink-3)}
+.li-meta .days{font-size:12.5px}
+.li-head{display:grid;grid-template-columns:26px minmax(0,1fr) 22px;gap:10px;align-items:start}
+.li-t{display:block;font-weight:700;font-size:14.5px;line-height:1.35;margin-top:2px}
+.li-go{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:var(--sunken);color:var(--ink-3)}
+.li[aria-selected="true"] .li-go{background:var(--tc-ic);color:#fff}
+.li-meta{display:flex;align-items:center;gap:8px;margin:5px 0 0 36px;flex-wrap:wrap}
+.li-bot{display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+.li-i{font-size:16.5px;font-weight:800;color:var(--tc);white-space:nowrap}
+.li-l{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.li-bot .bar{flex:1;min-width:24px;margin:0;height:5px}
+.li-fx{font-size:12.5px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.bar{height:6px;border-radius:9px;background:var(--sunken);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:9px;transition:width .35s}
+.li.solved .li-t{text-decoration:line-through;color:var(--ink-3)}
+
+.detail{background:var(--surface);border:1px solid var(--line);border-bottom:4px solid var(--line-3d);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.d-top{padding:22px 26px 20px;background:linear-gradient(180deg,var(--tc-soft),var(--surface));border-bottom:1.5px solid var(--tc-line)}
+.d-top h3{margin:10px 0 8px;font-size:21px;line-height:1.3;letter-spacing:-.01em}
+.d-top p{margin:0;color:var(--ink-2);max-width:86ch}
+.d-sec{padding:20px 26px;border-bottom:1px solid var(--line-2)}
+.chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.node{border-radius:12px;padding:14px 16px;border:1px solid var(--line);border-bottom:3px solid var(--line-3d);background:var(--soft);box-shadow:var(--shadow-sm)}
+.node small{display:block;font-size:12.5px;font-weight:700;color:var(--ink-2);margin-bottom:8px}
+.node p{margin:0;font-size:14.5px;line-height:1.55}
+.node.n2{background:var(--yellow-soft);border-color:var(--yellow-line);border-bottom-color:color-mix(in srgb,var(--yellow-line) 50%,var(--yellow-ic))} .node.n2 small{color:var(--yellow)}
+.node.n3{background:var(--red-soft);border-color:var(--red-line);border-bottom-color:color-mix(in srgb,var(--red-line) 50%,var(--red-ic))} .node.n3 small{color:var(--red)}
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.wd{text-align:center;border-radius:10px;padding:10px 6px;border:1px solid var(--line);border-bottom:3px solid var(--line-3d);background:var(--soft);color:var(--ink-3);font-size:12.5px;box-shadow:var(--shadow-sm)}
+.wd b{display:block;font-size:14.5px;color:var(--ink-2)}
+.wd.hit{background:var(--tc-soft);border-color:var(--tc-line);border-bottom-color:color-mix(in srgb,var(--tc-line) 50%,var(--tc-ic));color:var(--tc)}
+.wd.hit b{color:var(--tc)}
+.people{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.pp{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-bottom:3px solid var(--line-3d);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow-sm)}
+.pp .pa{box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.pp .pa{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13.5px;line-height:1;color:#fff}
+.pp b{display:block;font-size:14.5px;font-weight:600}
+.pp .pd{display:block;font-size:13px;color:var(--ink-2);line-height:1.4}
+details.nums summary{list-style:none;cursor:pointer;padding:16px 26px;font-weight:600;color:var(--blue);display:flex;align-items:center;gap:8px}
+details.nums summary::-webkit-details-marker{display:none}
+details.nums summary svg{transition:transform .2s}
+details.nums[open] summary svg{transform:rotate(90deg)}
+.tblw{overflow-x:auto;margin:0 26px 24px;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--ink-3);font-size:12.5px;padding:10px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+td{padding:10px 14px;border-bottom:1px solid var(--line-2)}
+tr:last-child td{border-bottom:0}
+.r{text-align:right}
+.neg{color:var(--red);font-weight:600} .pos{color:var(--green);font-weight:600}
+
+/* fix panel */
+.fixpanel{display:flex;flex-direction:column;max-height:var(--col-h);background:var(--surface);border:1px solid var(--line);border-bottom:4px solid var(--line-3d);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.fixpanel .fp-list{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin}
+.fixpanel .fp-h,.fixpanel .fp-f{flex:none}
+.fixpanel .fp-f{padding-top:10px;border-top:1px solid var(--line-2)}
+.fp-h{padding:22px 18px 16px;background:linear-gradient(180deg,var(--blue-soft),var(--surface));border-bottom:1.5px solid var(--blue-line)}
+.fp-h h4{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:17px}
+.fp-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff;background:var(--blue-ic);box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.fp-h .bar i{background:var(--blue-ic)}
+.fp-h .bar{margin:0 0 8px;background:var(--line)}
+.fp-h small{font-size:13px;color:var(--ink-3)}
+.fp-list{padding:12px;display:flex;flex-direction:column;gap:10px}
+.fp-f{padding:4px 12px 14px}
+.outline{width:100%;display:flex;justify-content:center;align-items:center;gap:8px;border:1.5px solid var(--blue);border-bottom-width:3px;background:var(--surface);color:var(--blue);border-radius:12px;padding:11px;font-weight:700}
+.outline:hover{background:var(--blue-soft)}
+
+/* task */
+.task{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-bottom:3px solid var(--line-3d);border-radius:12px;padding:13px 14px;cursor:pointer;box-shadow:var(--shadow-sm);transition:background .2s,border-color .2s,transform .15s}
+.task:hover{border-color:var(--blue-line);transform:translateY(-1px)}
+.task.done{background:var(--green-soft);border-color:var(--green-line);border-bottom-color:color-mix(in srgb,var(--green-line) 50%,var(--green-ic))}
+.task.done .tk-t{text-decoration:line-through;color:var(--ink-3)}
+.chk{appearance:none;width:22px;height:22px;margin:1px 0 0;border:1.5px solid var(--ink-3);border-radius:6px;display:grid;place-items:center;cursor:pointer;background:var(--surface)}
+.chk:checked{background:var(--green-ic);border-color:var(--green-ic)}
+.chk:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.tk-t{font-weight:600;font-size:14.5px;line-height:1.4}
+.tk-d{font-size:13px;color:var(--ink-2);margin-top:2px}
+.tk-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip-g{font-size:12px;font-weight:700;color:var(--green);background:var(--green-soft);border-radius:6px;padding:2px 8px}
+.chip-w{font-size:12px;font-weight:700;color:var(--blue);background:var(--blue-soft);border-radius:6px;padding:2px 8px}
+.chip-w.today{color:var(--red);background:var(--red-soft)}
+.task.done .chip-g,.task.done .chip-w{background:var(--surface)}
+
+/* ===================== FIX PLAN ===================== */
+.allset{display:none;align-items:center;gap:12px;background:var(--green-soft);color:var(--green);border:1px solid var(--green-line);border-bottom-width:3px;border-radius:14px;padding:14px 18px;font-weight:600;margin-bottom:16px}
+.allset.on{display:flex}
+/* one row of problem cards, left to right like the "What went wrong" list;
+   the arrows page through the cards that don't fit */
+.plan{--per:5;--gap:12px;display:flex;gap:var(--gap);align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 2px 14px;scrollbar-width:thin}
+.plan>.pc{flex:0 0 calc((100% - var(--gap) * (var(--per) - 1)) / var(--per));scroll-snap-align:start;min-width:0}
+/* 5 cards a view: tighter cards and steps */
+.plan .pc-h{padding:12px 12px 10px}
+.plan .pc-top{flex-wrap:wrap;row-gap:4px}
+.plan .pc-top .why{font-size:12.5px}
+.plan .pc-t{font-size:14.5px;line-height:1.35;margin-top:8px}
+.plan .pc-h small{font-size:12px;margin-top:6px}
+.plan .pc-h .bar{margin-top:8px}
+.plan .pc-list{padding:8px;gap:6px}
+.plan .task{grid-template-columns:20px 1fr;gap:9px;padding:10px}
+.plan .chk{width:19px;height:19px}
+.plan .tk-t{font-size:13.5px}
+.plan .tk-d{font-size:12.5px}
+.plan .tk-row{gap:4px;margin-top:6px}
+.plan .chip-g,.plan .chip-w{font-size:11.5px;padding:2px 6px}
+.vh-tools{display:flex;align-items:center;gap:14px}
+.pnav{display:flex;align-items:center;gap:8px}
+.pnav-c{font-size:13px;color:var(--ink-3);white-space:nowrap}
+.pnav button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);border-bottom-width:2px;background:var(--surface);display:grid;place-items:center;color:var(--blue)}
+.pnav button:hover:not(:disabled){border-color:var(--blue-line);background:var(--blue-soft)}
+.pnav button:disabled{color:var(--ink-3);opacity:.45;cursor:default}
+.pnav button.next:not(:disabled){background:var(--blue-ic);border-color:var(--blue-ic);color:#fff}
+.pc{background:var(--surface);border:1px solid var(--line);border-bottom:4px solid var(--line-3d);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.pc-h{padding:16px 16px 14px;border-bottom:1px solid var(--line-2)}
+.pc-top{display:flex;align-items:center;gap:8px}
+.pc-top .why{margin-left:auto;background:none;border:0;padding:0;color:var(--blue);font-weight:700;font-size:13.5px}
+.pc-top .why:hover{text-decoration:underline}
+.pc-t{font-weight:700;font-size:16px;margin:12px 0 0}
+.pc-h small{display:block;font-size:13px;color:var(--ink-3);margin-top:8px}
+.pc-list{padding:12px;display:flex;flex-direction:column;gap:8px}
+.pc.solved .pc-h{background:var(--green-soft)}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;transition:.25s;pointer-events:none;z-index:70;display:flex;gap:12px;align-items:center}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:none;border:0;color:var(--blue);font-weight:700;padding:0}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width:1400px){ .md{grid-template-columns:280px minmax(0,1fr) 320px} }
+@media (max-width:1200px){
+  .md{grid-template-columns:280px minmax(0,1fr)}
+  .fixpanel{grid-column:1 / -1;max-height:none}
+  .fixpanel .fp-list{overflow:visible}
+  .plan{--per:3}
+  .fp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .chain{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .wrap{padding:16px 16px 56px}
+  html.embed .wrap{padding:0 0 10px}
+  .tcap{margin-left:16px}
+  .brief{grid-template-columns:1fr;padding:18px}
+  .brief h1{font-size:19px}
+  .tabs3{grid-template-columns:1fr;gap:12px}
+  .tc[aria-selected="true"]{transform:none}
+  .md{grid-template-columns:1fr}
+  .list{flex-direction:row;overflow-x:auto;padding-bottom:6px;max-height:none}
+  .tc{grid-template-columns:40px minmax(0,1fr) auto 24px}
+  .li{min-width:260px}
+  .d-top,.d-sec{padding-left:16px;padding-right:16px}
+  details.nums summary{padding-left:16px}
+  .tblw{margin:0 16px 20px}
+  .wk{grid-template-columns:repeat(7,minmax(46px,1fr));overflow-x:auto}
+  .plan{--per:1}
+  .plan>.pc{flex-basis:88%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="page">
+    <main class="wrap">
+      <section class="brief">
+        <div>
+          <div class="crumb"><span class="ai"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>AI insights</span><span>Week of Sep 1 – 7, 2026 · Updated 7:04 PM</span></div>
+          <h1>Weekdays are on track, but the weekend, 6 legal risks and 3 time-off conflicts need fixing.</h1>
+          <p>This week runs <span class="hl o num">59.90 hrs over budget</span> with <span class="hl o num">$971.99 in overtime</span>, mostly from 9–10 hour weekend shifts, and 2 accepted shift offers would add <span class="hl o num">$155.06</span> more. <span class="hl r">6 legal risks</span> and <span class="hl r">3 time-off conflicts</span> need fixing before those shifts are worked, <span class="hl y">3 shifts</span> are unassigned and <span class="hl y">8 shifts</span> aren’t published yet.</p>
+        </div>
+        <div class="tools">
+          <div class="week"><button aria-label="Previous week">‹</button><span class="num">Sep 1 – 7, 2026</span><button aria-label="Next week">›</button></div>
+          <button class="icon-btn" id="refresh" aria-label="Refresh insights" title="Refresh insights"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+        </div>
+      </section>
+
+      <nav class="tabs3" role="tablist" aria-label="Insight sections">
+        <button class="tc t-green" role="tab" data-v="well" aria-selected="false">
+          <span class="tc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <span class="tc-mid">
+            <span class="tc-head"><span class="tc-t">What went well</span><span class="tc-s">Keep doing this</span></span>
+            <span class="tc-chips"><span>Weekdays on track</span><span>7 things working</span></span>
+          </span>
+          <span class="tc-n num">7</span>
+          <span class="tc-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+        </button>
+        <button class="tc t-red" role="tab" data-v="wrong" aria-selected="true">
+          <span class="tc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+          <span class="tc-mid">
+            <span class="tc-head"><span class="tc-t">What went wrong</span><span class="tc-s">And why it happened</span></span>
+            <span class="tc-chips"><span>6 legal risks</span><span>$971.99 overtime</span><span>3 unassigned</span><span>8 unpublished</span></span>
+          </span>
+          <span class="tc-n num" id="tcWrongN">7</span>
+          <span class="tc-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+        </button>
+        <button class="tc t-blue" role="tab" data-v="fix" aria-selected="false">
+          <span class="tc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>
+          <span class="tc-mid">
+            <span class="tc-head"><span class="tc-t">How to fix it</span><span class="tc-s">Your step-by-step plan</span></span>
+            <span class="tc-prog"><span class="tc-bar"><i id="tcBar"></i></span><span class="tc-ps num" id="tcFixSub">0 of 34 steps done</span></span>
+          </span>
+          <span class="tc-n num" id="tcFixN">0%</span>
+          <span class="tc-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+        </button>
+      </nav>
+
+      <!-- WENT WELL -->
+      <section class="view" id="v-well" aria-label="What went well">
+        <div class="vh"><div><h2>What went well</h2><p>7 things are working this week. Keep these patterns when you build next week.</p></div></div>
+        <div class="well-grid" id="wellGrid"></div>
+      </section>
+
+      <!-- WENT WRONG -->
+      <section class="view on" id="v-wrong" aria-label="What went wrong">
+        <div class="vh"><div><h2>What went wrong</h2><p id="wrongSub">Problems grouped by root cause, most urgent first. Select one to see why it happened, who it affects and how to fix it.</p></div></div>
+        <div class="md">
+          <div class="list" role="listbox" aria-label="Problems" id="probList"></div>
+          <article class="detail" id="detail" aria-live="polite"></article>
+          <aside class="fixpanel" id="fixpanel" aria-label="How to fix this"></aside>
+        </div>
+      </section>
+
+      <!-- FIX PLAN -->
+      <section class="view" id="v-fix" aria-label="The full fix plan">
+        <div class="vh"><div><h2>The full fix plan</h2><p id="planSub">Legal risks first, then overtime and coverage.</p></div><div class="vh-tools"><span class="vh-r num" id="planDone">0 of 34 steps done</span>
+          <div class="pnav" aria-label="Browse problems"><span class="pnav-c num" id="pnavC"></span>
+            <button class="prev" id="pPrev" aria-label="Previous problems"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button class="next" id="pNext" aria-label="Next problems"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div></div></div>
+        <div class="allset" id="allset"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span id="allsetText"></span></div>
+        <div class="plan" id="plan"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="undo">Undo</button></div>
+
+<script>
+/* ---------- host page (index.html) ----------
+   Embedded in the Insights tab: the theme comes from the host's profile
+   menu, the host sizes the frame to our height and shows our toasts
+   (a fixed toast inside a full-height frame would sit off-screen). */
+const EMBED=window.parent!==window;
+const toHost=m=>{if(EMBED)parent.postMessage(m,"*")};
+addEventListener("message",e=>{
+  if(e.source!==parent)return;
+  const d=e.data||{};
+  if(d.type==="si-theme")document.documentElement.setAttribute("data-theme",d.theme==="dark"?"dark":"light");
+  else if(d.type==="si-v3-undo")undoLast();
+});
+function postHeight(){toHost({type:"si-v3-height",h:Math.ceil(document.body.getBoundingClientRect().height)})}
+if(EMBED){new ResizeObserver(postHeight).observe(document.body);toHost({type:"si-v3-ready"})}
+
+/* ---------- icons ---------- */
+const IC={
+  tick:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  alert:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></svg>',
+  caret:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  arrow:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+};
+
+/* ---------- data ---------- */
+const WEEK=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DATES={Mon:"Sep 1",Tue:"Sep 2",Wed:"Sep 3",Thu:"Sep 4",Fri:"Sep 5",Sat:"Sep 6",Sun:"Sep 7"};
+const AVC=["#2F6BE6","#24974A","#D9620A","#7C3AED","#0E7490","#BE185D","#B45309","#475569"];
+const ini=n=>n.split(" ").map(x=>x[0]).join("").slice(0,2);
+
+const WELL=[
+ ["Weekdays are on track","Mon – Wed sit within 4–6 hrs of forecast. The weekday template works.","Weekday template"],
+ ["Tuesday and Wednesday are near budget","20.32% and 20.65% labor against a 20% target.","Within 0.7%"],
+ ["62 of 98 shifts have no warnings","Monday is a completely clean day.","63% clean"],
+ ["Every open shift has a ready replacement","All 3 unassigned Friday shifts have a free line cook in the same position.","3 of 3 matched"],
+ ["Weekday shifts stay under 8 hrs","No Mon – Fri shift goes past 8 hrs, so all daily overtime sits on the weekend.","0 weekday daily OT"],
+ ["A manager or shift lead covers every open hour","Management is on the floor from open to close on Sunday.","19 of 19 hrs"],
+ ["Every Sunday shift is assigned and published","Employees have all their Sunday shift details.","17 of 17 shifts"]
+];
+
+/* Problems are grouped by root cause: one card per topic (labor law, time off,
+   overtime, ...) with "parts" breaking it down, instead of one card per KPI.
+   Rules and warning text follow the Zip Schedule pad (HW Release:
+   BNEShiftWarningService + messages.json). */
+const PROBS=[
+ {id:"law",tier:"t-red",tag:"Legal risk",short:"6 shifts break labor-law rules",impact:"6",impactL:"legal risks",days:["Fri","Sat","Sun"],
+  title:"6 shifts break labor-law rules: minors, meal breaks, rest and a 7th day",
+  lead:"The schedule pad flagged every one of these, and the week was published with the warnings still open. They are legal risks, so fix them before the shifts are worked.",
+  parts:[["Minor rules","2","Mia Lee, Noah Davis"],["Meal breaks","2","Shifts over 10 hrs"],["Rest between shifts","1","Under 8 hrs off"],["7th consecutive day","1","Mei Tanaka"]],
+  chain:["The schedule went out with its compliance warnings still open.","2 minors are past their limits, 2 long shifts miss the 2nd meal break, 1 closer opens the next morning and 1 employee works all 7 days.","6 legal risks this week, all on Fri – Sun."],
+  people:[["Mia Lee","Age 16 · Fri 5.08 hrs on a school day (limit 4)"],["Noah Davis","Age 17 · Sun until 12:25 AM (limit 10:00 PM)"],["Daniel Reyes","Sat over 10 hrs, no 2nd meal break"],["Omar Haddad","Sun over 10 hrs, no 2nd meal break"],["Olivia Martinez","Closes Fri 11:00 PM, opens Sat 6:30 AM"],["Mei Tanaka","Scheduled Mon – Sun, 7 days in a row"]],
+  tables:[{t:"Schedule pad warnings",h:["Employee","Day","Shift","Rule breached","Fix"],r:[
+   ["Mia Lee (16)","Fri","11:15 AM – 4:20 PM","Minor: max 4 hrs on a school day (5.08 hrs)","End at 3:15 PM"],
+   ["Noah Davis (17)","Sun","5:30 PM – 12:25 AM","Minor Employee cannot be scheduled after 10:00 PM","End at 10:00 PM"],
+   ["Daniel Reyes","Sat","7:00 AM – 5:25 PM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
+   ["Omar Haddad","Sun","2:45 PM – 12:45 AM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
+   ["Olivia Martinez","Sat","6:30 AM – 12:30 PM","Minimum Time Off Between the Punch rule of 8 Hrs (7.50 hrs)","Start at 7:00 AM"],
+   ["Mei Tanaka","Sun","6:45 AM – 4:35 PM","7th Consecutive Day rule has been breached","Move to Jordan Price"]],n:[]}]},
+
+ {id:"avail",tier:"t-red",tag:"Conflict",short:"3 shifts clash with time off or availability",impact:"3",impactL:"conflicts",days:["Thu","Sat"],
+  title:"3 employees are scheduled when they’re off or unavailable",
+  lead:"Time off was approved or requested after the shifts were built, and one closer runs past her availability. Each shift needs a replacement or a shorter end time.",
+  parts:[["Approved time off","1","Juan Lopez · Sat"],["Pending time off","1","Sofia Bagley · Sat"],["Outside availability","1","Ava Thompson · Thu"]],
+  chain:["Time off was decided after the schedule was built, and availability wasn’t checked on Thursday’s close.","Juan Lopez is on approved time off, Sofia Bagley’s Saturday request is still pending, and Ava Thompson is booked 1.92 hrs past 9:00 PM.","2 likely no-shows on Saturday night and 1 availability breach on Thursday."],
+  people:[["Juan Lopez","Line Cook · Sat 4:00 – 11:30 PM · approved off"],["Sofia Bagley","GSA · Sat 4:00 – 10:50 PM · request pending 9 days"],["Ava Thompson","GSA · Thu 4:00 – 10:55 PM · available until 9:00 PM"],["Ethan Kim","Free Line Cook · 18.50 hrs this week"],["Chloe Adams","Free GSA · 15.75 hrs this week"]],
+  tables:[{t:"Conflicts and who can take the shift",h:["Employee","Day","Shift","Conflict","Suggested employee","Their week after"],r:[
+   ["Juan Lopez","Sat","4:00 – 11:30 PM","Approved time off · Family wedding","Ethan Kim","26.00 hrs"],
+   ["Sofia Bagley","Sat","4:00 – 10:50 PM","Pending time off · Personal errand","Chloe Adams","22.58 hrs"],
+   ["Ava Thompson","Thu","4:00 – 10:55 PM","Not available after 9:00 PM (1.92 hrs past)","End at 9:00 PM, no cover needed","—"]],n:[5]}]},
+
+ {id:"ot",tier:"t-orange",tag:"Fix first",short:"Overtime: daily, weekly and from accepted offers",impact:"$971.99",impactL:"overtime",days:["Thu","Sat","Sun"],
+  title:"Overtime comes from long weekend shifts, 2 weekly breaches and 2 accepted offers",
+  lead:"Most overtime is daily: weekend shifts are built 9 to 10 hrs long. 2 employees also pass 40 hrs, and 2 accepted shift offers would push 2 more past 40 if you approve them.",
+  parts:[["Daily OT (over 8 hrs)","$853.30","24 shifts · Sat & Sun"],["Weekly OT (over 40 hrs)","$118.69","Chris Walker, Jasmine Ortiz"],["Accepted offers → OT","+$155.06","2 waiting for your approval"]],
+  chain:["The weekend template puts 24 of 34 shifts past 8 hrs, and extra shifts were added on top of full weeks.","$853.30 of daily OT; Chris Walker is at 42.75 hrs and Jasmine Ortiz at 41.50 hrs; Kimberli Lopez and Alex Garcia accepted offers that take them past 40.","$971.99 of scheduled overtime, plus $155.06 more if both offers are approved."],
+  people:[["Daniel Reyes","GM · Sat 7:00 AM – 5:25 PM · $99.96 daily OT"],["Priya Nair","GM · Sun 7:15 AM – 4:55 PM · $70.98 daily OT"],["Omar Haddad","AM · Sun 2:45 PM – 12:45 AM · $69.35 daily OT"],["Chris Walker","Shift Leader · 42.75 hrs · $80.44 weekly OT"],["Jasmine Ortiz","Line Cook · 41.50 hrs · $38.25 weekly OT"],["Kimberli Lopez","Accepted Tyler Brooks’s Thu offer · 42.25 hrs"],["Alex Garcia","Accepted Eliza Funes’s Sun offer · 43.50 hrs"]],
+  note:"The daily table shows the 8 most expensive of 24 shifts. Managers hold 49% of the daily overtime cost.",
+  tables:[
+   {t:"Daily overtime · 8 most expensive of 24 shifts",h:["Employee","Day","Shift","OT hrs","OT cost","Suggested employee"],r:[["Daniel Reyes","Sat","7:00 AM – 5:25 PM","2.38",'<span class="neg">$99.96</span>',"Priya Nair"],["Priya Nair","Sun","7:15 AM – 4:55 PM","1.69",'<span class="neg">$70.98</span>',"Daniel Reyes"],["Omar Haddad","Sun","2:45 PM – 12:45 AM","2.01",'<span class="neg">$69.35</span>',"Marcus Bell"],["Graciela Atempa","Sat","10:00 AM – 7:50 PM","1.82",'<span class="neg">$62.79</span>',"Hannah Cho"],["Marcus Bell","Sat","2:30 PM – 12:10 AM","1.67",'<span class="neg">$57.62</span>',"Omar Haddad"],["Hannah Cho","Sun","10:15 AM – 7:55 PM","1.64",'<span class="neg">$56.58</span>',"Graciela Atempa"],["Mei Tanaka","Sun","6:45 AM – 4:35 PM","1.86",'<span class="neg">$54.41</span>',"Jordan Price"],["Kimberli Lopez","Sat","6:30 AM – 4:10 PM","1.69",'<span class="neg">$49.43</span>',"Ana Morales"]],n:[3,4]},
+   {t:"Weekly overtime · over 40 hrs",h:["Employee","Position","Week hrs","OT hrs","OT cost","Move this shift","Suggested employee","Their week after"],r:[["Chris Walker","Shift Leader","42.75","2.75",'<span class="neg">$80.44</span>',"Sun 2:00 – 8:00 PM","Ana Morales","26.00 hrs"],["Jasmine Ortiz","Line Cook","41.50","1.50",'<span class="neg">$38.25</span>',"Sun 10:00 AM – 3:30 PM","Andre Wilson","21.75 hrs"]],n:[2,3,4,7]},
+   {t:"Accepted shift offers waiting for approval",h:["Offered by","Shift","Accepted by","Their week if approved","OT if approved","Suggested instead","Their week after"],r:[["Tyler Brooks","Thu 2:00 – 8:00 PM · Shift Leader","Kimberli Lopez","42.25 hrs",'<span class="neg">2.25 hrs · $65.81</span>',"Jordan Price","24.50 hrs"],["Eliza Funes","Sun 3:00 – 9:00 PM · Line Cook","Alex Garcia","43.50 hrs",'<span class="neg">3.50 hrs · $89.25</span>',"Nicole Ramos","25.25 hrs"]],n:[3,4,6]}]},
+
+ {id:"open",tier:"t-orange",tag:"Fix first",short:"3 Friday shifts are unassigned",impact:"3",impactL:"unassigned",days:["Fri"],
+  title:"3 Friday Line Cook shifts are unassigned after approved time off",
+  lead:"Approved time off moved 3 shifts to Unassigned and nobody picked them up. Friday’s dinner rush is short until they have an employee, and unassigned shifts can’t be published.",
+  parts:[["Unassigned shifts","3","Fri · Line Cook"],["Hours open","17.50","10:30 AM – 9:00 PM"],["Ready matches","3 of 3","Same position, free Friday"]],
+  chain:["Luis Hernandez, Diego Ruiz and Maria Santos were approved off; their shifts were left unassigned.","Friday has 9.26 hrs scheduled vs 17.15 hrs needed from 4:00 PM to close.","The dinner rush is 7.89 staff-hours short and the 3 shifts can’t be published."],
+  people:[["Luis Hernandez","Line Cook · approved off Fri"],["Diego Ruiz","Line Cook · approved off Fri"],["Maria Santos","Line Cook · approved off Fri"],["Kevin Tran","Free to cover · 5.37 hrs this week"],["Carlos Mendoza","Free to cover · 5.39 hrs this week"],["Rosa Delgado","Free to cover · 5.87 hrs this week"]],
+  tables:[{t:"Unassigned shifts and suggested employees",h:["Open shift","Position","Hrs","Suggested employee","Their week after","Backup"],r:[["Fri 10:30 AM – 5:00 PM","Line Cook","6.50","Kevin Tran","11.87 hrs","Carlos Mendoza"],["Fri 3:00 – 9:00 PM","Line Cook","6.00","Carlos Mendoza","11.39 hrs","Rosa Delgado"],["Fri 4:00 – 9:00 PM","Line Cook","5.00","Rosa Delgado","10.87 hrs","Andre Wilson"]],n:[2]}]},
+
+ {id:"staff",tier:"t-yellow",tag:"Fix soon",short:"Overstaffed afternoons, short Friday night",impact:"+114.54 hrs",impactL:"overstaffed",days:["Mon","Thu","Fri","Sat","Sun"],
+  title:"Staffing doesn’t follow the forecast: too many people mid-afternoon, too few on Friday night",
+  lead:"Store-level staffing against the forecast, hour by hour. Afternoons are padded on 4 days and Thursday carries an extra closer, while Friday’s dinner rush is short because of the open shifts.",
+  parts:[["Overstaffed","114.54 hrs","Biggest: Sun 1:00 – 5:00 PM"],["Understaffed","9.35 hrs","Mostly Fri 4:00 PM – close"],["Over budget","59.90 hrs","20% labor budget"],["Staffing efficiency","81.1%","Scheduled vs forecast staff"]],
+  chain:["The templates add the same afternoon overlap every day, whatever the forecast says.","Thursday runs 14 shifts instead of 13; Sat and Sun afternoons carry 3 to 4 more people than needed; Friday dinner is short.","114.54 hrs over forecast and 59.90 hrs over budget, while Friday’s dinner rush runs 7.89 staff-hours short."],
+  people:[["Ava Thompson","Thu closer 4:00 – 10:55 PM"],["Daniel Reyes","About 40 min of padding on Thu"],["Hannah Cho","About 40 min of padding on Thu"],["Mei Tanaka","About 40 min of padding on Thu"]],
+  tables:[
+   {t:"Biggest gaps by hour",h:["Day","Time window","Scheduled staff-hrs","Forecast staff-hrs","Gap"],r:[["Mon Sep 1 (Labor Day)","2:00 – 5:00 PM","17.12","11.00",'<span class="neg">+6.12 over</span>'],["Thu Sep 4","1:00 – 6:00 PM","29.37","22.00",'<span class="neg">+7.37 over</span>'],["Sat Sep 6","2:00 – 6:00 PM","35.84","24.00",'<span class="neg">+11.84 over</span>'],["Sun Sep 7","1:00 – 5:00 PM","34.06","22.00",'<span class="neg">+12.06 over</span>'],["Sun Sep 7","9:00 PM – close","10.10","6.00",'<span class="neg">+4.10 over</span>'],["Fri Sep 5","4:00 PM – close","9.26","17.15",'<span class="neg">−7.89 short</span>'],["Sat Sep 6","11:00 AM – 12:00 PM","8.54","10.00",'<span class="neg">−1.46 short</span>']],n:[2,3,4]},
+   {t:"Budget vs scheduled by day",h:["Day","Budget hrs","Scheduled hrs","Difference"],r:[["Mon Sep 1","63.38","73.90",'<span class="neg">−10.52</span>'],["Tue Sep 2","71.69","72.56",'<span class="neg">−0.87</span>'],["Wed Sep 3","69.30","71.28",'<span class="neg">−1.98</span>'],["<b>Thu Sep 4</b>","70.52","89.06",'<span class="neg"><b>−18.54</b></span>'],["Fri Sep 5","72.68","59.74",'<span class="pos">+12.94 (understaffed)</span>'],["Sat Sep 6","128.45","145.01",'<span class="neg">−16.56</span>'],["Sun Sep 7","120.41","144.79",'<span class="neg">−24.38</span>'],["<b>Week</b>","596.44","656.34",'<span class="neg"><b>−59.90</b></span>']],n:[1,2,3]}]},
+
+ {id:"rate",tier:"t-yellow",tag:"Save money",short:"4 shifts use a higher-paid employee",impact:"$67.26",impactL:"per week",days:["Tue","Sat","Sun"],
+  title:"4 shifts go to higher-paid employees while a lower-paid one in the same position is free",
+  lead:"Same position, same hours. Swapping in the lower-rate employee who is available and well under 40 hrs saves $67.26 this week, about $3,497.52 a year.",
+  parts:[["Shifts to swap","4","Line Cook, Shift Leader, Prep Cook, GSA"],["Weekly saving","$67.26","No coverage change"],["Yearly if repeated","$3,497.52","52 weeks"]],
+  chain:["Shifts were filled by habit, not by pay rate.","4 shifts go to employees earning $2.00 – $3.50/hr more than a free co-worker in the same position.","$67.26 of extra labor this week, repeated every week the template is reused."],
+  people:[["Pedro Alvarez","Line Cook · $19.75/hr · Sat"],["Tyler Brooks","Shift Leader · $21.25/hr · Tue"],["Victor Castillo","Prep Cook · $17.75/hr · Sun"],["Cecilia Ramirez","GSA · $18.25/hr · Sat"]],
+  tables:[{t:"Swap to the lower-rate employee",h:["Scheduled","Rate","Day","Shift","Hrs","Suggested employee","Rate","Their week after","Saving"],r:[["Pedro Alvarez","$19.75","Sat","10:30 AM – 5:00 PM","6.50","Eliza Funes","$16.25","28.50 hrs",'<span class="pos">$22.75</span>'],["Tyler Brooks","$21.25","Tue","2:00 – 8:30 PM","6.50","Ana Morales","$18.50","26.50 hrs",'<span class="pos">$17.88</span>'],["Victor Castillo","$17.75","Sun","6:00 AM – 12:00 PM","6.00","Ivy Chen","$15.75","20.00 hrs",'<span class="pos">$12.00</span>'],["Cecilia Ramirez","$18.25","Sat","11:00 AM – 5:30 PM","6.50","Isabella Flores","$16.00","17.00 hrs",'<span class="pos">$14.63</span>'],["<b>Total</b>","","","","<b>25.50</b>","","","",'<span class="pos"><b>$67.26</b></span>']],n:[1,4,6,7,8]}]},
+
+ {id:"publish",tier:"t-yellow",tag:"Fix soon",short:"Week published, 8 shifts still unpublished",impact:"8",impactL:"unpublished",days:["Tue","Wed","Fri"],
+  title:"The week is published, but 8 shifts are still unpublished",
+  lead:"8 shifts unpublished, employees don’t have the shift details. 4 time-off requests for the next schedule are also still undecided.",
+  parts:[["Unpublished shifts","8","44.56 hrs · 7 employees"],["Pending requests","4","Sep 18 – 20"]],
+  chain:["The week is in Published state, but 8 shifts on Tue, Wed and Fri are still unpublished.","7 employees don’t have their shift details (44.56 hrs).","Risk of no-shows, and the next schedule is being built on undecided time off."],
+  people:[["Priya Nair","GM · 2 unpublished shifts"],["Daniel Reyes","GM · Tue 7:00 AM – 1:35 PM"],["Luis Hernandez","Line Cook · Tue 3:00 – 8:30 PM"],["Aaliyah Brown","Dishwasher · Tue 10:30 AM – 3:35 PM"],["Kevin Tran","Line Cook · Wed 3:15 – 8:35 PM"],["Hector Cruz","Dishwasher · Wed 10:45 AM – 3:00 PM"],["Grace Park","Prep Cook · Fri 9:15 AM – 1:50 PM"]],
+  tables:[{t:"Unpublished shifts",h:["Employee","Day","Shift","Hrs"],r:[["Daniel Reyes","Tue","7:00 AM – 1:35 PM","6.57"],["Luis Hernandez","Tue","3:00 – 8:30 PM","5.52"],["Aaliyah Brown","Tue","10:30 AM – 3:35 PM","5.05"],["Priya Nair","Wed","7:15 AM – 1:45 PM","6.54"],["Kevin Tran","Wed","3:15 – 8:35 PM","5.37"],["Hector Cruz","Wed","10:45 AM – 3:00 PM","4.23"],["Priya Nair","Fri","7:15 AM – 2:00 PM","6.71"],["Grace Park","Fri","9:15 AM – 1:50 PM","4.57"],["<b>Total</b>","","","<b>44.56</b>"]],n:[3]}]}
+];
+
+const WHEN={today:"Today",shift:"Before Sunday",publish:"Before publish",next:"Next schedule"};
+const FIXES=[
+ {id:"a1",p:"law",ph:"today",t:"End Mia Lee’s Friday shift at 3:15 PM",d:"Minor, age 16, school day.",g:"Clears 1 legal risk"},
+ {id:"a2",p:"law",ph:"today",t:"End Noah Davis’s Sunday shift at 10:00 PM",d:"Minor, age 17, school day next.",g:"Clears 1 legal risk"},
+ {id:"a3",p:"law",ph:"today",t:"Cut Daniel Reyes and Omar Haddad to 8 hrs",d:"Or add a second meal break to each shift.",g:"Clears 2 legal risks"},
+ {id:"l4",p:"law",ph:"today",t:"Start Olivia Martinez’s Saturday shift at 7:00 AM",d:"Gives her 8 hrs off between Friday close and Saturday open.",g:"Clears 1 legal risk"},
+ {id:"l5",p:"law",ph:"shift",t:"Give Mei Tanaka Sunday off",d:"Move her 6:45 AM shift to Jordan Price, capped at 8 hrs. His week goes to 26.50 hrs.",g:"Clears 1 legal risk, −1.86 OT hrs"},
+ {id:"l6",p:"law",ph:"publish",t:"Clear the schedule pad warnings before you publish",d:"All 6 risks showed a warning icon on the shift before the week went out.",g:"No new legal risks"},
+ {id:"t1",p:"avail",ph:"today",t:"Move Juan Lopez’s Saturday shift to Ethan Kim",d:"Line Cook, free Saturday night. His week goes to 26.00 hrs.",g:"Clears the time-off conflict"},
+ {id:"t2",p:"avail",ph:"today",t:"Decide Sofia Bagley’s Sat Sep 6 request",d:"Waiting 9 days. If you approve it, give her 4:00 – 10:50 PM shift to Chloe Adams (22.58 hrs).",g:"No surprise no-show"},
+ {id:"t3",p:"avail",ph:"shift",t:"End Ava Thompson’s Thursday shift at 9:00 PM",d:"Thursday is overstaffed at close, so nobody needs to cover 9:00 – 10:55 PM.",g:"−1.92 hrs, 1 warning cleared"},
+ {id:"o1",p:"ot",ph:"today",t:"Approve Tyler Brooks’s Thursday offer for Jordan Price, not Kimberli Lopez",d:"Kimberli would reach 42.25 hrs. Jordan is a Shift Leader at 18.50 hrs.",g:"Avoids $65.81 OT"},
+ {id:"o2",p:"ot",ph:"today",t:"Approve Eliza Funes’s Sunday offer for Nicole Ramos, not Alex Garcia",d:"Alex would reach 43.50 hrs. Nicole is a Line Cook at 19.25 hrs.",g:"Avoids $89.25 OT"},
+ {id:"w1",p:"ot",ph:"shift",t:"Move Chris Walker’s Sun 2:00 – 8:00 PM shift to Ana Morales",d:"Shift Leader. Chris drops to 36.75 hrs; Ana goes to 26.00 hrs.",g:"−$80.44 weekly OT"},
+ {id:"w2",p:"ot",ph:"shift",t:"Move Jasmine Ortiz’s Sun 10:00 AM – 3:30 PM shift to Andre Wilson",d:"Line Cook. Jasmine drops to 36.00 hrs; Andre goes to 21.75 hrs.",g:"−$38.25 weekly OT"},
+ {id:"b5",p:"ot",ph:"shift",t:"Cap every Saturday shift at 8 hrs",d:"Daniel Reyes, Graciela Atempa, Marcus Bell, Kimberli Lopez and 8 more. The suggested employee takes the extra hours.",g:"−14.47 hrs, −$448.13 OT"},
+ {id:"b1",p:"ot",ph:"shift",t:"Cap every Sunday shift at 8 hrs",d:"Omar Haddad, Priya Nair, Hannah Cho and 9 more.",g:"−13.27 hrs, −$405.17 OT"},
+ {id:"c1",p:"ot",ph:"publish",t:"Turn on the 8-hour daily check",d:"Any shift over 8 hrs is flagged before the schedule goes out.",g:"Stops long shifts coming back"},
+ {id:"d1",p:"ot",ph:"next",t:"Cap Saturday and Sunday template shifts at 8 hrs",d:"Start with the 6 GM and AM shifts ($417.27 of OT).",g:"−27.74 hrs, all weekend OT"},
+ {id:"d2",p:"ot",ph:"next",t:"End the 3 past-midnight closers by 11:00 PM",d:"Do this together with the 8-hour cap.",g:"About −29 extra weekend hrs"},
+ {id:"a5",p:"open",ph:"today",t:"Assign Kevin Tran to Fri 10:30 AM – 5:00 PM",d:"Line Cook. His week goes to 11.87 hrs. Backup: Carlos Mendoza.",g:"Shift can be published"},
+ {id:"a6",p:"open",ph:"today",t:"Assign Carlos Mendoza to Fri 3:00 – 9:00 PM",d:"Line Cook. His week goes to 11.39 hrs. Backup: Rosa Delgado.",g:"Covers the dinner rush"},
+ {id:"a7",p:"open",ph:"today",t:"Assign Rosa Delgado to Fri 4:00 – 9:00 PM",d:"Line Cook. Her week goes to 10.87 hrs. Backup: Andre Wilson.",g:"Covers the dinner rush"},
+ {id:"d5",p:"open",ph:"next",t:"Offer shifts for pick-up when time off is approved",d:"Use Unassign and Offer Shift instead of leaving them in the Unassigned row.",g:"No silent coverage gaps"},
+ {id:"b2",p:"staff",ph:"shift",t:"Shorten the longest overlapping Sunday shifts",d:"Sunday 1:00 – 5:00 PM carries 12.06 staff-hours more than forecast.",g:"Up to −12.06 staff-hours"},
+ {id:"b4",p:"staff",ph:"shift",t:"End Sunday closers by 11:00 PM",d:"Omar, Hector, Noah, Olivia and Luis.",g:"−4.10 hrs after 9:00 PM"},
+ {id:"s1",p:"staff",ph:"next",t:"Cut one 2:00 – 6:00 PM shift from the Saturday template",d:"Saturday afternoon has about 3 more people than the forecast needs.",g:"Up to −11.84 staff-hours"},
+ {id:"d3",p:"staff",ph:"next",t:"Drop one of the two 4:00 – 10:55 PM Thursday closers",d:"6.95 hrs. If you drop Ava Thompson’s, her availability conflict goes too.",g:"−6.95 hrs"},
+ {id:"d4",p:"staff",ph:"next",t:"Remove the ~40 min of padding per Thursday shift",d:"Start or end Daniel Reyes, Hannah Cho and Mei Tanaka about an hour earlier or later.",g:"About −8.6 hrs"},
+ {id:"s2",p:"staff",ph:"next",t:"Trim Labor Day afternoon to the holiday forecast",d:"Mon 2:00 – 5:00 PM ran 6.12 staff-hours over; build holidays from their own forecast.",g:"−6.12 staff-hours"},
+ {id:"r1",p:"rate",ph:"shift",t:"Give Pedro Alvarez’s Saturday shift to Eliza Funes",d:"Line Cook, $19.75 → $16.25/hr. Her week goes to 28.50 hrs.",g:"−$22.75"},
+ {id:"r2",p:"rate",ph:"next",t:"Give Tyler Brooks’s Tuesday shift to Ana Morales",d:"Shift Leader, $21.25 → $18.50/hr. Her week goes to 26.50 hrs.",g:"−$17.88 a week"},
+ {id:"r3",p:"rate",ph:"shift",t:"Give Victor Castillo’s Sunday shift to Ivy Chen",d:"Prep Cook, $17.75 → $15.75/hr. Her week goes to 20.00 hrs.",g:"−$12.00"},
+ {id:"r4",p:"rate",ph:"shift",t:"Give Cecilia Ramirez’s Saturday shift to Isabella Flores",d:"GSA, $18.25 → $16.00/hr. Her week goes to 17.00 hrs.",g:"−$14.63"},
+ {id:"a9",p:"publish",ph:"today",t:"Publish the 8 unpublished shifts",d:"All 8 shifts reach the 7 employees.",g:"7 employees get their shifts"},
+ {id:"c2",p:"publish",ph:"publish",t:"Decide the 4 pending requests for Sep 18 – 20",d:"Liam Rodriguez and Isabella Flores are under 11 hrs and can cover Sat Sep 19.",g:"Next schedule on decided time off"}
+];
+
+/* ---------- state ---------- */
+const done=new Set();
+let selected="law", lastToggle=null;
+try{JSON.parse(localStorage.getItem("si5-done")||"[]").forEach(x=>{if(FIXES.some(f=>f.id===x))done.add(x)})}catch(e){}
+const save=()=>{try{localStorage.setItem("si5-done",JSON.stringify([...done]))}catch(e){}};
+const P=id=>PROBS.find(p=>p.id===id);
+const fxOf=id=>FIXES.filter(f=>f.p===id);
+
+function task(f,meta=true){
+  return `<label class="task ${done.has(f.id)?"done":""}">
+    <input type="checkbox" class="chk" data-id="${f.id}" ${done.has(f.id)?"checked":""} aria-label="${f.t}">
+    <div><div class="tk-t">${f.t}</div><div class="tk-d">${f.d}</div>
+    ${meta?`<div class="tk-row"><span class="chip-g">${f.g}</span><span class="chip-w ${f.ph==="today"?"today":""}">${WHEN[f.ph]}</span></div>`:""}</div>
+  </label>`;
+}
+
+/* ---------- views ---------- */
+function show(v){
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll(".tc").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+  if(location.hash!=="#"+v) history.replaceState(null,"","#"+v);
+  if(v==="fix")planNav();   // card widths are only measurable once the view is shown
+}
+document.querySelectorAll(".tc").forEach(b=>b.onclick=()=>show(b.dataset.v));
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["well","wrong","fix"].includes(h))show(h)});
+document.addEventListener("click",e=>{
+  const w=e.target.closest("[data-why]");
+  if(w){e.preventDefault();selected=w.dataset.why;renderWrong();show("wrong");document.getElementById("v-wrong").scrollIntoView({behavior:"smooth",block:"start"})}
+});
+
+/* ---------- went well ---------- */
+document.getElementById("wellGrid").innerHTML=WELL.map(w=>`<div class="wc"><span class="ck">${IC.tick}</span><div><b>${w[0]}</b><span>${w[1]}</span><em class="num">${w[2]}</em></div></div>`).join("");
+
+/* ---------- went wrong ---------- */
+function renderWrong(){
+  document.getElementById("probList").innerHTML=PROBS.map(p=>{
+    const fx=fxOf(p.id), d=fx.filter(f=>done.has(f.id)).length, solved=d===fx.length;
+    return `<button class="li ${solved?"t-green solved":p.tier}" role="option" aria-selected="${p.id===selected}" data-p="${p.id}">
+      <span class="li-head"><span class="sic">${solved?IC.tick:IC.alert}</span><span class="li-t">${p.short}</span><span class="li-go" aria-hidden="true">${IC.caret}</span></span>
+      <span class="li-meta"><span class="tag">${solved?"Fixed":p.tag}</span><span class="days">${p.days.join(", ")}</span></span>
+      <span class="li-bot"><span class="li-i num">${p.impact}</span><span class="li-l">${p.impactL}</span><span class="bar"><i style="width:${Math.round(d/fx.length*100)}%"></i></span><span class="li-fx num">${d}/${fx.length} fixed</span></span>
+    </button>`}).join("");
+  document.querySelectorAll(".li").forEach(b=>b.onclick=()=>{selected=b.dataset.p;renderWrong()});
+
+  const p=P(selected), fx=fxOf(p.id), d=fx.filter(f=>done.has(f.id)).length;
+  const det=document.getElementById("detail");
+  det.className="detail "+p.tier;
+  det.innerHTML=`
+    <div class="d-top"><span class="li-top"><span class="tag">${p.tag}</span><span class="days">${p.days.join(", ")}</span></span><h3>${p.title}</h3><p>${p.lead}</p>
+      ${p.parts?`<div class="parts">${p.parts.map(x=>`<div class="part"><small>${x[0]}</small><b class="num">${x[1]}</b><span>${x[2]}</span></div>`).join("")}</div>`:""}</div>
+    <div class="d-sec"><div class="lbl">Why it happened</div>
+      <div class="chain">
+        <div class="node"><small>1 · Cause</small><p>${p.chain[0]}</p></div>
+        <div class="node n2"><small>2 · What it led to</small><p>${p.chain[1]}</p></div>
+        <div class="node n3"><small>3 · What it costs you</small><p>${p.chain[2]}</p></div>
+      </div></div>
+    <div class="d-sec"><div class="lbl">When it happens</div>
+      <div class="wk">${WEEK.map(w=>`<div class="wd ${p.days.includes(w)?"hit":""}"><b>${w}</b>${DATES[w]}</div>`).join("")}</div></div>
+    <div class="d-sec"><div class="lbl">Who it affects</div>
+      <div class="people">${p.people.map((x,i)=>`<div class="pp"><span class="pa" style="background:${AVC[i%AVC.length]}">${ini(x[0])}</span><div><b>${x[0]}</b><span class="pd">${x[1]}</span></div></div>`).join("")}</div>
+      ${p.note?`<p style="margin:12px 0 0;font-size:13.5px;color:var(--ink-3)">${p.note}</p>`:""}</div>
+    <details class="nums" open><summary>${IC.caret}See the numbers behind this</summary>
+      ${p.tables.map(tb=>`${tb.t?`<div class="tcap">${tb.t}</div>`:""}<div class="tblw"><table><thead><tr>${tb.h.map((h,i)=>`<th class="${tb.n.includes(i)?"r":""}">${h}</th>`).join("")}</tr></thead>
+      <tbody>${tb.r.map(r=>`<tr>${r.map((c,i)=>`<td class="${tb.n.includes(i)?"r num":""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("")}
+    </details>`;
+
+  document.getElementById("fixpanel").innerHTML=`
+    <div class="fp-h"><h4><span class="fp-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>How to fix this</h4><div class="bar"><i style="width:${Math.round(d/fx.length*100)}%"></i></div><small class="num">${d} of ${fx.length} steps done</small></div>
+    <div class="fp-list">${fx.map(f=>task(f)).join("")}</div>
+    <div class="fp-f"><button class="outline" id="seePlan">See the full plan ${IC.arrow}</button></div>`;
+  document.getElementById("seePlan").onclick=()=>{show("fix");document.getElementById("v-fix").scrollIntoView({behavior:"smooth",block:"start"})};
+}
+
+/* ---------- full plan ---------- */
+function renderPlan(){
+  document.getElementById("plan").innerHTML=PROBS.map(p=>{
+    const fx=fxOf(p.id), d=fx.filter(f=>done.has(f.id)).length, solved=d===fx.length;
+    return `<div class="pc ${solved?"t-green solved":p.tier}">
+      <div class="pc-h">
+        <div class="pc-top"><span class="tag">${solved?"Fixed":p.tag}</span><span class="days">${p.days.join(", ")}</span><button class="why" data-why="${p.id}">Why it happened</button></div>
+        <div class="pc-t">${p.short}</div>
+        <div class="bar"><i style="width:${Math.round(d/fx.length*100)}%"></i></div>
+        <small class="num">${d} of ${fx.length} steps done</small>
+      </div>
+      <div class="pc-list">${fx.map(f=>task(f)).join("")}</div>
+    </div>`}).join("");
+}
+
+function progress(){
+  const n=done.size,t=FIXES.length,pct=Math.round(n/t*100);
+  document.getElementById("tcFixSub").textContent=`${n} of ${t} steps done`;
+  document.getElementById("tcFixN").textContent=pct+"%";
+  document.getElementById("tcBar").style.width=pct+"%";
+  document.getElementById("planDone").textContent=`${n} of ${t} steps done`;
+  document.getElementById("planSub").textContent=`${t} steps across ${PROBS.length} problems. Legal risks first, then overtime and coverage.`;
+  document.getElementById("tcWrongN").textContent=PROBS.length;
+  const today=FIXES.filter(f=>f.ph==="today").every(f=>done.has(f.id));
+  document.getElementById("allset").classList.toggle("on",today);
+  document.getElementById("allsetText").textContent=n===t?"Every step is done. Refresh to re-check the schedule.":"Today’s steps are done: no legal risks left and the schedule can be published.";
+}
+
+/* ---------- fix plan carousel: arrows page through the problem cards ---------- */
+const planEl=document.getElementById("plan");
+function planStep(){const c=planEl.querySelector(".pc");return c?c.getBoundingClientRect().width+12:planEl.clientWidth}
+function planNav(){
+  const n=PROBS.length,step=planStep();if(!step)return;
+  const first=Math.round(planEl.scrollLeft/step),per=Math.max(1,Math.round((planEl.clientWidth+12)/step));
+  const last=Math.min(n,first+per);
+  document.getElementById("pnavC").textContent=`${first+1}${last>first+1?"–"+last:""} of ${n} problems`;
+  document.getElementById("pPrev").disabled=planEl.scrollLeft<4;
+  document.getElementById("pNext").disabled=planEl.scrollLeft+planEl.clientWidth>=planEl.scrollWidth-4;
+  document.querySelector(".pnav").style.display=per>=n?"none":"";
+}
+document.getElementById("pPrev").onclick=()=>planEl.scrollBy({left:-planStep()});
+document.getElementById("pNext").onclick=()=>planEl.scrollBy({left:planStep()});
+planEl.addEventListener("scroll",()=>requestAnimationFrame(planNav),{passive:true});
+addEventListener("resize",planNav);
+
+function rerender(){renderWrong();renderPlan();progress();planNav()}
+document.addEventListener("change",e=>{
+  if(!e.target.matches(".chk[data-id]"))return;
+  const id=e.target.dataset.id;
+  e.target.checked?done.add(id):done.delete(id);
+  lastToggle={id,was:!e.target.checked};
+  save();rerender();toast(e.target.checked?"Marked done":"Marked not done");
+});
+let tt;
+function toast(m,undo=true){if(EMBED){toHost({type:"si-v3-toast",msg:m,undo});return}const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=m;document.getElementById("undo").style.display=undo?"":"none";t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2600)}
+function undoLast(){if(!lastToggle)return;lastToggle.was?done.add(lastToggle.id):done.delete(lastToggle.id);lastToggle=null;save();rerender();document.getElementById("toast").classList.remove("on")}
+document.getElementById("undo").onclick=undoLast;
+document.getElementById("refresh").onclick=()=>toast("Insights refreshed",false);
+
+rerender();
+const h=location.hash.slice(1);
+show(["well","wrong","fix"].includes(h)?h:"wrong");
+</script>
+</body>
+</html>

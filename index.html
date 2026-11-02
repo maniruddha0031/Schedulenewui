@@ -873,7 +873,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <div class="ai-insight-icon"><i data-lucide="lightbulb" class="w-4 h-4"></i></div>
             <span>AI INSIGHT</span>
         </div>
-        <button class="ai-insight-more" onclick="openAiInsightModal()" aria-label="View more AI insights">View More</button>
+        <button class="ai-insight-more" onclick="location.href='schedule-insight/index.html'" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
         <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
@@ -1653,7 +1653,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <div class="ai-insight-icon"><i data-lucide="lightbulb" class="w-4 h-4"></i></div>
             <span>AI INSIGHT</span>
         </div>
-        <button class="ai-insight-more" onclick="openAiInsightModal()" aria-label="View more AI insights">View More</button>
+        <button class="ai-insight-more" onclick="location.href='schedule-insight/index.html'" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
         <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
@@ -2629,41 +2629,6 @@ renderDashboardUI();
 <div id="kpi-modal-root"></div>
 
 
-
-<!-- ===== AI INSIGHT MODAL ===== -->
-<div id="aiInsightModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[200]">
-  <div class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
-    <button onclick="closeAiInsightModal()" class="ai-modal-close" aria-label="Close">
-      <i data-lucide="x"></i>
-    </button>
-
-    <header class="ai-modal-head">
-      <div class="ai-modal-brand">
-        <div class="ai-modal-avatar"><i data-lucide="lightbulb"></i></div>
-        <h2 id="aiModalTitle">AI INSIGHT</h2>
-      </div>
-      <div class="ai-modal-actions">
-        <a href="Advanced Insights.html" class="ai-advanced-btn">
-          <span class="ai-advanced-spark"><i data-lucide="sparkles"></i></span>
-          <span>Advanced Insights</span>
-          <i data-lucide="arrow-up-right" class="ai-advanced-arrow"></i>
-        </a>
-        <span class="ai-modal-time">Updated at: 05:21 AM</span>
-      </div>
-    </header>
-
-    <div class="ai-modal-body">
-      <section class="ai-col">
-        <div class="ai-col-title">Daily recommendations</div>
-        <div class="ai-col-list" id="aiDailyList"></div>
-      </section>
-      <section class="ai-col">
-        <div class="ai-col-title">Weekly recommendations</div>
-        <div class="ai-col-list" id="aiWeeklyList"></div>
-      </section>
-    </div>
-  </div>
-</div>
 
 <!-- GENERIC KPI MODAL -->
 <div id="kpiModal" class="fixed inset-0 bg-slate-900/45 backdrop-blur-[2px] hidden items-center justify-center z-50" onclick="if(event.target===this) closeKpiModal()">
@@ -4577,6 +4542,71 @@ function switchTab(tab) {
   @keyframes uaDropIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
 </style>
 
+<!-- UNASSIGNED SHIFT: ASSIGN DRAWER (dashboard) -->
+<div id="dashAssignDrawer" class="hidden fixed inset-0 z-[9990]">
+  <span class="da-backdrop absolute inset-0 block bg-slate-900/30" onclick="closeDashAssign()"></span>
+  <aside class="da-panel absolute top-0 right-0 h-full w-full max-w-[540px] bg-white shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between px-6 h-14 border-b border-slate-200 shrink-0">
+      <span class="text-[17px] font-bold text-slate-900">Assign Shift</span>
+      <button onclick="closeDashAssign()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100" title="Close (Esc)"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="px-6 py-3.5 bg-slate-50 border-b border-slate-100 shrink-0 flex items-center gap-3">
+      <span class="w-11 h-11 rounded-full bg-blue-50 text-blue-600 border-2 border-dashed border-blue-300 flex items-center justify-center shrink-0"><i data-lucide="calendar-clock" class="w-5 h-5"></i></span>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2"><span id="daRole" class="text-[15px] font-bold text-slate-900"></span><span id="daDept" class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold"></span></div>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-[12.5px] text-slate-600">
+          <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i><span id="daWhen"></span></span>
+          <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i><span id="daTime"></span></span>
+          <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-slate-400"></i><span id="daDur"></span></span>
+        </div>
+      </div>
+    </div>
+    <div class="px-6 pt-4 pb-3 border-b border-slate-100 shrink-0 space-y-3">
+      <div class="flex items-center justify-between gap-3">
+        <span class="text-[13px] font-semibold text-slate-700">Assign this shift to</span>
+        <div class="da-tabs">
+          <button type="button" data-tab="eligible" onclick="setDashAssignTab('eligible')">Eligible <span id="daEligCount">0</span></button>
+          <button type="button" data-tab="others" onclick="setDashAssignTab('others')">Others <span id="daOtherCount">0</span></button>
+        </div>
+      </div>
+      <div class="da-search"><i data-lucide="search" class="w-4 h-4 text-slate-400"></i><input id="daSearch" type="text" placeholder="Search employee" oninput="renderDashAssign()"></div>
+      <p id="daHint" class="text-[12px] text-slate-500"></p>
+    </div>
+    <div id="daList" class="flex-1 overflow-y-auto px-4 py-3 space-y-2"></div>
+    <div class="px-6 py-3 border-t border-slate-200 flex items-center justify-between gap-3 shrink-0 bg-white">
+      <span id="daInfo" class="text-[13px] text-slate-500"></span>
+      <button id="daConfirm" onclick="confirmDashAssign()" class="da-confirm"><i data-lucide="user-check" class="w-4 h-4"></i>Assign</button>
+    </div>
+  </aside>
+</div>
+<style>
+  #dashAssignDrawer .da-panel { transform: translateX(100%); transition: transform .22s ease; }
+  #dashAssignDrawer .da-backdrop { opacity: 0; transition: opacity .22s ease; }
+  #dashAssignDrawer.da-open .da-panel { transform: none; }
+  #dashAssignDrawer.da-open .da-backdrop { opacity: 1; }
+  #dashAssignDrawer svg { width: 1em; height: 1em; }
+  #dashAssignDrawer i[data-lucide] + *, #dashAssignDrawer svg.lucide { flex-shrink: 0; }
+  .da-tabs { display: flex; gap: 4px; padding: 3px; background: #f1f5f9; border-radius: 10px; }
+  .da-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 600; color: #64748b; }
+  .da-tabs button span { min-width: 20px; height: 18px; padding: 0 6px; border-radius: 999px; background: #e2e8f0; color: #475569; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+  .da-tabs button.active { background: #fff; color: #1d4ed8; box-shadow: 0 1px 3px rgba(15,23,42,.15); }
+  .da-tabs button.active span { background: #dbeafe; color: #1d4ed8; }
+  .da-search { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; }
+  .da-search input { flex: 1; border: 0; outline: none; font-size: 13px; background: transparent; }
+  .da-emp { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: border-color .12s, background .12s; }
+  .da-emp:hover { border-color: #bfdbfe; background: #f8fbff; }
+  .da-emp.selected { border-color: #2563eb; background: #eff6ff; box-shadow: inset 0 0 0 1px #2563eb; }
+  .da-emp input { accent-color: #2563eb; width: 16px; height: 16px; }
+  .da-emp img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+  .da-name { font-size: 13.5px; font-weight: 600; color: #0f172a; }
+  .da-sub { font-size: 12px; color: #64748b; }
+  .da-tag { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px; }
+  .da-tag-ok { background: #dcfce7; color: #15803d; } .da-tag-warn { background: #fef3c7; color: #b45309; } .da-tag-bad { background: #ffe4e6; color: #be123c; }
+  .da-confirm { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 18px; border-radius: 10px; background: #2563eb; color: #fff; font-size: 13px; font-weight: 600; }
+  .da-confirm svg { width: 16px; height: 16px; }
+  .da-confirm:disabled { opacity: .45; cursor: not-allowed; }
+</style>
+
 <!-- UNASSIGNED SHIFT: OFFER STATUS (dashboard) -->
 <div id="dashUaOffersPop" class="hidden" role="dialog" aria-label="Shift offers">
   <div class="du-head">
@@ -4825,6 +4855,21 @@ function renderDashUaStatus() {
     document.querySelectorAll('.ua-actions [onclick^="openAssignModal(\'ua-"]').forEach(btn => {
         const key = btn.getAttribute('onclick').match(/'(ua-[^']+)'/)[1];
         const row = btn.closest('.ua-actions').parentElement;
+        // three actions per row: Offer (existing Offer pop-up), Assign (right-side drawer), Delete
+        if (!btn.dataset.duOffer) {
+            btn.dataset.duOffer = '1';
+            btn.title = 'Offer Shift';
+            const isIcon = btn.classList.contains('sd-icon-btn');
+            if (isIcon) btn.innerHTML = '<i data-lucide="send"></i>';
+            else btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i> Offer';
+            const a = document.createElement('button');
+            a.type = 'button';
+            a.title = 'Assign Shift';
+            a.className = isIcon ? 'sd-icon-btn sd-icon-btn--ok du-assign' : 'text-emerald-600 text-[12px] font-bold flex items-center gap-1 hover:underline du-assign';
+            a.innerHTML = isIcon ? '<i data-lucide="user-check"></i>' : '<i data-lucide="user-check" class="w-4 h-4"></i> Assign';
+            a.onclick = e => { e.stopPropagation(); openDashAssign(key); };
+            btn.insertAdjacentElement('beforebegin', a);
+        }
         const name = row.querySelector('.sd-row-name, .font-bold');
         if (!name) return;
         let pill = name.querySelector('.du-status');
@@ -4919,6 +4964,89 @@ document.addEventListener('mousedown', e => {
     if (p && !p.classList.contains('hidden') && !p.contains(e.target) && !e.target.closest('.du-offered')) closeDashUaOffers();
 });
 document.addEventListener('DOMContentLoaded', renderDashUaStatus);
+
+/* ---- Assign an unassigned shift from the dashboard: right-side drawer (same as Schedule Pad) ---- */
+const _daEmps = [
+    ['Maria Lopez', 'Crew', 47, 26.5], ['Kevin Brooks', 'Cashier', 12, 31], ['Aisha Khan', 'Crew', 45, 18],
+    ['Tom Reyes', 'Cashier', 15, 34], ['Sara Nguyen', 'Crew', 44, 22], ['Luis Ortega', 'Dishwasher', 33, 29.5],
+    ['Ben Carter', 'Prep Cook', 8, 36], ['Nina Patel', 'Prep Cook', 32, 24], ['Omar Haddad', 'Line Cook', 59, 38.5],
+    ['Emily Carter', 'Line Cook', 49, 27], ['Marcos Delgado', 'Shift Leader', 11, 39], ['Jose Ramirez', 'Shift Leader', 14, 30],
+    ['Diana Torres', 'Server', 26, 21], ['Angel Renteria', 'Server', 5, 33], ['Kenia Garcia', 'Line Cook', 41, 40.5],
+].map(([name, pos, img, wk], i) => ({ id: i + 1, name, pos, img, wk }));
+const _daSkills = { 'Crew': ['Crew', 'Cashier', 'Server'], 'Cashier': ['Cashier', 'Crew'], 'Server': ['Server', 'Crew'],
+    'Line Cook': ['Line Cook', 'Prep Cook'], 'Prep Cook': ['Prep Cook', 'Line Cook', 'Dishwasher'], 'Dishwasher': ['Dishwasher', 'Prep Cook'],
+    'Shift Leader': ['Shift Leader', 'Crew', 'Cashier', 'Server'] };
+let _da = null;   // { key, role, tab, sel }
+function _daElig(e, role) {
+    if (e.wk >= 40) return { ok: false, tone: 'warn', note: 'Would go into OT' };
+    if (!(_daSkills[e.pos] || [e.pos]).includes(role)) return { ok: false, tone: 'warn', note: `Not trained: ${role}` };
+    if (e.id % 5 === 0) return { ok: false, tone: 'bad', note: 'Unavailable' };
+    return { ok: true, tone: 'ok', note: e.pos === role ? 'Position match' : 'Skill match' };
+}
+function openDashAssign(key) {
+    const m = _duMeta(key);
+    const [when = '', time = ''] = m.when.split('•').map(s => s.trim());
+    _da = { key, role: m.role, tab: 'eligible', sel: null };
+    document.getElementById('daRole').innerText = m.role;
+    document.getElementById('daDept').innerText = m.dept || '—';
+    document.getElementById('daWhen').innerText = when;
+    document.getElementById('daTime').innerText = time;
+    document.getElementById('daDur').innerText = uaShiftDuration(time);
+    document.getElementById('daSearch').value = '';
+    setDashAssignTab('eligible');
+    const d = document.getElementById('dashAssignDrawer');
+    d.classList.remove('hidden');
+    requestAnimationFrame(() => d.classList.add('da-open'));
+    document.addEventListener('keydown', _daKey);
+}
+function _daKey(e) { if (e.key === 'Escape') closeDashAssign(); }
+function closeDashAssign() {
+    const d = document.getElementById('dashAssignDrawer');
+    d.classList.remove('da-open');
+    document.removeEventListener('keydown', _daKey);
+    setTimeout(() => { if (!d.classList.contains('da-open')) d.classList.add('hidden'); }, 220);
+}
+function setDashAssignTab(tab) {
+    _da.tab = tab;
+    document.querySelectorAll('#dashAssignDrawer .da-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('daHint').innerText = tab === 'eligible'
+        ? 'Available that day, trained for this position and under 40 hrs this week.'
+        : 'Everyone else: different position, unavailable or would go into overtime.';
+    renderDashAssign();
+}
+function renderDashAssign() {
+    const rows = _daEmps.map(e => ({ e, el: _daElig(e, _da.role) }));
+    const elig = rows.filter(r => r.el.ok), other = rows.filter(r => !r.el.ok);
+    document.getElementById('daEligCount').innerText = elig.length;
+    document.getElementById('daOtherCount').innerText = other.length;
+    const q = document.getElementById('daSearch').value.trim().toLowerCase();
+    const list = (_da.tab === 'eligible' ? elig : other).filter(r => !q || r.e.name.toLowerCase().includes(q) || r.e.pos.toLowerCase().includes(q));
+    document.getElementById('daList').innerHTML = list.length ? list.map(({ e, el }) => `
+        <label class="da-emp${_da.sel === e.id ? ' selected' : ''}">
+            <input type="radio" name="daEmp" ${_da.sel === e.id ? 'checked' : ''} onchange="_da.sel=${e.id}; renderDashAssign()">
+            <img src="https://i.pravatar.cc/80?img=${e.img}" alt="">
+            <div class="flex-1 min-w-0"><div class="da-name">${e.name}</div><div class="da-sub">${e.pos} · Week ${e.wk} hrs</div></div>
+            <span class="da-tag da-tag-${el.tone}">${el.note}</span>
+        </label>`).join('') : '<div class="py-10 text-center text-[13px] text-slate-500">No employees in this list.</div>';
+    const emp = _daEmps.find(x => x.id === _da.sel);
+    document.getElementById('daInfo').innerHTML = emp ? `Assign to <b class="text-slate-800">${emp.name}</b>` : 'No employee selected';
+    document.getElementById('daConfirm').disabled = !emp;
+    if (window.lucide) lucide.createIcons();
+}
+function confirmDashAssign() {
+    const emp = _daEmps.find(x => x.id === _da.sel);
+    if (!emp) return;
+    const { key, role } = _da;
+    _duRows(key).forEach(row => {
+        const badge = row.closest('.draggable-card')?.querySelector('.ua-count');
+        row.remove();
+        if (badge) badge.textContent = Math.max(0, (parseInt(badge.textContent, 10) || 0) - 1);
+    });
+    delete dashUaOffers[key];
+    renderDashUaStatus();
+    closeDashAssign();
+    _duToast(`${role} shift assigned to ${emp.name}.`);
+}
 
 /* ---- Delete an unassigned shift (dashboard panel, both UIs) ---- */
 let uaPendingRow = null;

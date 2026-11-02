@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule AI Hub</title>
+<meta name="description" content="AI Hub mockup: 10 fixed schedule KPIs with driver breakdowns, evidence tables and recommended fixes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f9; --surface:#ffffff; --surface-2:#f7f8fc; --surface-3:#eef1f8;
+  --ink:#141c3f; --ink-2:#44506b; --muted:#7a839c; --line:#e2e6ef; --line-2:#d6dbe8;
+  --accent:#6d28d9; --accent-soft:#f3eefe; --accent-line:#e3d8fb; --accent-ink:#3d2c66;
+  --al:#d42525; --al-bg:#fdecec; --wn:#b86206; --wn-bg:#fdf1df; --gd:#0e8452; --gd-bg:#e2f5ea; --nm:#64748b; --nm-bg:#eef1f6;
+  --bar:#141c3f; --bar-ink:#ffffff;
+  --shadow:0 4px 16px rgba(20,28,63,.06);
+  --hero-a:#141c3f; --hero-b:#26327a; --hero-c:#5b34b8;
+  --heat-0:#f4f6fb; --heat-ink:#141c3f;
+  --ui:'Roboto',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --head:'Poppins','Roboto',system-ui,sans-serif;
+  --mono:'Roboto Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1120; --surface:#151a2e; --surface-2:#1a2037; --surface-3:#222944;
+    --ink:#e8ebf7; --ink-2:#b4bbd4; --muted:#8a93b0; --line:#283050; --line-2:#323b60;
+    --accent:#a78bfa; --accent-soft:#221c3d; --accent-line:#3b2f66; --accent-ink:#d9ceff;
+    --al:#f87171; --al-bg:rgba(248,113,113,.14); --wn:#fbbf24; --wn-bg:rgba(251,191,36,.13); --gd:#34d399; --gd-bg:rgba(52,211,153,.13); --nm:#94a3b8; --nm-bg:rgba(148,163,184,.12);
+    --bar:#0a0e1b; --shadow:0 4px 16px rgba(0,0,0,.28);
+    --heat-0:#1a2037; --heat-ink:#e8ebf7;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1120; --surface:#151a2e; --surface-2:#1a2037; --surface-3:#222944;
+  --ink:#e8ebf7; --ink-2:#b4bbd4; --muted:#8a93b0; --line:#283050; --line-2:#323b60;
+  --accent:#a78bfa; --accent-soft:#221c3d; --accent-line:#3b2f66; --accent-ink:#d9ceff;
+  --al:#f87171; --al-bg:rgba(248,113,113,.14); --wn:#fbbf24; --wn-bg:rgba(251,191,36,.13); --gd:#34d399; --gd-bg:rgba(52,211,153,.13); --nm:#94a3b8; --nm-bg:rgba(148,163,184,.12);
+  --bar:#0a0e1b; --shadow:0 4px 16px rgba(0,0,0,.28);
+  --heat-0:#1a2037; --heat-ink:#e8ebf7;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5}
+button{font-family:inherit;color:inherit}
+button:focus-visible,[tabindex]:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{flex-shrink:0}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- app chrome ---------- */
+.topbar{background:var(--bar);color:var(--bar-ink);display:flex;align-items:center;gap:18px;padding:9px 16px;font-size:12.5px;font-weight:500;flex-wrap:wrap}
+.topbar .tb{display:flex;align-items:center;gap:6px;white-space:nowrap;opacity:.95}
+.topbar .sp{flex:1}
+.topbar .pill{background:#fff;color:#141c3f;border-radius:20px;padding:5px 12px;font-weight:600}
+.topbar .clock{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
+@media (max-width:760px){.topbar .hide-s{display:none}}
+
+.wrap{padding:16px;padding-block:14px 32px;max-width:1680px;margin:0 auto}
+.subhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.subhead .ttl{display:flex;align-items:center;gap:10px}
+.subhead .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:grid;place-items:center;color:#fff}
+.subhead h1{font-family:var(--head);font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em}
+.tag-ai{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:999px;padding:2px 10px}
+.subhead .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);background:var(--surface);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--surface-2)}
+.seg{display:inline-flex;background:var(--surface-3);border-radius:11px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:6px}
+.seg button.on{background:var(--hero-a);color:#fff}
+:root[data-theme="dark"] .seg button.on{background:var(--accent);color:#140b2e}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button.on{background:var(--accent);color:#140b2e}}
+
+.ctx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 14px;margin-bottom:14px;font-size:13px}
+.ctx .lbl{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--ink-2)}
+.ctx .date{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line-2);border-radius:8px;padding:4px 10px;background:var(--surface-2)}
+.ctx .wk{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:4px 10px}
+.ctx .sp{flex:1}
+.ctx .upd{font-size:12px;color:var(--muted)}
+
+/* ---------- layout ---------- */
+.hub{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1020px){.hub{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- rail ---------- */
+.rail{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);position:sticky;top:12px}
+@media (max-width:1020px){.rail{position:static}}
+.rail-mode{padding:10px;border-bottom:1px solid var(--line)}
+.rail-mode .seg{display:flex;width:100%}
+.rail-mode .seg button{flex:1;justify-content:center}
+.rail-h{padding:12px 15px;background:linear-gradient(120deg,var(--hero-a),var(--hero-b) 60%,var(--hero-c));color:#fff}
+.rail-h .t{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+.rail-h .d{font-size:11.5px;color:#cdd6f7;margin-top:2px}
+.rail-list{padding:6px 8px 10px;display:flex;flex-direction:column;gap:5px;max-height:calc(100vh - 250px);overflow:auto}
+@media (max-width:1020px){.rail-list{max-height:none;flex-direction:row;overflow-x:auto;padding-bottom:12px}.rail-grp{display:none}.ra{min-width:190px}}
+.rail-grp{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 6px 2px}
+.ra{text-align:left;border:1px solid var(--line);border-left:3px solid var(--line-2);border-radius:11px;padding:9px 11px;background:var(--surface);cursor:pointer;width:100%;transition:background .12s}
+.ra:hover{background:var(--surface-2)}
+.ra.sev-al{border-left-color:var(--al)} .ra.sev-wn{border-left-color:var(--wn)} .ra.sev-gd{border-left-color:var(--gd)}
+.ra-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.ra-name{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);line-height:1.35}
+.ra-tag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 7px;white-space:nowrap}
+.sev-al .ra-tag{background:var(--al-bg);color:var(--al)} .sev-wn .ra-tag{background:var(--wn-bg);color:var(--wn)} .sev-gd .ra-tag{background:var(--gd-bg);color:var(--gd)}
+.ra-row{display:flex;align-items:baseline;gap:8px;margin-top:3px}
+.ra-val{font-family:var(--head);font-size:18px;font-weight:700;letter-spacing:-.01em}
+.ra-var{font-size:11.5px;font-weight:700}
+.sev-al .ra-var{color:var(--al)} .sev-wn .ra-var{color:var(--wn)}
+.ra-tgt{font-size:11px;color:var(--muted);margin-top:1px}
+.ra.on{background:linear-gradient(135deg,var(--hero-b),#6d28d9);border-color:transparent;box-shadow:0 4px 14px rgba(80,40,160,.26)}
+.ra.on .ra-name,.ra.on .ra-tgt{color:rgba(255,255,255,.72)} .ra.on .ra-val{color:#fff} .ra.on .ra-var{color:#fff}
+.ra.on .ra-tag{background:rgba(255,255,255,.2);color:#fff}
+
+/* ---------- main column ---------- */
+.main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.hero{display:flex;flex-wrap:wrap;background:linear-gradient(115deg,var(--hero-a),var(--hero-b) 55%,var(--hero-c));border-radius:18px;padding:22px 26px;color:#fff;box-shadow:0 14px 32px rgba(30,42,90,.24);gap:22px}
+.hero-main{flex:1.25;min-width:280px;display:flex;flex-direction:column;gap:16px}
+.hero-eyebrow{font-size:12px;font-weight:700;letter-spacing:.02em;color:#c3cdf7}
+.hero-valrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:4px}
+.hero-val{font-family:var(--head);font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hero-chip{font-size:13px;font-weight:700;padding:5px 13px;border-radius:999px;background:rgba(255,255,255,.16)}
+.hero.sev-al .hero-chip{background:rgba(248,113,113,.3);color:#ffe0e0} .hero.sev-wn .hero-chip{background:rgba(251,191,36,.26);color:#fff0c8}
+.hero-def{font-size:12px;color:#aeb8e6;margin-top:6px;max-width:60ch}
+.hero-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;border-top:1px solid rgba(255,255,255,.16);padding-top:14px}
+@media (max-width:640px){.hero-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hs .l{font-size:11px;font-weight:700;color:#a9b4e6}
+.hs .v{font-family:var(--head);font-size:21px;font-weight:700;margin-top:3px}
+.hs .v.al{color:#ffa3a3} .hs .v.wn{color:#ffd28a} .hs .v.gd{color:#8ff0c3}
+.hs .n{font-size:11.5px;color:#a9b4e6;margin-top:1px}
+.hero-var{flex:1;min-width:280px;border-left:1px solid rgba(255,255,255,.16);padding-left:24px;display:flex;flex-direction:column;justify-content:center}
+@media (max-width:900px){.hero-var{border-left:0;padding-left:0;border-top:1px solid rgba(255,255,255,.16);padding-top:16px}}
+.hero-var-l{font-size:14px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hero-var-l span{font-size:12px;font-weight:500;color:rgba(255,255,255,.6)}
+.bbar{display:flex;height:26px;border-radius:8px;overflow:hidden;gap:2px;margin-top:12px}
+.bbar button{border:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;cursor:pointer;min-width:6px;transition:filter .12s}
+.bbar button:hover{filter:brightness(1.15)}
+.bleg{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.bleg button{border:0;background:transparent;display:flex;align-items:center;gap:8px;font-size:13px;color:#fff;cursor:pointer;padding:3px 6px;margin:0 -6px;border-radius:7px;text-align:left}
+.bleg button:hover{background:rgba(255,255,255,.1)}
+.bleg .sw{width:11px;height:11px;border-radius:3px}
+.bleg .nm{color:rgba(255,255,255,.86);font-weight:500;flex:1}
+.bleg .am{font-weight:700}
+.bleg .pc{font-size:11.5px;color:rgba(255,255,255,.55);width:34px;text-align:right}
+.hero-var-note{font-size:11.5px;color:rgba(255,255,255,.6);margin-top:8px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+.sec{display:flex;align-items:center;gap:8px;font-family:var(--head);font-size:15px;font-weight:600;margin:0}
+.sec svg{color:var(--accent)}
+.sec small{font-family:var(--ui);font-size:12.5px;font-weight:500;color:var(--muted)}
+
+.ai{display:flex;gap:14px;align-items:flex-start;background:var(--accent-soft);border:1px solid var(--accent-line);border-left:4px solid var(--accent);border-radius:14px;padding:16px 18px;flex-wrap:wrap}
+.ai-ico{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6d28d9,#db2777);display:grid;place-items:center;color:#fff}
+.ai-tx{flex:1;min-width:240px}
+.ai-lbl{font-size:12.5px;font-weight:700;color:var(--accent)}
+.ai-body{font-size:15px;color:var(--accent-ink);line-height:1.65;margin-top:3px;max-width:95ch}
+.ai-body strong{color:var(--ink)}
+.ai-acts{display:flex;gap:8px;flex-wrap:wrap}
+.b-read{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--accent-line);background:var(--surface);color:var(--accent);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.b-ask{display:inline-flex;align-items:center;gap:6px;border:0;background:linear-gradient(135deg,#6d28d9,#db2777);color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(109,40,217,.25)}
+.related{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12px;color:var(--muted);width:100%;padding-left:50px}
+@media (max-width:640px){.related{padding-left:0}}
+.related button{border:1px solid var(--accent-line);background:var(--surface);color:var(--accent);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* heatmap */
+.heat-wrap{overflow-x:auto;margin-top:12px}
+.heat{border-collapse:separate;border-spacing:4px;min-width:560px;width:100%}
+.heat th{font-size:11.5px;font-weight:700;color:var(--muted);text-align:center;padding:2px 4px}
+.heat th.rowh{text-align:left;color:var(--ink-2);white-space:nowrap}
+.heat th .sub{display:block;font-weight:500;font-size:10.5px}
+.heat td{height:38px;border-radius:8px;text-align:center;font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--heat-ink);background:var(--heat-0)}
+.heat td.hot{color:#fff}
+.heat td.tot{background:transparent;color:var(--ink);font-weight:700}
+.heat-note{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;align-items:center}
+.heat-note i{display:inline-block;width:26px;height:10px;border-radius:3px;vertical-align:middle;margin-right:5px}
+
+/* drivers */
+.drivers{display:flex;flex-direction:column;gap:10px}
+.dc{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--line-2);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);transition:box-shadow .2s}
+.dc[data-sev="al"]{border-left-color:var(--al)} .dc[data-sev="wn"]{border-left-color:var(--wn)} .dc[data-sev="nm"]{border-left-color:var(--nm)}
+.dc.flash{box-shadow:0 0 0 3px var(--accent-line)}
+.dc-h{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;width:100%;border:0;background:transparent;text-align:left}
+.dc-h:hover{background:var(--surface-2)}
+.dc-ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff}
+.dc-info{flex:1;min-width:0}
+.dc-name{font-size:15.5px;font-weight:700;line-height:1.35;color:var(--ink);text-wrap:balance}
+.dc-sub{font-size:13px;color:var(--ink-2);margin-top:2px;line-height:1.45}
+.dc-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.segtag{font-size:11.5px;font-weight:600;color:var(--ink-2);background:var(--surface-3);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.imp{font-family:var(--head);font-size:15px;font-weight:700;white-space:nowrap}
+.imp.al{color:var(--al)} .imp.wn{color:var(--wn)} .imp.nm{color:var(--nm)} .imp.gd{color:var(--gd)}
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px}
+.badge.al{background:var(--al-bg);color:var(--al)} .badge.wn{background:var(--wn-bg);color:var(--wn)} .badge.nm{background:var(--nm-bg);color:var(--nm)}
+.chev{color:var(--muted);transition:transform .2s}
+.dc.open .chev{transform:rotate(180deg)}
+.dc-b{display:none;padding:0 18px 18px 68px}
+.dc.open .dc-b{display:block}
+@media (max-width:760px){.dc-h{flex-wrap:wrap}.dc-right{width:100%;justify-content:flex-start;padding-left:52px}.dc-b{padding:0 14px 16px}}
+.dc-ins{font-size:14px;color:var(--ink-2);line-height:1.65;padding:4px 0 12px;max-width:100ch}
+.dc-ins strong{color:var(--ink)}
+.subs{display:flex;flex-direction:column;gap:10px}
+.sub-t{font-size:12.5px;font-weight:700;color:var(--ink-2);margin:0 0 6px;display:flex;justify-content:space-between;gap:8px}
+.sub-t span{font-weight:500;color:var(--muted)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+.tbl th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);padding:9px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--ink)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.al{color:var(--al);font-weight:700} .tbl td.wn{color:var(--wn);font-weight:700} .tbl td.gd{color:var(--gd);font-weight:700} .tbl td.nm{color:var(--muted)}
+.tbl tr.total td{background:var(--surface-2);font-weight:700}
+.fix{margin-top:12px;background:var(--gd-bg);border-radius:10px;padding:10px 12px}
+.fix-l{font-size:12px;font-weight:700;color:var(--gd);letter-spacing:.02em}
+.fix p{margin:3px 0 0;font-size:13.5px;color:var(--ink);line-height:1.55}
+.dc-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.lnk{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:var(--surface);border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.lnk:hover{border-color:var(--accent);color:var(--accent)}
+
+/* bottom */
+.bottom{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:1180px){.bottom{grid-template-columns:minmax(0,1fr)}}
+.recs{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.rec{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.rec-n{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#db2777);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.rec-tx{flex:1;font-size:13.5px;line-height:1.55;color:var(--ink)}
+.rec-imp{display:block;font-size:12px;color:var(--gd);font-weight:700;margin-top:3px}
+.pri{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap;margin-top:2px}
+.pri.high{background:var(--al-bg);color:var(--al)} .pri.med{background:var(--wn-bg);color:var(--wn)} .pri.low{background:var(--nm-bg);color:var(--nm)}
+.rec-note{font-size:12px;color:var(--muted);margin-top:10px}
+.charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+@media (max-width:640px){.charts{grid-template-columns:minmax(0,1fr)}}
+.chart{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.chart .t{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.chart .n{font-family:var(--head);font-size:19px;font-weight:700;margin-top:2px}
+.chart .n small{font-family:var(--ui);font-size:12px;font-weight:500;color:var(--muted);margin-left:4px}
+.chart svg{width:100%;height:auto;display:block;margin-top:6px}
+.chart svg text{font-family:var(--ui);font-size:10px;fill:var(--muted)}
+.chart svg text.v{fill:var(--ink);font-weight:700}
+
+/* chat drawer */
+.chat{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:-12px 0 32px rgba(10,14,40,.18);display:flex;flex-direction:column;transform:translateX(105%);transition:transform .22s ease;z-index:30;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
+.chat.open{transform:none}
+.chat-h{display:flex;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(120deg,var(--hero-a),var(--hero-b) 60%,var(--hero-c));color:#fff}
+.chat-h .tx{flex:1;min-width:0}
+.chat-h .t{font-weight:700}
+.chat-h .s{font-size:12px;color:#c3cdf7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-h button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;display:grid;place-items:center}
+.chat-ctx{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 0}
+.chat-ctx span{font-size:11.5px;font-weight:600;background:var(--surface-3);color:var(--ink-2);border-radius:999px;padding:3px 9px}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
+.chat-chips button{font-size:12.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:999px;padding:5px 11px;cursor:pointer;text-align:left}
+.thread{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;font-size:13.5px;line-height:1.6;padding:10px 13px;border-radius:14px}
+.msg.ai{background:var(--accent-soft);color:var(--accent-ink);border-top-left-radius:4px}
+.msg.ai strong{color:var(--ink)}
+.msg.me{background:var(--hero-b);color:#fff;align-self:flex-end;border-top-right-radius:4px}
+.msg ol{margin:4px 0 0;padding-left:18px}
+.chat-in{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;min-width:0;border:1px solid var(--line-2);border-radius:10px;padding:9px 12px;font:inherit;background:var(--surface-2);color:var(--ink)}
+.chat-in button{border:0;border-radius:10px;background:var(--accent);color:#fff;padding:0 14px;font-weight:700;cursor:pointer}
+.chat-foot{font-size:11px;color:var(--muted);padding:0 14px 10px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all .2s;z-index:40;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+body{margin:0}
+[hidden]{display:none!important}
+.theme-btn{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="tb"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>My Apps</span>
+  <span class="tb">Schedule</span>
+  <span class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>236 - Bressi Ranch</span>
+  <span class="sp"></span>
+  <span class="tb hide-s clock">09:09 AM · AMERICA/LOS_ANGELES</span>
+  <span class="sp hide-s"></span>
+  <button type="button" class="theme-btn" id="b-theme">Dark theme</button>
+  <span class="tb pill hide-s">Original Fish Taco, LLC</span>
+</header>
+
+<div class="wrap">
+  <div class="subhead">
+    <div class="ttl">
+      <div class="logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 15l2 2 4-4"/></svg></div>
+      <h1>Schedule AI Insight</h1><span class="tag-ai">AI</span>
+    </div>
+    <span class="sp"></span>
+    <button class="btn" id="b-back" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to Schedule</button>
+    <div class="seg" role="tablist">
+      <button class="on" type="button" role="tab" aria-selected="true">Insights</button>
+      <button type="button" role="tab" aria-selected="false" data-toast="Deep Dive is outside this mockup">Deep Dive</button>
+    </div>
+  </div>
+
+  <div class="ctx">
+    <span class="lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 9.5h18"/></svg>Insights for</span>
+    <span class="date num">08-09-2026</span>
+    <span class="wk">Week of Aug 3 – Aug 9, 2026 · posted schedule</span>
+    <span class="sp"></span>
+    <span class="upd">Last updated 8:40 PM</span>
+    <button class="btn" type="button" id="b-refresh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/></svg>Refresh</button>
+  </div>
+
+  <div class="hub">
+    <aside class="rail" aria-label="Schedule KPIs">
+      <div class="rail-mode"><div class="seg">
+        <button type="button" data-toast="AI Insights is the card list view, outside this mockup">AI Insights</button>
+        <button type="button" class="on">AI Hub</button>
+      </div></div>
+      <div class="rail-h">
+        <div class="t"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Schedule KPIs · Aug 9, 2026</div>
+        <div class="d" id="rail-sum"></div>
+      </div>
+      <div class="rail-list" id="rail"></div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+</div>
+
+<aside class="chat" id="chat" aria-label="Ask the Agent" aria-hidden="true">
+  <div class="chat-h">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 4.9L19 9.7l-4.3 2.9L16 18l-4-3.2L8 18l1.3-5.4L5 9.7l5.2-1.8z"/></svg>
+    <div class="tx"><div class="t">Ask the Agent</div><div class="s" id="chat-s"></div></div>
+    <button type="button" id="chat-x" aria-label="Close chat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="chat-ctx" id="chat-ctx"></div>
+  <div class="chat-chips" id="chat-chips"></div>
+  <div class="thread" id="thread" aria-live="polite"></div>
+  <form class="chat-in" id="chat-form">
+    <input id="chat-input" type="text" placeholder="Ask about this KPI, a day, a shift or an employee…" autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+  <div class="chat-foot">Mockup replies are built from this week's KPI data. The agent suggests changes; it never edits the schedule.</div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============================================================
+   DATA — Store 236 Bressi Ranch · posted schedule for Mon 08/03 – Sun 08/09/2026
+   One dataset: every KPI below reconciles to the same week.
+   Core facts: fcst sales $61,280 · sched 532h (525 reg + 7 OT) vs fcst 505h
+   daily fcst 72/70/68/75/74/78/68 · daily sched 75/73/71/83/79/83/68
+   over (gross) 45.75h · under 18.75h · net +27.0h
+   KPI keys follow HW Release/Rptkey_detail_franchise_data.csv
+   ============================================================ */
+const DAYS = ['Mon 08/03','Tue 08/04','Wed 08/05','Thu 08/06','Fri 08/07','Sat 08/08','Sun 08/09'];
+const DAYS_S = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const WEEKS = ['Jun 29','Jul 6','Jul 13','Jul 20','Jul 27','Aug 3'];
+const WEEKS_PRIOR = ['Jun 22','Jun 29','Jul 6','Jul 13','Jul 20','Jul 27'];
+const DAYPARTS = [['Open','6–11a'],['Lunch','11a–2p'],['Afternoon','2–5p'],['Dinner & Close','5–10p']];
+const C1='#1A3A6B', C2='#2E5FA3', C3='#5680BC', C4='#8AA8CC';
+
+const KPIS = [
+/* 1 ---------------------------------------------------------------- */
+{ id:'lbr', group:'Cost', key:'schLbrPerc', label:'Scheduled Labor %', val:'28.8%', vr:'▲ +1.0 pts', sev:'wn', tgt:'Target 27.8%',
+  hero:{ eyebrow:'Scheduled Labor % · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ +1.0 pts above forecast',
+    def:'Scheduled labor $ ÷ forecasted sales. Target comes from the forecast-driven labor budget.',
+    stats:[{l:'Total Scheduled $',v:'$17,650',n:'Forecast $17,000'},{l:'Over Forecast',v:'+$650',n:'This week',c:'wn'},{l:'Scheduled Hours',v:'532h',n:'Forecast 505h',c:'wn'},{l:'OT Hours Scheduled',v:'7h',n:'3 shifts flagged',c:'al'}]},
+  segs:[{k:'over',l:'Overscheduled Hrs',pct:46,amt:'+$300',col:C1},{k:'rate',l:'High-Rate Scheduling',pct:22,amt:'+$140',col:C2},{k:'ot',l:'Avoidable OT',pct:24,amt:'+$158',col:C3},{k:'fcst',l:'Forecast Override',pct:8,amt:'+$52',col:C4}],
+  ai:'Scheduled Labor % is <strong>28.8%, 1.0 pts above the 27.8% target</strong>, which is <strong>$650</strong> of labor the forecast doesn\'t support. Nearly half comes from 20 extra regular hours. Avoidable overtime and high-rate assignments make up most of the rest.',
+  related:['fcst','ot','over'],
+  drivers:[
+   {seg:'over',sev:'al',icon:'cal',name:'Regular hours scheduled are running 20h above the system-forecasted baseline',sub:'Shifts were added beyond what the demand forecast supports, before any overtime is counted.',impact:'+$300 avoidable cost',impCls:'al',scope:'Mon 08/03 – Sun 08/09 · added shifts',
+    insight:'<strong>Forecast calls for 505 regular hours; the posted schedule has 525</strong>, about 4% over before overtime. Four added shifts explain 14 of the 20 hours; the other 6 are 1-hour start/end padding on Wed and Fri.',
+    subs:[{name:'Scheduled vs Forecasted Hours by Day',cols:['Date','Forecasted Hrs','Scheduled Hrs','Variance'],num:[1,2,3],
+       rows:[['Mon 08/03','72h','75h',{v:'+3h',c:'wn'}],['Tue 08/04','70h','73h',{v:'+3h',c:'wn'}],['Wed 08/05','68h','71h',{v:'+3h',c:'wn'}],['Thu 08/06','75h','80h',{v:'+5h',c:'al'}],['Fri 08/07','74h','77h',{v:'+3h',c:'wn'}],['Sat 08/08','78h','81h',{v:'+3h',c:'wn'}],['Sun 08/09','68h','68h',{v:'0h',c:'gd'}]],
+       total:['Week','505h','525h','+20h']},
+      {name:'Shifts Added Beyond Forecasted Demand',cols:['Date','Shift','Extra Staff Added','Reason Logged','Extra Hrs'],num:[4],
+       rows:[['Thu 08/06','5:00 PM–10:00 PM','+1 extra closer','No stated reason',{v:'5h',c:'al'}],['Mon 08/03','6:00 AM–9:00 AM','+1 extra opener','"Just in case" per manager note',{v:'3h',c:'wn'}],['Sat 08/08','11:00 AM–2:00 PM','+1 extra mid-shift','No stated reason',{v:'3h',c:'wn'}],['Tue 08/04','2:00 PM–5:00 PM','+1 extra prep','No stated reason',{v:'3h',c:'wn'}],['Wed 08/05, Fri 08/07','Start/end padding','30–60 min early starts','None',{v:'6h',c:'nm'}]],
+       total:['','','','','20h']}],
+    fix:'Trim the flagged shifts back to forecasted headcount. Start with Thursday 08/06 evening (5h) and Tuesday 08/04 prep (3h). Saves about $300 a week without adding OT risk.'},
+   {seg:'rate',sev:'wn',icon:'usd',name:'High-payrate staff scheduled over available lower-rate, same-skill employees',sub:'4 shifts assign employees well above the $15.30/hr store average while same-skill staff at lower rates were available.',impact:'+$140 avoidable cost',impCls:'wn',scope:'4 shifts · Mon, Tue, Wed, Sun',
+    insight:'<strong>4 shifts on the posted schedule use employees paid $3.50–$6.50/hr above the store average.</strong> No wage change or skill gap explains it: a same-skill employee at a lower rate was marked available for each of these shifts.',
+    subs:[{name:'High-Rate Employees Scheduled',cols:['Date','Shift','Employee','Rate','Store Avg','Premium/hr','Hrs','Excess $'],num:[3,4,5,6,7],
+       rows:[['Mon 08/03','6:00 AM–2:30 PM','Derek W.',{v:'$21.80',c:'al'},'$15.30',{v:'+$6.50',c:'al'},'8h',{v:'$52.00',c:'al'}],['Tue 08/04','10:30 AM–7:00 PM','Nina F.',{v:'$19.30',c:'wn'},'$15.30',{v:'+$4.00',c:'wn'},'8h',{v:'$32.00',c:'wn'}],['Wed 08/05','2:00 PM–10:30 PM','Marcus B.',{v:'$18.80',c:'wn'},'$15.30',{v:'+$3.50',c:'wn'},'8h',{v:'$28.00',c:'wn'}],['Sun 08/09','2:00 PM–10:30 PM','Elena V.',{v:'$18.80',c:'wn'},'$15.30',{v:'+$3.50',c:'wn'},'8h',{v:'$28.00',c:'wn'}]],
+       total:['','','','','','','32h','$140.00']},
+      {name:'Available Lower-Rate Same-Skill Staff',cols:['Date','Alternative Employee','Rate','Skill Match','Save/Shift'],num:[2,4],
+       rows:[['Mon 08/03','Jamie T.',{v:'$15.50',c:'gd'},'Full match',{v:'$50.40',c:'gd'}],['Tue 08/04','Sam N.',{v:'$14.80',c:'gd'},'Full match',{v:'$36.00',c:'gd'}],['Wed 08/05','Aisha K.',{v:'$15.20',c:'gd'},'Full match',{v:'$28.80',c:'gd'}],['Sun 08/09','Ben H.',{v:'$15.00',c:'gd'},'Full match',{v:'$30.40',c:'gd'}]]}],
+    fix:'Swap these 4 shifts to the lower-rate, same-skill alternates before publishing. Saves about $140 a week. Sam N. and Ben H. stay under 40h even if they also pick up the OT shifts below.'},
+   {seg:'ot',sev:'al',icon:'clock',name:'Overtime scheduled from crew unavailability, not manager choice',sub:'3 shifts push employees past 40 hours after a call-out or an unbackfilled swap, while lower-hours staff had open availability.',impact:'+$158 avoidable OT',impCls:'al',scope:'Thu 08/06 – Sat 08/08 · 3 OT shifts',
+    insight:'<strong>3 scheduled shifts push employees past 40 hours into overtime.</strong> None were approved by a manager in advance. Each followed a call-out or a swap that wasn\'t backfilled, and each could have gone to someone with open hours.',
+    subs:[{name:'Overtime Scheduled by Shift',cols:['Date','Employee','Sched Hrs (Wk)','OT Hrs','Cause','OT Rate','OT $'],num:[2,3,5,6],
+       rows:[['Thu 08/06','Josh P.','43h',{v:'3h',c:'al'},'Covered a call-out','$22.00',{v:'$66.00',c:'al'}],['Fri 08/07','Sarah M.','42h',{v:'2h',c:'wn'},'Shift swap not backfilled','$23.00',{v:'$46.00',c:'wn'}],['Sat 08/08','Dan W.','42h',{v:'2h',c:'wn'},'Covered a call-out','$23.00',{v:'$46.00',c:'wn'}]],
+       total:['','','','7h','','','$158.00']},
+      {name:'Available Lower-Hours Staff',cols:['Employee','Sched Hrs (Wk)','Hrs Available','Regular Rate','Could Have Covered'],num:[1,2,3],
+       rows:[['Priya K.','32h','6h open','$15.10','Josh P.\'s Thu 08/06 shift'],['Sam N.','29h','4h open','$14.80','Sarah M.\'s Fri 08/07 shift'],['Ben H.','30h','8h open','$15.00','Dan W.\'s Sat 08/08 shift']]}],
+    fix:'Reassign the 3 flagged OT shifts to Priya K., Sam N. and Ben H. before the schedule posts. Removes $158 in avoidable OT.'},
+   {seg:'fcst',sev:'nm',icon:'trend',name:'Manager sales-forecast overrides are adding a net $52 to scheduled labor',sub:'The forecast used to build the schedule was adjusted on 3 days: two up, one down.',impact:'+$52 net',impCls:'nm',scope:'Tue 08/04, Thu 08/06, Sun 08/09',
+    insight:'<strong>The sales forecast was manually overridden on 3 days, each 9–12% off the system baseline.</strong> The two upward overrides outweigh the downward one and add a net $52 of labor.',
+    subs:[{name:'Sales Forecast Override by Day',cols:['Date','System Forecast','Manager-Adjusted','Delta','Sched Hrs Added','$ Impact'],num:[1,2,3,4,5],
+       rows:[['Tue 08/04','$7,500','$6,800',{v:'−$700',c:'gd'},{v:'−2.0h',c:'gd'},{v:'−$30',c:'gd'}],['Thu 08/06','$6,800','$7,600',{v:'+$800',c:'wn'},{v:'+2.8h',c:'wn'},{v:'+$40',c:'wn'}],['Sun 08/09','$9,400','$10,500',{v:'+$1,100',c:'wn'},{v:'+3.0h',c:'wn'},{v:'+$42',c:'wn'}]],
+       total:['Net','','','+$1,200','+3.8h','+$52']}],
+    fix:'Check the Thu 08/06 and Sun 08/09 overrides against the last 4 weeks of actual sales before next week\'s schedule is built.'}],
+  recs:[{t:'Trim the 4 added shifts back to forecasted headcount, starting with Thu 08/06 evening and Tue 08/04 prep.',imp:'Saves ~$300/week',pri:'high'},
+        {t:'Reassign the 3 OT shifts to Priya K., Sam N. and Ben H. before the schedule posts.',imp:'Removes $158 OT',pri:'high'},
+        {t:'Swap the 4 high-rate shifts to the same-skill alternates listed above.',imp:'Saves ~$140/week',pri:'med'},
+        {t:'Review the Thu and Sun forecast overrides against actual demand before building next week.',imp:'~$52/week',pri:'low'}],
+  trend:{t:'Scheduled Labor % · 6 weeks',vals:[27.6,27.9,28.1,28.3,28.5,28.8],target:27.8,fmt:'pct',bad:'up'},
+  daily:{t:'Scheduled Labor % by day',vals:[28.5,28.5,28.6,30.3,29.2,29.1,27.8],target:27.8,fmt:'pct',bad:'up'},
+  people:'Josh P., Sarah M. and Dan W. carry the OT. Derek W., Nina F., Marcus B. and Elena V. are the high-rate assignments.',
+  prompts:['Why is labor % over target?','What should I fix first?','Which employees are involved?','How big is the impact?']
+},
+/* 2 ---------------------------------------------------------------- */
+{ id:'splh', group:'Cost', key:'splh · idealStaff', label:'Scheduled SPLH', val:'$115.19', vr:'▼ −$6.16', sev:'wn', tgt:'Target $121.35',
+  hero:{ eyebrow:'Scheduled SPLH · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▼ −5.1% below target',
+    def:'Forecasted sales ÷ scheduled labor hours. Target SPLH = forecasted sales ÷ forecasted hours.',
+    stats:[{l:'Forecasted Sales',v:'$61,280',n:'Week plan'},{l:'Scheduled Hours',v:'532h',n:'Forecast 505h',c:'wn'},{l:'Gap vs Target',v:'−5.1%',n:'−$6.16 per labor hour',c:'wn'},{l:'Lowest Day',v:'$109.65',n:'Thu 08/06',c:'al'}]},
+  segs:[{k:'thu',l:'Thursday evening',pct:30,amt:'−$1.83',col:C1},{k:'frisat',l:'Fri–Sat OT & mid-shift',pct:37,amt:'−$2.28',col:C2},{k:'mtw',l:'Mon–Wed added hours',pct:33,amt:'−$2.05',col:C3}],
+  ai:'Scheduled SPLH is <strong>$115.19, $6.16 below the $121.35</strong> the forecast supports. Sales are planned at forecast, so the whole gap comes from the <strong>27 extra scheduled hours</strong> spreading the same sales across more labor. Thursday 08/06 is the weakest day at $109.65.',
+  related:['fcst','lbr','over'],
+  drivers:[
+   {seg:'thu',sev:'al',icon:'cal',name:'Thursday 08/06 drops to $109.65, the lowest SPLH of the week',sub:'An extra 5–10 PM closer and Josh P.\'s 3 OT hours add 8 hours to a normal forecast day.',impact:'−$1.83/hr',impCls:'al',scope:'Thu 08/06 · 5–10 PM',
+    insight:'<strong>Thursday\'s forecast is ordinary ($9,101), but its schedule has 83 hours against 75 forecast.</strong> The 8 extra hours all sit in dinner and close, which pulls the day to $109.65, $11.70 under target.',
+    subs:[{name:'Scheduled SPLH by Day',cols:['Date','Fcst Sales','Sched Hrs','Fcst Hrs','SPLH','vs Target'],num:[1,2,3,4,5],
+       rows:[['Mon 08/03','$8,737','75h','72h','$116.49',{v:'−$4.86',c:'wn'}],['Tue 08/04','$8,494','73h','70h','$116.36',{v:'−$4.99',c:'wn'}],['Wed 08/05','$8,252','71h','68h','$116.23',{v:'−$5.12',c:'wn'}],['Thu 08/06','$9,101','83h','75h','$109.65',{v:'−$11.70',c:'al'}],['Fri 08/07','$8,980','79h','74h','$113.67',{v:'−$7.68',c:'wn'}],['Sat 08/08','$9,465','83h','78h','$114.04',{v:'−$7.31',c:'wn'}],['Sun 08/09','$8,252','68h','68h','$121.35',{v:'$0.00',c:'gd'}]],
+       total:['Week','$61,280','532h','505h','$115.19','−$6.16']}],
+    fix:'Remove the Thursday extra closer and move Josh P.\'s OT shift to Priya K. That takes Thursday back to $121.35.'},
+   {seg:'frisat',sev:'wn',icon:'users',name:'Friday and Saturday add 10 hours through OT and an extra mid-shift',sub:'Sarah M. and Dan W. OT (2h each), the Sat 11a–2p mid-shift (3h) and Friday padding (3h).',impact:'−$2.28/hr',impCls:'wn',scope:'Fri 08/07 – Sat 08/08',
+    insight:'<strong>Fri and Sat have the highest sales of the week, but also 10 extra hours.</strong> Part of that is misplaced rather than excess: the lunch peak on both days is actually short-staffed (see Understaffed Hours).',
+    subs:[{name:'Extra Hours on Fri & Sat',cols:['Date','Source','Employee','Extra Hrs'],num:[3],
+       rows:[['Fri 08/07','OT, swap not backfilled','Sarah M.',{v:'2h',c:'wn'}],['Fri 08/07','Open, lunch & afternoon padding','3 shifts',{v:'3h',c:'nm'}],['Sat 08/08','Extra mid-shift 11a–2p','Grace L.',{v:'3h',c:'wn'}],['Sat 08/08','OT, call-out cover','Dan W.',{v:'2h',c:'wn'}]],
+       total:['','','','10h']}],
+    fix:'Keep the Saturday mid-shift but move it to 11:30 AM–2:00 PM so it covers the peak. Cut the Friday padding and reassign both OT shifts.'},
+   {seg:'mtw',sev:'nm',icon:'trend',name:'Mon–Wed each carry 3 hours the forecast doesn\'t need',sub:'A "just in case" opener on Monday, an extra prep block on Tuesday, and padding on Wednesday.',impact:'−$2.05/hr',impCls:'nm',scope:'Mon 08/03 – Wed 08/05',
+    insight:'Monday to Wednesday each run <strong>3 hours over forecast</strong>. None of it is tied to a stated reason or an event on the calendar.',
+    subs:[{name:'Mon–Wed Added Hours',cols:['Date','Shift','Reason Logged','Extra Hrs'],num:[3],
+       rows:[['Mon 08/03','Extra opener 6–9 AM','"Just in case"',{v:'3h',c:'wn'}],['Tue 08/04','Extra prep 2–5 PM','None',{v:'3h',c:'wn'}],['Wed 08/05','Open, lunch & afternoon padding','None',{v:'3h',c:'nm'}]],total:['','','','9h']}],
+    fix:'Remove the Monday opener and Tuesday prep block. Trim Wednesday starts and ends to the forecast ramp.'}],
+  recs:[{t:'Remove the Thu 08/06 extra closer and reassign Josh P.\'s OT shift.',imp:'+$1.83 SPLH',pri:'high'},
+        {t:'Cut the Mon opener and Tue prep block (6h).',imp:'+$1.37 SPLH',pri:'med'},
+        {t:'Shift the Sat mid-shift to 11:30 AM–2:00 PM instead of cutting it, so the lunch peak stays covered.',imp:'Protects peak service',pri:'med'}],
+  trend:{t:'Scheduled SPLH · 6 weeks',vals:[122.4,120.9,119.6,118.2,117.0,115.19],target:121.35,fmt:'usd',bad:'down'},
+  daily:{t:'Scheduled SPLH by day',vals:[116.49,116.36,116.23,109.65,113.67,114.04,121.35],target:121.35,fmt:'usd',bad:'down'},
+  people:'The Thursday closer and Josh P.\'s OT drive the worst day. Sarah M., Dan W. and Grace L. add the Fri–Sat hours.',
+  prompts:['Why is SPLH below target?','Which day is worst?','What should I fix first?','How big is the impact?']
+},
+/* 3 ---------------------------------------------------------------- */
+{ id:'fcst', group:'Hours vs Forecast', key:'schedVsFcdHrs', label:'Schedule vs Forecast Hours', val:'+27.0h', vr:'▲ +5.3%', sev:'wn', tgt:'Target within ±2%',
+  hero:{ eyebrow:'Schedule vs Forecast Hours · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ Over-scheduled by 27 hours',
+    def:'Scheduled hours − system-forecasted hours (fctStaff). Net of any understaffed intervals.',
+    stats:[{l:'Scheduled Hours',v:'532h',n:'525 regular + 7 OT',c:'wn'},{l:'Forecasted Hours',v:'505h',n:'System forecast'},{l:'Variance %',v:'+5.3%',n:'Target within ±2%',c:'wn'},{l:'Largest Day',v:'+8h',n:'Thu 08/06',c:'al'}]},
+  segs:[{k:'dinner',l:'Dinner & Close (5–10p)',pct:44,amt:'+12.0h',col:C1},{k:'mid',l:'Lunch & Afternoon',pct:37,amt:'+10.0h',col:C2},{k:'open',l:'Open (6–11a)',pct:19,amt:'+5.0h',col:C3}],
+  ai:'The schedule is <strong>27 hours over the system forecast (+5.3%)</strong>. Dinner and close hold 12 of those hours, mostly the extra Thursday closer and 7 OT hours. Midday adds 10 more, although the <strong>lunch peak itself is short-staffed</strong>, so part of the midday excess is badly placed rather than unneeded.',
+  related:['over','under','lbr'],
+  heat:{t:'Where the extra hours sit',sub:'Net scheduled − forecast hours by day and daypart',mode:'net',
+    rows:[[3,0,0,0],[0,0,3,0],[1,1,1,0],[0,0,0,8],[1,1,1,2],[0,3,0,2],[0,0,0,0]]},
+  drivers:[
+   {seg:'dinner',sev:'al',icon:'moon',name:'Dinner and close carry 12 extra hours, led by Thursday 08/06',sub:'One extra 5–10 PM closer and 7 overtime hours on Thu–Sat evenings.',impact:'+12.0h',impCls:'al',scope:'Thu–Sat · 5–10 PM',
+    insight:'<strong>All 7 OT hours this week land in evening shifts</strong>, on top of the extra Thursday closer. On Fri and Sat the 6–8 PM peak is still one person short, so these hours sit at the wrong end of the shift.',
+    subs:[{name:'Evening Hours Above Forecast',cols:['Date','Shift','Employee','Type','Extra Hrs'],num:[4],
+       rows:[['Thu 08/06','5:00–10:00 PM','Tony G.','Added after publish, no reason',{v:'5h',c:'al'}],['Thu 08/06','5:00–10:00 PM','Josh P.','OT, call-out cover',{v:'3h',c:'al'}],['Fri 08/07','4:00–10:00 PM','Sarah M.','OT, swap not backfilled',{v:'2h',c:'wn'}],['Sat 08/08','5:00–10:00 PM','Dan W.','OT, call-out cover',{v:'2h',c:'wn'}]],total:['','','','','12h']}],
+    fix:'Remove the Thursday extra closer (−5h) and reassign the 3 OT shifts to lower-hours staff (see Scheduled Overtime).'},
+   {seg:'mid',sev:'wn',icon:'sun',name:'Lunch and afternoon run 10 hours over, but the lunch peak is short',sub:'Extra Tue prep, an extra Sat mid-shift and 1-hour padding on Wed and Fri.',impact:'+10.0h',impCls:'wn',scope:'Tue, Wed, Fri, Sat · 11a–5p',
+    insight:'<strong>Midday is 10 hours over on net, yet 11:30 AM–1:30 PM is short 10.5 hours.</strong> Shifts start before the rush and meal breaks fall inside it. Moving hours into the peak fixes both problems; cutting them alone would make service worse.',
+    subs:[{name:'Midday Hours Above Forecast',cols:['Date','Shift','Employee','Type','Extra Hrs'],num:[4],
+       rows:[['Tue 08/04','2:00–5:00 PM','Aisha K.','Extra prep block',{v:'3h',c:'wn'}],['Sat 08/08','11:00 AM–2:00 PM','Grace L.','Extra mid-shift',{v:'3h',c:'wn'}],['Wed 08/05','Lunch & afternoon','2 shifts','Start/end padding',{v:'2h',c:'nm'}],['Fri 08/07','Lunch & afternoon','2 shifts','Start/end padding',{v:'2h',c:'nm'}]],total:['','','','','10h']}],
+    fix:'Cut the Tuesday prep block. Keep the Saturday mid-shift but start it at 11:30 AM. Move meal breaks out of 11:30–1:30.'},
+   {seg:'open',sev:'nm',icon:'sunrise',name:'Openers start before the morning ramp',sub:'A "just in case" Monday opener and early starts on Wed and Fri.',impact:'+5.0h',impCls:'nm',scope:'Mon, Wed, Fri · 6–11 AM',
+    insight:'The morning forecast ramps at 7:30 AM, but <strong>3 opening shifts start at 6:00 or earlier</strong>.',
+    subs:[{name:'Opening Hours Above Forecast',cols:['Date','Shift','Employee','Type','Extra Hrs'],num:[4],
+       rows:[['Mon 08/03','6:00–9:00 AM','Omar S.','Extra opener, "just in case"',{v:'3h',c:'wn'}],['Wed 08/05','5:30 AM start','Derek W.','Starts 1h before ramp',{v:'1h',c:'nm'}],['Fri 08/07','5:30 AM start','Jamie T.','Starts 1h before ramp',{v:'1h',c:'nm'}]],total:['','','','','5h']}],
+    fix:'Remove the Monday extra opener and move Wed/Fri opening starts to 6:30 AM.'}],
+  recs:[{t:'Remove the Thu 08/06 extra closer and reassign the 3 OT shifts.',imp:'−12.0h',pri:'high'},
+        {t:'Move midday hours into 11:30 AM–1:30 PM: start the Sat mid-shift at 11:30 and move meal breaks after 2:00 PM.',imp:'−10.0h net, fixes peak gap',pri:'high'},
+        {t:'Remove the Monday "just in case" opener and start Wed/Fri openers at 6:30 AM.',imp:'−5.0h',pri:'med'}],
+  trend:{t:'Sched − Fcst hours · 6 weeks',vals:[6,9,12,15,19,27],target:0,fmt:'hs',bad:'up'},
+  daily:{t:'Sched − Fcst hours by day',vals:[3,3,3,8,5,5,0],target:0,fmt:'hs',bad:'up'},
+  people:'Tony G. (Thu closer), Josh P., Sarah M. and Dan W. (OT), Aisha K. and Grace L. (midday), Omar S. (Mon opener).',
+  prompts:['Where are the extra hours?','Which daypart is worst?','What should I cut first?','Compare with last week']
+},
+/* 4 ---------------------------------------------------------------- */
+{ id:'eff', group:'Hours vs Forecast', key:'schEfficiency', label:'Schedule Efficiency', val:'87.9%', vr:'▼ −7.1 pts', sev:'al', tgt:'Target 95.0%',
+  hero:{ eyebrow:'Schedule Efficiency · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▼ −7.1 pts below target',
+    def:'How closely scheduled staff follows the required staffing curve in each 15-minute interval: 1 − (over + under hours) ÷ scheduled hours.',
+    stats:[{l:'Mismatch Hours',v:'64.5h',n:'45.75 over + 18.75 under',c:'al'},{l:'Overstaffed',v:'45.75h',n:'Above required',c:'al'},{l:'Understaffed',v:'18.75h',n:'Below required',c:'wn'},{l:'Worst Day',v:'77.1%',n:'Sat 08/08',c:'al'}]},
+  segs:[{k:'over',l:'Overstaffed intervals',pct:71,amt:'45.75h',col:C1},{k:'under',l:'Understaffed intervals',pct:29,amt:'18.75h',col:C2}],
+  ai:'Schedule Efficiency is <strong>87.9%, 7.1 pts under target</strong>, and it has fallen for 5 straight weeks. <strong>64.5 hours don\'t match the staffing need.</strong> Friday and Saturday are worst because shifts are built around the peaks instead of on them: the shoulders are overstaffed while 11:30–1:30 and 6–8 PM run short.',
+  related:['over','under','fcst'],
+  drivers:[
+   {seg:'over',sev:'al',icon:'up',name:'45.75 hours are scheduled above the required staffing level',sub:'Mostly dinner/close and the lunch shoulders (10:30–11:30 and 1:30–2:30).',impact:'45.75h over',impCls:'al',scope:'All days · shoulders and evenings',
+    insight:'<strong>Overstaffing is spread across every day but peaks Fri–Sun</strong>, where extra coverage is placed just before and after the rush.',
+    subs:[{name:'Efficiency by Day',cols:['Date','Sched Hrs','Over','Under','Efficiency'],num:[1,2,3,4],
+       rows:[['Mon 08/03','75h','3.0h','0.0h',{v:'96.0%',c:'gd'}],['Tue 08/04','73h','3.0h','0.0h',{v:'95.9%',c:'gd'}],['Wed 08/05','71h','3.0h','0.0h',{v:'95.8%',c:'gd'}],['Thu 08/06','83h','9.5h','1.5h',{v:'86.7%',c:'wn'}],['Fri 08/07','79h','10.25h','5.25h',{v:'80.4%',c:'al'}],['Sat 08/08','83h','12.0h','7.0h',{v:'77.1%',c:'al'}],['Sun 08/09','68h','5.0h','5.0h',{v:'85.3%',c:'wn'}]],
+       total:['Week','532h','45.75h','18.75h','87.9%']}],
+    fix:'See Overstaffed Hours for the specific shifts. Fixing Thu–Sat recovers about 5 of the 7.1 points.'},
+   {seg:'under',sev:'wn',icon:'down',name:'18.75 hours short during the lunch and dinner peaks',sub:'11:30 AM–1:30 PM and 6–8 PM on Thu–Sun.',impact:'18.75h under',impCls:'wn',scope:'Thu–Sun · peaks',
+    insight:'<strong>Every short interval this week is inside a peak window.</strong> The same days have overstaffing an hour earlier or later, so this is a shift-placement problem more than a headcount problem.',
+    subs:[{name:'Shift Placement Fixes',cols:['Pattern','Current','Suggested','Effect'],
+       rows:[['Fri/Sat/Sun lunch mid-shift','10:30 AM–3:00 PM','11:15 AM–3:45 PM',{v:'+0.75h in peak',c:'gd'}],['Meal breaks, 6h+ lunch shifts','12:00–1:30 PM','2:00–3:00 PM',{v:'+4.5h in peak',c:'gd'}],['Fri/Sat line-cook closer','6:30 PM start','6:00 PM start',{v:'+1.0h in peak',c:'gd'}]]}],
+    fix:'Move shift starts and meal breaks to match the demand curve. This raises efficiency without adding any hours.'}],
+  recs:[{t:'Move Fri–Sun lunch mid-shifts to 11:15 AM and move meal breaks after 2:00 PM.',imp:'+2.4 pts efficiency',pri:'high'},
+        {t:'Start Fri/Sat closers at 6:00 PM and remove the Thu extra closer.',imp:'+2.1 pts efficiency',pri:'high'},
+        {t:'Trim Mon–Wed padding to the forecast ramp.',imp:'+1.7 pts efficiency',pri:'med'}],
+  trend:{t:'Schedule Efficiency · 6 weeks',vals:[94.2,93.5,92.1,91.0,89.6,87.9],target:95,fmt:'pct',bad:'down'},
+  daily:{t:'Schedule Efficiency by day',vals:[96.0,95.9,95.8,86.7,80.4,77.1,85.3],target:95,fmt:'pct',bad:'down'},
+  people:'This is a placement issue across the Fri–Sun lunch and dinner crews, not specific employees.',
+  prompts:['Why is efficiency falling?','Which day is worst?','How do I fix it without adding hours?','Compare with last week']
+},
+/* 5 ---------------------------------------------------------------- */
+{ id:'over', group:'Hours vs Forecast', key:'overStaffedHrs · overStaffingCost', label:'Overstaffed Hours', val:'45.75h', vr:'▲ +6.25h WoW', sev:'al', tgt:'Target ≤ 15.0h',
+  hero:{ eyebrow:'Overstaffed Hours · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ 30.75h above limit',
+    def:'Hours scheduled above the required staffing level, counted per 15-minute interval (before netting against understaffed intervals).',
+    stats:[{l:'Overstaffing Cost',v:'$700',n:'At $15.30 avg rate',c:'al'},{l:'Net of Understaffing',v:'+27.0h',n:'vs forecast',c:'wn'},{l:'Worst Daypart',v:'20.25h',n:'Dinner & Close',c:'al'},{l:'Worst Day',v:'12.0h',n:'Sat 08/08',c:'al'}]},
+  segs:[{k:'dinner',l:'Dinner & Close',pct:44,amt:'20.25h · $310',col:C1},{k:'lunch',l:'Lunch shoulders',pct:34,amt:'15.5h · $237',col:C2},{k:'openaft',l:'Open & Afternoon',pct:22,amt:'10.0h · $153',col:C3}],
+  ai:'<strong>45.75 hours are scheduled above what the forecast requires</strong>, costing about <strong>$700</strong>. That is 3× the limit and up for the 6th week in a row. After subtracting the 18.75 short hours, the schedule nets to +27 hours over forecast. Dinner/close and the edges of the lunch rush account for 78%.',
+  related:['under','eff','fcst'],
+  heat:{t:'Overstaffed hours by day and daypart',sub:'Hours above required staffing',mode:'over',
+    rows:[[3,0,0,0],[0,0,3,0],[1,1,1,0],[0,1.5,0,8],[1,3.5,1,4.75],[0,6.5,0,5.5],[0,3,0,2]]},
+  drivers:[
+   {seg:'dinner',sev:'al',icon:'moon',name:'Dinner and close are overstaffed by 20.25 hours',sub:'Thursday\'s extra closer, 7 OT hours, and closers staying to 10 PM when close needs 2 people.',impact:'+$310',impCls:'al',scope:'Thu–Sun · 5–10 PM',
+    insight:'<strong>Thursday alone contributes 8 hours.</strong> On Fri–Sun, 3 closers stay until 10:00 PM although the forecast after 8:30 PM needs only 2.',
+    subs:[{name:'Dinner & Close Overstaffing by Day',cols:['Date','Over Hrs','Main Cause','Cost'],num:[1,3],
+       rows:[['Thu 08/06',{v:'8.0h',c:'al'},'Extra closer (Tony G.) + Josh P. OT','$122'],['Fri 08/07',{v:'4.75h',c:'wn'},'3rd closer after 8:30 PM + Sarah M. OT','$73'],['Sat 08/08',{v:'5.5h',c:'wn'},'3rd closer after 8:30 PM + Dan W. OT','$84'],['Sun 08/09',{v:'2.0h',c:'nm'},'3rd closer after 8:30 PM','$31']],total:['Total','20.25h','','$310']}],
+    fix:'Remove the Thursday extra closer and end the 3rd closer at 8:30 PM on Fri–Sun. Saves about $250 a week.'},
+   {seg:'lunch',sev:'wn',icon:'sun',name:'Lunch shoulders are overstaffed while the peak is short',sub:'Crew arrives at 10:30 and stays to 2:30 around an 11:30–1:30 rush.',impact:'+$237',impCls:'wn',scope:'Wed–Sun · 10:30–11:30 & 1:30–2:30',
+    insight:'<strong>15.5 overstaffed lunch hours sit next to 10.5 understaffed peak hours.</strong> Shifting start times by 45 minutes turns most of the excess into peak coverage.',
+    subs:[{name:'Lunch Overstaffing by Day',cols:['Date','Over Hrs (shoulders)','Short Hrs (peak)','Cost'],num:[1,2,3],
+       rows:[['Wed 08/05','1.0h','0.0h','$15'],['Thu 08/06','1.5h','1.5h','$23'],['Fri 08/07',{v:'3.5h',c:'wn'},'2.5h','$54'],['Sat 08/08',{v:'6.5h',c:'al'},'3.5h','$99'],['Sun 08/09','3.0h','3.0h','$46']],total:['Total','15.5h','10.5h','$237']}],
+    fix:'Start the Fri–Sun lunch mid-shifts at 11:15 AM instead of 10:30 AM.'},
+   {seg:'openaft',sev:'nm',icon:'sunrise',name:'Opening and afternoon carry 10 hours of added shifts and padding',sub:'Monday "just in case" opener, Tuesday prep block, and early starts.',impact:'+$153',impCls:'nm',scope:'Mon–Wed, Fri · 6–11 AM & 2–5 PM',
+    insight:'These are <strong>the same added shifts flagged under Scheduled Labor %</strong>, seen interval by interval.',
+    subs:[{name:'Open & Afternoon Overstaffing',cols:['Date','Daypart','Cause','Over Hrs'],num:[3],
+       rows:[['Mon 08/03','Open','Extra opener, Omar S.',{v:'3h',c:'wn'}],['Tue 08/04','Afternoon','Extra prep, Aisha K.',{v:'3h',c:'wn'}],['Wed 08/05','Open + Afternoon','Padding',{v:'2h',c:'nm'}],['Fri 08/07','Open + Afternoon','Padding',{v:'2h',c:'nm'}]],total:['','','','10h']}],
+    fix:'Remove the Monday opener and Tuesday prep block. Trim padding to the forecast ramp.'}],
+  recs:[{t:'Remove the Thu 08/06 extra closer and end the 3rd closer at 8:30 PM on Fri–Sun.',imp:'Saves ~$250/week',pri:'high'},
+        {t:'Start Fri–Sun lunch mid-shifts at 11:15 AM so shoulder hours become peak coverage.',imp:'Saves ~$150/week',pri:'high'},
+        {t:'Remove the Mon opener and Tue prep block.',imp:'Saves ~$92/week',pri:'med'}],
+  trend:{t:'Overstaffed hours · 6 weeks',vals:[24,28.5,31,35.25,39.5,45.75],target:15,fmt:'h',bad:'up'},
+  daily:{t:'Overstaffed hours by day',vals:[3,3,3,9.5,10.25,12,5],fmt:'h',bad:'up'},
+  people:'Tony G. (Thu closer), the Fri–Sun 3rd closer, the Fri–Sun lunch mid-shift crew, Omar S. and Aisha K.',
+  prompts:['Where am I overstaffed?','What does it cost?','What should I cut first?','Why is it rising?']
+},
+/* 6 ---------------------------------------------------------------- */
+{ id:'under', group:'Hours vs Forecast', key:'underStaffedHrs', label:'Understaffed Hours', val:'18.75h', vr:'▲ +3.75h WoW', sev:'wn', tgt:'Target ≤ 8.0h',
+  hero:{ eyebrow:'Understaffed Hours · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ 10.75h above limit',
+    def:'Hours where scheduled staff is below the required staffing level, counted per 15-minute interval.',
+    stats:[{l:'Lunch Peak Short',v:'10.5h',n:'11:30 AM–1:30 PM',c:'wn'},{l:'Dinner Peak Short',v:'8.25h',n:'6:00–8:00 PM',c:'wn'},{l:'Worst Day',v:'7.0h',n:'Sat 08/08',c:'al'},{l:'Fcst Transactions',v:'1,240',n:'In short windows'}]},
+  segs:[{k:'lunch',l:'Lunch peak 11:30–1:30',pct:56,amt:'10.5h',col:C1},{k:'dinner',l:'Dinner peak 6–8 PM',pct:44,amt:'8.25h',col:C2}],
+  ai:'The schedule is 27 hours over forecast overall, yet the busiest windows are <strong>18.75 hours short</strong>. <strong>9 meal breaks are scheduled inside the 11:30–1:30 lunch rush</strong>, and the Fri–Sun lunch and dinner shifts start after demand ramps. 1,240 forecasted transactions fall in these short windows.',
+  related:['over','eff','fcst'],
+  heat:{t:'Understaffed hours by day and daypart',sub:'Hours below required staffing',mode:'under',
+    rows:[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,1.5,0,0],[0,2.5,0,2.75],[0,3.5,0,3.5],[0,3,0,2]]},
+  drivers:[
+   {seg:'lunch',sev:'wn',icon:'sun',name:'Lunch peak is 10.5 hours short on Thu–Sun',sub:'9 meal breaks fall inside 11:30–1:30, and mid-shifts start at 12:00 instead of 11:30.',impact:'10.5h short',impCls:'wn',scope:'Thu–Sun · 11:30 AM–1:30 PM',
+    insight:'<strong>Meal breaks explain 4.5 hours and late mid-shift starts explain 6.</strong> Both can be fixed without adding labor, by moving breaks after 2:00 PM and starting mid-shifts earlier.',
+    subs:[{name:'Short Hours by Day',cols:['Date','From Meal Breaks','From Late Starts','Short Hrs'],num:[1,2,3],
+       rows:[['Thu 08/06','1.0h','0.5h',{v:'1.5h',c:'nm'}],['Fri 08/07','1.0h','1.5h',{v:'2.5h',c:'wn'}],['Sat 08/08','1.5h','2.0h',{v:'3.5h',c:'al'}],['Sun 08/09','1.0h','2.0h',{v:'3.0h',c:'wn'}]],total:['Total','4.5h','6.0h','10.5h']},
+      {name:'Meal Breaks Scheduled Inside the Lunch Peak',cols:['Date','Employee','Break'],
+       rows:[['Thu 08/06','Ben H.','12:00–12:30 PM'],['Thu 08/06','Grace L.','1:00–1:30 PM'],['Fri 08/07','Nina F.','12:00–12:30 PM'],['Fri 08/07','Jamie T.','12:30–1:00 PM'],['Sat 08/08','Priya K.','12:00–12:30 PM'],['Sat 08/08','Sam N.','12:30–1:00 PM'],['Sat 08/08','Maya C.','1:00–1:30 PM'],['Sun 08/09','Luis R.','12:00–12:30 PM'],['Sun 08/09','Aisha K.','12:30–1:00 PM']]}],
+    fix:'Move the 9 meal breaks to 2:00–3:00 PM and start the Fri–Sun mid-shifts at 11:15 AM. That closes the lunch gap with no extra hours.'},
+   {seg:'dinner',sev:'wn',icon:'moon',name:'Dinner peak is 8.25 hours short on Fri–Sun',sub:'Closers start after the 6:00 PM ramp, and one Sunday open shift wasn\'t filled.',impact:'8.25h short',impCls:'wn',scope:'Fri–Sun · 6–8 PM',
+    insight:'<strong>Fri and Sat closers start at 6:30 PM, 30 minutes after demand ramps</strong>, and Dan W.\'s call-out cover only starts at 7:00 PM. On Sunday a shift opened by approved time off was never filled.',
+    subs:[{name:'Dinner Peak Coverage (6–8 PM)',cols:['Date','Required (avg)','Scheduled (avg)','Short Hrs','Cause'],num:[1,2,3],
+       rows:[['Fri 08/07','6.0','4.6',{v:'2.75h',c:'wn'},'2 closers start 6:30 PM'],['Sat 08/08','6.5','4.75',{v:'3.5h',c:'al'},'Call-out cover starts 7:00 PM'],['Sun 08/09','5.0','4.0',{v:'2.0h',c:'wn'},'Open shift not filled']],total:['Total','','','8.25h','']}],
+    fix:'Start Fri/Sat closers at 6:00 PM and fill the Sunday open shift from the available-staff list (Ben H. has 8h open).'}],
+  recs:[{t:'Move the 9 meal breaks out of 11:30 AM–1:30 PM.',imp:'−4.5h short, $0 added',pri:'high'},
+        {t:'Start Fri–Sun lunch mid-shifts at 11:15 AM and Fri/Sat closers at 6:00 PM.',imp:'−7.75h short',pri:'high'},
+        {t:'Fill the Sunday 08/09 open dinner shift.',imp:'−2.0h short',pri:'med'}],
+  trend:{t:'Understaffed hours · 6 weeks',vals:[8.5,10,11.25,13.5,15,18.75],target:8,fmt:'h',bad:'up'},
+  daily:{t:'Understaffed hours by day',vals:[0,0,0,1.5,5.25,7,5],fmt:'h',bad:'up'},
+  people:'Meal breaks: Ben H., Grace L., Nina F., Jamie T., Priya K., Sam N., Maya C., Luis R., Aisha K.',
+  prompts:['Where am I short-staffed?','Why is the lunch peak short?','Can I fix it without adding hours?','Which employees are affected?']
+},
+/* 7 ---------------------------------------------------------------- */
+{ id:'ot', group:'Overtime & Actuals', key:'otHrs · authorizedOtHrs', label:'Scheduled Overtime', val:'7.0h', vr:'▲ +1.5h WoW', sev:'al', tgt:'Target 0h avoidable',
+  hero:{ eyebrow:'Scheduled Overtime · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ 7h avoidable OT',
+    def:'Scheduled hours past 40 per employee per week. "Avoidable" = not pre-approved and a lower-hours employee was available.',
+    stats:[{l:'OT Pay',v:'$158',n:'3 shifts',c:'al'},{l:'Pre-approved',v:'0 of 3',n:'All crew-side',c:'al'},{l:'Near-OT Employees',v:'2',n:'38.75–39.5h scheduled',c:'wn'},{l:'OT % of Hours',v:'1.3%',n:'7 of 532h'}]},
+  segs:[{k:'call',l:'Call-out coverage',pct:71,amt:'5h · $112',col:C1},{k:'swap',l:'Unbackfilled swap',pct:29,amt:'2h · $46',col:C2}],
+  ai:'<strong>7 overtime hours ($158) are on the posted schedule and all of them are avoidable.</strong> Two came from covering call-outs and one from a swap that wasn\'t backfilled. Each time, someone with open availability and fewer hours could have taken the shift. <strong>2 more employees are within 1.25h of overtime</strong>.',
+  related:['lbr','act','comp'],
+  drivers:[
+   {seg:'call',sev:'al',icon:'phone',name:'Call-out coverage pushed Josh P. and Dan W. past 40 hours',sub:'Both picked up a called-out shift on top of a full week.',impact:'+$112 OT',impCls:'al',scope:'Thu 08/06, Sat 08/08',
+    insight:'<strong>Both call-outs were covered by the first person who answered</strong> instead of the person with the most open hours.',
+    subs:[{name:'Overtime from Call-outs',cols:['Date','Employee','Sched Hrs (Wk)','OT Hrs','OT $','Available Instead'],num:[2,3,4],
+       rows:[['Thu 08/06','Josh P.','43h',{v:'3h',c:'al'},'$66.00','Priya K. (32h, 6h open)'],['Sat 08/08','Dan W.','42h',{v:'2h',c:'wn'},'$46.00','Ben H. (30h, 8h open)']],total:['Total','','','5h','$112.00','']}],
+    fix:'Reassign both shifts before the schedule posts. For future call-outs, offer the shift to staff under 32h first.'},
+   {seg:'swap',sev:'wn',icon:'swap',name:'Sarah M. took a swapped shift that wasn\'t backfilled',sub:'Elena V. swapped out of Fri 08/07; Sarah M. absorbed it at 42h.',impact:'+$46 OT',impCls:'wn',scope:'Fri 08/07 · 4–10 PM',
+    insight:'The swap was approved at 10:05 PM the night before, <strong>after the publish cutoff</strong>, so no one checked Sarah\'s weekly hours (see Publish Compliance).',
+    subs:[{name:'Overtime from Swap',cols:['Date','Employee','Sched Hrs (Wk)','OT Hrs','OT $','Available Instead'],num:[2,3,4],
+       rows:[['Fri 08/07','Sarah M.','42h',{v:'2h',c:'wn'},'$46.00','Sam N. (29h, 4h open)']]}],
+    fix:'Give the Friday shift to Sam N. Require an hours check before approving any swap.'},
+   {seg:null,sev:'nm',icon:'alert',name:'Luis R. and Maya C. are one late clock-out away from overtime',sub:'Scheduled 39.5h and 38.75h, and both regularly clock out late.',impact:'~$35 at risk',impCls:'nm',scope:'Luis R., Maya C. · closing shifts',
+    insight:'Last week Luis R. clocked out late 7 times and Maya C. 6 times (see Actual vs Scheduled). <strong>If that repeats, both cross 40 hours by Saturday.</strong>',
+    subs:[{name:'Near-Overtime Employees',cols:['Employee','Sched Hrs (Wk)','Headroom','Late Outs Last Wk','Projected OT'],num:[1,2,3,4],
+       rows:[['Luis R.','39.5h',{v:'0.5h',c:'al'},'7 (2.6h)',{v:'2.1h',c:'wn'}],['Maya C.','38.75h',{v:'1.25h',c:'wn'},'6 (1.8h)',{v:'0.55h',c:'wn'}]]}],
+    fix:'Trim 1 hour from each of their Saturday shifts, or set a hard clock-out reminder at scheduled end.'}],
+  recs:[{t:'Reassign Josh P., Sarah M. and Dan W.\'s OT shifts to Priya K., Sam N. and Ben H.',imp:'Removes $158 OT',pri:'high'},
+        {t:'Trim 1h from Luis R. and Maya C.\'s Saturday shifts.',imp:'Avoids ~$35 OT',pri:'med'},
+        {t:'Offer call-out shifts to employees under 32h first.',imp:'Prevents repeats',pri:'low'}],
+  trend:{t:'Scheduled OT hours · 6 weeks',vals:[2.0,3.5,1.5,4.0,5.5,7.0],target:0,fmt:'h',bad:'up'},
+  daily:{t:'Scheduled OT hours by day',vals:[0,0,0,3,2,2,0],fmt:'h',bad:'up'},
+  people:'OT: Josh P., Sarah M., Dan W. Near OT: Luis R., Maya C. Available cover: Priya K., Sam N., Ben H.',
+  prompts:['Who is in overtime?','Who is at risk of overtime?','Who can cover without OT?','How much does it cost?']
+},
+/* 8 ---------------------------------------------------------------- */
+{ id:'act', group:'Overtime & Actuals', key:'schVsActHrs · earlyClockIn · lateClockOut', label:'Actual vs Scheduled Hours', val:'+14.6h', vr:'▲ +2.9%', sev:'wn', tgt:'Target within ±1%',
+  hero:{ eyebrow:'Actual vs Scheduled Hours · Last Week (Jul 27 – Aug 02) · 236 - Bressi Ranch', chip:'▲ 14.6h worked beyond schedule',
+    def:'Actual punched hours − scheduled hours. Uses last week, because this week\'s actuals are not in yet.',
+    stats:[{l:'Scheduled',v:'510.0h',n:'Last week'},{l:'Actual',v:'524.6h',n:'Punched',c:'wn'},{l:'Extra Labor $',v:'$223',n:'At $15.30 avg rate',c:'wn'},{l:'Late Clock-outs',v:'26',n:'8.7h total',c:'al'}]},
+  segs:[{k:'late',l:'Late clock-outs',pct:52,amt:'+8.7h',col:C1},{k:'early',l:'Early clock-ins',pct:24,amt:'+4.1h',col:C2},{k:'unsch',l:'Unscheduled shift',pct:24,amt:'+4.0h',col:C3}],
+  segNote:'Offset by −2.2h of early clock-outs.',
+  ai:'Last week the crew worked <strong>14.6 hours more than scheduled (+2.9%, about $223)</strong>. Half of it is <strong>closers clocking out late</strong>, led by Luis R. and Maya C., who are also close to overtime this week. The rest is early clock-ins and a catering shift that was never added to the schedule.',
+  related:['ot','lbr','law'],
+  drivers:[
+   {seg:'late',sev:'al',icon:'clock',name:'26 late clock-outs added 8.7 hours',sub:'Mostly closers finishing side-work after the scheduled 10:00 PM end.',impact:'+8.7h · $133',impCls:'al',scope:'Closing shifts · Jul 27 – Aug 02',
+    insight:'<strong>Closers are scheduled to end at 10:00 PM, the same time the store closes</strong>, so any closing task runs past the schedule.',
+    subs:[{name:'Late Clock-outs by Employee',cols:['Employee','Cases','Hours','Avg Minutes'],num:[1,2,3],
+       rows:[['Luis R.','7',{v:'2.6h',c:'al'},'22'],['Maya C.','6',{v:'1.8h',c:'wn'},'18'],['Josh P.','5',{v:'1.7h',c:'wn'},'20'],['Tony G.','4','1.4h','21'],['4 others','4','1.2h','18']],total:['Total','26','8.7h','20']}],
+    fix:'Schedule closers to 10:20 PM (the real close-out time) or move side-work before 9:30 PM. Either way the schedule will reflect the actual cost.'},
+   {seg:'early',sev:'wn',icon:'sunrise',name:'19 early clock-ins added 4.1 hours',sub:'Employees can punch in up to 15 minutes early with no approval.',impact:'+4.1h · $63',impCls:'wn',scope:'Opening & mid shifts',
+    insight:'<strong>There is no early clock-in grace rule</strong>, so most early punches are just employees arriving early, not extra work being needed.',
+    subs:[{name:'Early Clock-ins by Employee',cols:['Employee','Cases','Hours'],num:[1,2],
+       rows:[['Priya K.','6','1.4h'],['Sam N.','5','1.1h'],['Grace L.','4','0.9h'],['4 others','4','0.7h']],total:['Total','19','4.1h']}],
+    fix:'Turn on a 5-minute early clock-in restriction in Time Clock.'},
+   {seg:'unsch',sev:'nm',icon:'cal',name:'One catering shift was worked but never scheduled',sub:'Ben H., Sat 08/01, 4 hours for a catering order.',impact:'+4.0h · $60',impCls:'nm',scope:'Sat 08/01',
+    insight:'The hours were real and justified, but because <strong>they were never added to the schedule</strong>, they show up as variance.',
+    subs:[{name:'Unscheduled Shift',cols:['Date','Employee','Punched','Hours','Reason'],num:[3],
+       rows:[['Sat 08/01','Ben H.','9:00 AM–1:00 PM','4.0h','Catering order (manager note)']]}],
+    fix:'Add catering prep to the schedule when the order is booked.'}],
+  recs:[{t:'Schedule closers to the real close-out time, or move side-work before 9:30 PM.',imp:'−8.7h variance',pri:'high'},
+        {t:'Enable a 5-minute early clock-in restriction.',imp:'−4.1h/week',pri:'med'},
+        {t:'Add catering prep shifts to the schedule when orders are booked.',imp:'Cleaner variance',pri:'low'}],
+  trend:{t:'Actual − Scheduled hours · 6 weeks',vals:[6.2,8.0,9.4,11.1,12.8,14.6],target:0,fmt:'hs',bad:'up',weeks:'prior'},
+  daily:{t:'Actual − Scheduled by day (last week)',vals:[1.2,1.5,1.1,2.9,3.4,3.1,1.4],target:0,fmt:'hs',bad:'up'},
+  people:'Late outs: Luis R., Maya C., Josh P., Tony G. Early ins: Priya K., Sam N., Grace L. Unscheduled: Ben H.',
+  prompts:['Who clocks out late most?','Why did actual hours exceed schedule?','What does it cost?','How do I prevent it?']
+},
+/* 9 ---------------------------------------------------------------- */
+{ id:'comp', group:'Compliance', key:'schPublishComp · schChanges · latePublishing', label:'Schedule Publish Compliance', val:'86.6%', vr:'▼ −11.4 pts', sev:'al', tgt:'Target 98.0%',
+  hero:{ eyebrow:'Schedule Publish Compliance · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▼ −11.4 pts below target',
+    def:'Share of scheduled shifts left unchanged after the schedule was published.',
+    stats:[{l:'Shifts Scheduled',v:'82',n:'This week'},{l:'Changed After Publish',v:'11',n:'7 within 72h of shift',c:'al'},{l:'Published',v:'1 day late',n:'Tue 07/28 vs Mon 07/27',c:'wn'},{l:'Changes Last Week',v:'8',n:'+3 WoW',c:'wn'}]},
+  segs:[{k:'swap',l:'Late swap approvals',pct:55,amt:'6 shifts',col:C1},{k:'add',l:'Manager-added shifts',pct:27,amt:'3 shifts',col:C2},{k:'call',l:'Call-out replacements',pct:18,amt:'2 shifts',col:C3}],
+  ai:'Publish compliance is <strong>86.6%</strong>: 11 of 82 shifts changed after the schedule went out, and it was published a day late. <strong>6 are swap approvals made less than 24 hours before the shift.</strong> The 3 shifts managers added after publishing are the same extra opener, prep block and closer that drive this week\'s overstaffing.',
+  related:['over','ot','lbr'],
+  drivers:[
+   {seg:'swap',sev:'al',icon:'swap',name:'6 shift swaps were approved less than 24 hours before the shift',sub:'The swap window closes the same day the schedule publishes, so approvals land late.',impact:'6 changes',impCls:'al',scope:'Tue–Sun · swap approvals',
+    insight:'<strong>Every late swap was approved in the evening, less than 24 hours before the shift.</strong> One of them (Elena V. to Sarah M.) created this week\'s Friday overtime.',
+    subs:[{name:'Late Swap Approvals',cols:['Shift Date','Swap','Approved','Hours Before Shift'],num:[3],
+       rows:[['Tue 08/04','Nina F. → Jamie T.','Mon 9:40 PM',{v:'13h',c:'al'}],['Wed 08/05','Aisha K. → Priya K.','Tue 8:15 PM',{v:'18h',c:'al'}],['Fri 08/07','Elena V. → Sarah M.','Thu 10:05 PM',{v:'18h',c:'al'}],['Sat 08/08','Grace L. → Omar S.','Fri 7:30 PM',{v:'16h',c:'al'}],['Sat 08/08','Maya C. → Luis R.','Fri 9:10 PM',{v:'19h',c:'al'}],['Sun 08/09','Tony G. → Ben H.','Sat 6:45 PM',{v:'20h',c:'al'}]]}],
+    fix:'Close the swap-approval window 48 hours before the shift, and check weekly hours on every approval.'},
+   {seg:'add',sev:'wn',icon:'plus',name:'Managers added 3 shifts after publishing',sub:'The Mon extra opener, the Tue prep block and the Thu extra closer.',impact:'3 changes · 11h',impCls:'wn',scope:'Mon 08/03, Tue 08/04, Thu 08/06',
+    insight:'<strong>These 3 shifts add 11 hours that the forecast doesn\'t support.</strong> Two have no reason logged. Removing them fixes compliance and overstaffing at the same time.',
+    subs:[{name:'Shifts Added After Publish',cols:['Date','Shift','Employee','Reason','Hrs'],num:[4],
+       rows:[['Mon 08/03','6:00–9:00 AM','Omar S.','"Just in case"','3h'],['Tue 08/04','2:00–5:00 PM','Aisha K.','None','3h'],['Thu 08/06','5:00–10:00 PM','Tony G.','None','5h']],total:['','','','','11h']}],
+    fix:'Require a reason and a forecast check before adding a shift after publishing.'},
+   {seg:'call',sev:'nm',icon:'phone',name:'2 call-out replacements changed the schedule',sub:'Josh P. (Thu) and Dan W. (Sat) covered call-outs, both into overtime.',impact:'2 changes',impCls:'nm',scope:'Thu 08/06, Sat 08/08',
+    insight:'Call-outs are legitimate changes, but <strong>both replacements created overtime</strong> (see Scheduled Overtime).',
+    subs:[{name:'Call-out Replacements',cols:['Date','Called Out','Covered By','Result'],
+       rows:[['Thu 08/06','Kai M.','Josh P.',{v:'3h OT',c:'al'}],['Sat 08/08','Elena V.','Dan W.',{v:'2h OT',c:'wn'}]]}],
+    fix:'Offer call-out shifts to employees under 32 hours first.'}],
+  recs:[{t:'Publish next week\'s schedule by Monday, and close swap approvals 48h before the shift.',imp:'+7.3 pts compliance',pri:'high'},
+        {t:'Require a reason and forecast check for any shift added after publish.',imp:'+3.7 pts, −11h',pri:'high'},
+        {t:'Check weekly hours on every swap and call-out replacement.',imp:'Prevents OT',pri:'med'}],
+  trend:{t:'Publish Compliance · 6 weeks',vals:[97.6,96.3,95.1,92.7,90.2,86.6],target:98,fmt:'pct',bad:'down'},
+  daily:{t:'Shifts changed after publish, by day',vals:[1,1,1,3,2,2,1],fmt:'n',bad:'up'},
+  people:'Late swaps: Nina F., Jamie T., Aisha K., Priya K., Elena V., Sarah M., Grace L., Omar S., Maya C., Luis R., Tony G., Ben H.',
+  prompts:['Why is compliance low?','Which changes were late?','How do I prevent late swaps?','Compare with last week']
+},
+/* 10 ---------------------------------------------------------------- */
+{ id:'law', group:'Compliance', key:'ttlViolation · brkViolation · restPremium · minorViolation', label:'Labor Law Risk', val:'9', vr:'▲ +2 WoW', sev:'al', tgt:'Target 0 flagged shifts',
+  hero:{ eyebrow:'Labor Law Risk · This Week\'s Schedule · 236 - Bressi Ranch', chip:'▲ 9 shifts need a fix before they\'re worked',
+    def:'Scheduled shifts that break a California or store labor rule: meal breaks, rest between shifts, minor hours, split shifts.',
+    stats:[{l:'Meal Break',v:'4',n:'6h+ shifts, no break',c:'al'},{l:'Rest Period',v:'3',n:'Under 10h between shifts',c:'wn'},{l:'Minor & Split Shift',v:'2',n:'1 each',c:'al'},{l:'Premium Exposure',v:'$78',n:'If worked as scheduled',c:'al'}]},
+  segs:[{k:'meal',l:'Meal break missing',pct:44,amt:'4 shifts',col:C1},{k:'rest',l:'Short rest (clopening)',pct:33,amt:'3 shifts',col:C2},{k:'minor',l:'Minor hours & split shift',pct:23,amt:'2 shifts',col:C3}],
+  ai:'<strong>9 scheduled shifts break a labor rule</strong>, up from 7 last week. The legal exposure is the 4 shifts over 6 hours with no meal break (a premium hour each under California law) and <strong>one 16-year-old scheduled past the 8-hour daily limit</strong>. All 9 can still be fixed before the shifts are worked.',
+  related:['comp','act','ot'],
+  drivers:[
+   {seg:'meal',sev:'al',icon:'coffee',name:'4 shifts over 6 hours have no meal break scheduled',sub:'Each one owes 1 hour of premium pay if worked as scheduled.',impact:'$61 exposure',impCls:'al',scope:'Tue, Thu, Sat, Sun',
+    insight:'<strong>All 4 are long shifts built by extending an existing shift</strong> after publish. The break wasn\'t added when the shift was extended.',
+    subs:[{name:'Shifts Missing a Meal Break',cols:['Date','Employee','Shift','Length','Premium'],num:[3,4],
+       rows:[['Tue 08/04','Marcus B.','2:00–10:30 PM','8.5h',{v:'$15.30',c:'al'}],['Thu 08/06','Josh P.','1:00–10:00 PM','9.0h',{v:'$15.30',c:'al'}],['Sat 08/08','Dan W.','12:30–10:00 PM','9.5h',{v:'$15.30',c:'al'}],['Sun 08/09','Nina F.','7:00 AM–1:30 PM','6.5h',{v:'$15.30',c:'al'}]],total:['','','','','$61.20']}],
+    fix:'Add a 30-minute meal break before the end of the 5th hour on each shift, placed outside the lunch and dinner peaks.'},
+   {seg:'rest',sev:'wn',icon:'moon',name:'3 employees close and then open with under 10 hours of rest',sub:'Store policy requires 10 hours between shifts.',impact:'3 shifts',impCls:'wn',scope:'Mon 08/03, Fri 08/07, Sat 08/08',
+    insight:'<strong>Sarah M. closes Friday with 2 OT hours and opens Saturday 9.5 hours later.</strong> The same employees keep ending up on these closing-then-opening turns.',
+    subs:[{name:'Short Turnarounds',cols:['Employee','Closes','Opens','Rest'],num:[3],
+       rows:[['Omar S.','Sun 08/02 10:00 PM','Mon 08/03 6:00 AM',{v:'8.0h',c:'al'}],['Tony G.','Thu 08/06 10:00 PM','Fri 08/07 7:00 AM',{v:'9.0h',c:'wn'}],['Sarah M.','Fri 08/07 10:00 PM','Sat 08/08 7:30 AM',{v:'9.5h',c:'wn'}]]}],
+    fix:'Swap these openings with staff who are not closing the night before. Priya K. and Jamie T. are available.'},
+   {seg:'minor',sev:'al',icon:'alert',name:'A minor is over the daily limit, and one split shift owes a premium',sub:'Kai M. (16) is scheduled 8.5h on Thu. Grace L. has a split shift on Fri.',impact:'$17 + legal risk',impCls:'al',scope:'Thu 08/06, Fri 08/07',
+    insight:'<strong>The minor violation is the most serious item on this list</strong>, because it breaks a rule and can\'t be fixed by paying a premium.',
+    subs:[{name:'Minor & Split-Shift Flags',cols:['Date','Employee','Shift','Rule','Fix'],
+       rows:[['Thu 08/06','Kai M. (16)','9:00 AM–5:30 PM',{v:'Minor > 8h/day',c:'al'},'End at 5:00 PM'],['Fri 08/07','Grace L.','10a–1p + 5p–9p',{v:'Split shift premium',c:'wn'},'Merge or pay 1h premium']]}],
+    fix:'End Kai M.\'s Thursday shift at 5:00 PM (Priya K. can cover the last 30 minutes) and merge Grace L.\'s split shift.'}],
+  recs:[{t:'Cut Kai M.\'s Thursday shift to 8 hours.',imp:'Removes legal risk',pri:'high'},
+        {t:'Add meal breaks to the 4 long shifts, outside the peaks.',imp:'Avoids $61',pri:'high'},
+        {t:'Swap the 3 short-turnaround openings to rested staff.',imp:'Policy compliant',pri:'med'},
+        {t:'Merge Grace L.\'s Friday split shift.',imp:'Avoids $17',pri:'low'}],
+  trend:{t:'Flagged shifts · 6 weeks',vals:[3,4,4,6,7,9],target:0,fmt:'n',bad:'up'},
+  daily:{t:'Flagged shifts by day',vals:[1,1,0,2,2,2,1],fmt:'n',bad:'up'},
+  people:'Meal breaks: Marcus B., Josh P., Dan W., Nina F. Rest: Omar S., Tony G., Sarah M. Minor: Kai M. Split: Grace L.',
+  prompts:['Which shifts break a rule?','What is my legal exposure?','What should I fix first?','Who is affected?']
+}
+];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const SEV_LABEL = {al:'Alert',wn:'Warning',gd:'On target',nm:'Info'};
+const ICONS = {
+  cal:'<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M16 2.5v4M8 2.5v4M3 9.5h18M8 14h3"/>',
+  usd:'<circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.6-.9-1.7-1.4-3-1.4-1.8 0-3 .9-3 2.2 0 3 6 1.6 6 4.4 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.6-3.2-1.6M12 6v1.8M12 16.8V18"/>',
+  clock:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/>',
+  trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M2.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/><circle cx="17.5" cy="8.5" r="2.5"/><path d="M15.8 13.7c2.8.5 4.7 2.6 4.7 5.3"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>',
+  sunrise:'<path d="M12 3v5M5.6 9.6l1.4 1.4M18.4 9.6 17 11M3 17h18M7 17a5 5 0 0 1 10 0M9 6l3-3 3 3"/>',
+  up:'<path d="M12 19V5M6 11l6-6 6 6"/>', down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
+  phone:'<path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/>',
+  swap:'<path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',
+  plus:'<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M12 10v6M9 13h6M3 9.5h18"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  coffee:'<path d="M4 8h13v6a4.5 4.5 0 0 1-4.5 4.5h-4A4.5 4.5 0 0 1 4 14z"/><path d="M17 9.5h1.5a2.5 2.5 0 0 1 0 5H17M7 2.5v2M10.5 2.5v2M14 2.5v2"/>',
+  spark:'<path d="M12 3l1.8 4.9L19 9.7l-4.3 2.9L16 18l-4-3.2L8 18l1.3-5.4L5 9.7l5.2-1.8z"/>',
+  chev:'<path d="M6 9l6 6 6-6"/>', tree:'<path d="M4 5h6M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>', act:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  vol:'<path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
+};
+const ic = (n,s=16,w=2) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]||ICONS.alert}</svg>`;
+
+let cur = 0;
+try { const saved = localStorage.getItem('sah-kpi'); const i = KPIS.findIndex(k=>k.id===saved); if(i>=0) cur = i; } catch(e){}
+
+function renderRail(){
+  const al = KPIS.filter(k=>k.sev==='al').length, wn = KPIS.filter(k=>k.sev==='wn').length;
+  $('#rail-sum').textContent = `${KPIS.length} fixed KPIs · ${al} in alert · ${wn} in warning`;
+  let html = '', grp = '';
+  KPIS.forEach((k,i)=>{
+    if(k.group!==grp){ grp = k.group; html += `<div class="rail-grp">${grp}</div>`; }
+    html += `<button type="button" class="ra sev-${k.sev}${i===cur?' on':''}" data-i="${i}" aria-current="${i===cur}">
+      <div class="ra-top"><span class="ra-name">${k.label}</span><span class="ra-tag">${SEV_LABEL[k.sev]}</span></div>
+      <div class="ra-row"><span class="ra-val num">${k.val}</span><span class="ra-var num">${k.vr}</span></div>
+      <div class="ra-tgt">${k.tgt}</div></button>`;
+  });
+  $('#rail').innerHTML = html;
+}
+
+function cell(c, isNum){
+  if(c && typeof c==='object') return `<td class="${c.c||''}${isNum?' r':''}">${c.v}</td>`;
+  return `<td${isNum?' class="r"':''}>${c}</td>`;
+}
+function tableHtml(s){
+  const num = s.num||[];
+  return `<div><div class="sub-t">${s.name}<span>${s.rows.length} ${s.rows.length===1?'row':'rows'}</span></div>
+   <div class="tbl-wrap"><table class="tbl"><thead><tr>${s.cols.map((c,i)=>`<th${num.includes(i)?' class="r"':''}>${c}</th>`).join('')}</tr></thead>
+   <tbody>${s.rows.map(r=>`<tr>${r.map((c,i)=>cell(c,num.includes(i))).join('')}</tr>`).join('')}
+   ${s.total?`<tr class="total">${s.total.map((c,i)=>`<td${num.includes(i)?' class="r"':''}>${c}</td>`).join('')}</tr>`:''}</tbody></table></div></div>`;
+}
+
+function segCol(k, key){ const s = k.segs.find(x=>x.k===key); return s ? s.col : '#64748b'; }
+
+/* ---- heatmap ---- */
+function heatHtml(h){
+  const flat = h.rows.flat(); const max = Math.max(...flat) || 1;
+  const base = h.mode==='under' ? [212,37,37] : h.mode==='over' ? [184,98,6] : [46,95,163];
+  const colTot = [0,1,2,3].map(c=>h.rows.reduce((a,r)=>a+r[c],0));
+  const fmt = v => v===0 ? '·' : (h.mode==='net'&&v>0?'+':'') + (Number.isInteger(v)?v:v.toFixed(2).replace(/0$/,'')) + 'h';
+  const bg = v => v===0 ? '' : `style="background:rgba(${base.join(',')},${(0.22+0.78*(v/max)).toFixed(2)})"`;
+  return `<div class="card"><h3 class="sec">${ic('grid',17)}${h.t} <small>${h.sub}</small></h3>
+   <div class="heat-wrap"><table class="heat"><thead><tr><th></th>${DAYPARTS.map(d=>`<th>${d[0]}<span class="sub">${d[1]}</span></th>`).join('')}<th>Total</th></tr></thead><tbody>
+   ${h.rows.map((r,i)=>`<tr><th class="rowh">${DAYS[i]}</th>${r.map(v=>`<td class="${v?'hot':''}" ${bg(v)}>${fmt(v)}</td>`).join('')}<td class="tot">${fmt(r.reduce((a,b)=>a+b,0))}</td></tr>`).join('')}
+   <tr><th class="rowh">Week</th>${colTot.map(v=>`<td class="tot">${fmt(v)}</td>`).join('')}<td class="tot">${fmt(colTot.reduce((a,b)=>a+b,0))}</td></tr>
+   </tbody></table></div>
+   <div class="heat-note"><span><i style="background:rgba(${base.join(',')},.3)"></i>Lower</span><span><i style="background:rgba(${base.join(',')},1)"></i>Higher</span><span>Click a driver below for the shifts behind each cell.</span></div></div>`;
+}
+
+/* ---- charts ---- */
+function fmtV(v, f){
+  if(f==='pct') return v.toFixed(1)+'%';
+  if(f==='usd') return '$'+v.toFixed(2);
+  if(f==='hs') return (v>0?'+':'')+(+v.toFixed(2))+'h';
+  if(f==='h') return (+v.toFixed(2))+'h';
+  return String(v);
+}
+function trendSvg(t, isPrior){
+  const labels = isPrior ? WEEKS_PRIOR : WEEKS;
+  const W=320,H=130,L=8,R=8,T=18,B=24;
+  const vals=t.vals, all=vals.concat(t.target!=null?[t.target]:[]);
+  let lo=Math.min(...all), hi=Math.max(...all); const pad=(hi-lo)*0.18||1; lo-=pad; hi+=pad;
+  const X=i=>L+i*(W-L-R)/(vals.length-1), Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  const area=`M${X(0)},${H-B} L${pts.split(' ').join(' L')} L${X(vals.length-1)},${H-B} Z`;
+  const bad = v => t.target!=null && (t.bad==='up' ? v>t.target : v<t.target);
+  const lastBad = bad(vals[vals.length-1]);
+  const col = lastBad ? 'var(--al)' : 'var(--accent)';
+  const grid=[0.25,0.5,0.75].map(f=>`<line x1="${L}" x2="${W-R}" y1="${(T+(H-T-B)*f).toFixed(1)}" y2="${(T+(H-T-B)*f).toFixed(1)}" stroke="var(--line)" stroke-width="1"/>`).join('');
+  const thr = t.target!=null ? `<line x1="${L}" x2="${W-R}" y1="${Y(t.target).toFixed(1)}" y2="${Y(t.target).toFixed(1)}" stroke="var(--gd)" stroke-width="1.3" stroke-dasharray="4 3"/><text x="${W-R}" y="${(Y(t.target)-4).toFixed(1)}" text-anchor="end">target ${fmtV(t.target,t.fmt)}</text>` : '';
+  const dots=vals.map((v,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${i===vals.length-1?4:2.4}" fill="${i===vals.length-1?col:'var(--surface)'}" stroke="${col}" stroke-width="1.6"><title>${labels[i]}: ${fmtV(v,t.fmt)}</title></circle>`).join('');
+  const xl=labels.map((l,i)=>`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="${i===0?'start':i===labels.length-1?'end':'middle'}">${l}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t.t}">${grid}<path d="${area}" fill="${col}" opacity=".08"/>${thr}<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xl}</svg>`;
+}
+function barsSvg(d){
+  const W=320,H=130,L=6,R=6,T=18,B=22;
+  const vals=d.vals, all=vals.concat(d.target!=null?[d.target]:[]);
+  const isRatio = d.fmt==='pct'||d.fmt==='usd';
+  let lo = isRatio ? Math.min(...all)-(Math.max(...all)-Math.min(...all))*0.6 : 0;
+  let hi = Math.max(...all); if(hi===lo) hi=lo+1; hi += (hi-lo)*0.12;
+  const bw=(W-L-R)/vals.length, Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const bad = v => d.target!=null ? (d.bad==='up'? v>d.target : v<d.target) : v>0;
+  const maxV = Math.max(...vals), minV = Math.min(...vals);
+  const bars=vals.map((v,i)=>{
+    const x=L+i*bw+bw*0.2, w=bw*0.6, y=Y(v), h=Math.max(1.5,(H-B)-y);
+    const worst = d.bad==='down' ? v===minV : v===maxV;
+    const fill = bad(v) ? (worst?'var(--al)':'var(--wn)') : 'var(--gd)';
+    return `<rect x="${x.toFixed(1)}" y="${((H-B)-h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${fill}" opacity="${worst?1:.72}"><title>${DAYS[i]}: ${fmtV(v,d.fmt)}</title></rect>
+      <text class="v" x="${(x+w/2).toFixed(1)}" y="${(((H-B)-h)-4).toFixed(1)}" text-anchor="middle">${fmtV(v,d.fmt).replace('.00','')}</text>
+      <text x="${(x+w/2).toFixed(1)}" y="${H-6}" text-anchor="middle">${DAYS_S[i]}</text>`;
+  }).join('');
+  const thr = d.target!=null && d.target>lo ? `<line x1="${L}" x2="${W-R}" y1="${Y(d.target).toFixed(1)}" y2="${Y(d.target).toFixed(1)}" stroke="var(--gd)" stroke-width="1.3" stroke-dasharray="4 3"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${d.t}"><line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--line-2)"/>${bars}${thr}</svg>`;
+}
+
+function renderMain(){
+  const k = KPIS[cur];
+  const main = $('#main');
+  main.innerHTML = `
+  <section class="hero sev-${k.sev}" aria-label="${k.label} summary">
+    <div class="hero-main">
+      <div>
+        <div class="hero-eyebrow">${k.hero.eyebrow}</div>
+        <div class="hero-valrow"><span class="hero-val num">${k.val}</span><span class="hero-chip">${k.hero.chip}</span></div>
+        <div class="hero-def">${k.hero.def} <span style="opacity:.7">· ${k.key}</span></div>
+      </div>
+      <div class="hero-stats">${k.hero.stats.map(s=>`<div class="hs"><div class="l">${s.l}</div><div class="v num ${s.c||''}">${s.v}</div><div class="n">${s.n}</div></div>`).join('')}</div>
+    </div>
+    <div class="hero-var">
+      <div class="hero-var-l">${ic('act',16)}What is driving the variance? <span>Click a segment to jump to its driver</span></div>
+      <div class="bbar">${k.segs.map(s=>`<button type="button" data-seg="${s.k}" style="flex:${s.pct};background:${s.col}" title="${s.l}: ${s.amt}">${s.pct>=12?s.pct+'%':''}</button>`).join('')}</div>
+      <div class="bleg">${k.segs.map(s=>`<button type="button" data-seg="${s.k}"><span class="sw" style="background:${s.col}"></span><span class="nm">${s.l}</span><span class="am num">${s.amt}</span><span class="pc num">${s.pct}%</span></button>`).join('')}</div>
+      ${k.segNote?`<div class="hero-var-note">${k.segNote}</div>`:''}
+    </div>
+  </section>
+
+  <section class="ai">
+    <div class="ai-ico">${ic('spark',17,1.8)}</div>
+    <div class="ai-tx"><div class="ai-lbl">AI Root Cause Summary</div><div class="ai-body">${k.ai}</div></div>
+    <div class="ai-acts">
+      <button type="button" class="b-read" id="b-read">${ic('vol',15)}Read Aloud</button>
+      <button type="button" class="b-ask" id="b-ask">${ic('chat',15)}Ask the Agent</button>
+    </div>
+    <div class="related">Related KPIs: ${k.related.map(id=>{const r=KPIS.find(x=>x.id===id);return `<button type="button" data-goto="${id}">${r.label} · ${r.val}</button>`;}).join('')}</div>
+  </section>
+
+  ${k.heat ? heatHtml(k.heat) : ''}
+
+  <h3 class="sec" style="padding:4px 2px 0">${ic('tree',17)}Drilldown analysis <small>Expand a driver for shift and employee evidence</small></h3>
+  <div class="drivers">
+    ${k.drivers.map((d,i)=>`
+    <div class="dc${i===0?' open':''}" id="dc-${i}" data-sev="${d.sev}" data-seg="${d.seg||''}">
+      <button type="button" class="dc-h" aria-expanded="${i===0}" data-dc="${i}">
+        <span class="dc-ico" style="background:${d.seg?segCol(k,d.seg):'#64748b'}">${ic(d.icon,18)}</span>
+        <span class="dc-info"><span class="dc-name" style="display:block">${d.name}</span><span class="dc-sub" style="display:block">${d.sub}</span></span>
+        <span class="dc-right">
+          ${d.seg?`<span class="segtag">${k.segs.find(s=>s.k===d.seg).l}</span>`:''}
+          <span class="imp ${d.impCls}">${d.impact}</span>
+          <span class="badge ${d.sev}">${SEV_LABEL[d.sev]}</span>
+          <span class="chev">${ic('chev',18)}</span>
+        </span>
+      </button>
+      <div class="dc-b">
+        <div class="dc-ins">${d.insight}</div>
+        <div class="subs">${d.subs.map(tableHtml).join('')}</div>
+        <div class="fix"><div class="fix-l">Recommended fix</div><p>${d.fix}</p></div>
+        <div class="dc-links">
+          <button type="button" class="lnk" data-toast="Opens the Schedule filtered to: ${esc(d.scope)}">${ic('cal',14)}View these shifts</button>
+          <button type="button" class="lnk" data-toast="Opens Deep Dive pre-filtered to: ${esc(d.scope)}">${ic('ext',14)}Open in Deep Dive</button>
+          <button type="button" class="lnk" data-ask="${esc(d.name)}">${ic('chat',14)}Ask about this driver</button>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>
+
+  <div class="bottom">
+    <div class="card">
+      <h3 class="sec">${ic('check',17)}Recommended actions <small>Ranked by impact and risk</small></h3>
+      <div class="recs">${k.recs.map((r,i)=>`<div class="rec"><span class="rec-n">${i+1}</span><span class="rec-tx">${r.t}<span class="rec-imp">${r.imp}</span></span><span class="pri ${r.pri}">${r.pri==='med'?'Medium':r.pri==='high'?'High':'Low'}</span></div>`).join('')}</div>
+      <div class="rec-note">Suggestions only. Changes are made and published in the Schedule editor.</div>
+    </div>
+    <div class="card">
+      <h3 class="sec">${ic('act',17)}Impact snapshot</h3>
+      <div class="charts">
+        <div class="chart"><div class="t">${k.trend.t}</div><div class="n num">${fmtV(k.trend.vals[k.trend.vals.length-1],k.trend.fmt)}<small>was ${fmtV(k.trend.vals[0],k.trend.fmt)}</small></div>${trendSvg(k.trend, k.trend.weeks==='prior')}</div>
+        <div class="chart"><div class="t">${k.daily.t}</div><div class="n num">${k.val}<small>week total</small></div>${barsSvg(k.daily)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function select(i){
+  cur = i; try{ localStorage.setItem('sah-kpi', KPIS[i].id); }catch(e){}
+  stopSpeak(); closeChat();
+  renderRail(); renderMain();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---- toast ---- */
+let tt;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ---- read aloud ---- */
+let speaking=false;
+function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} speaking=false; const b=$('#b-read'); if(b) b.innerHTML=ic('vol',15)+'Read Aloud'; }
+function toggleSpeak(){
+  if(!('speechSynthesis' in window)){ toast('Read Aloud is not supported in this browser'); return; }
+  if(speaking){ stopSpeak(); return; }
+  const tmp=document.createElement('div'); tmp.innerHTML=KPIS[cur].ai;
+  const u=new SpeechSynthesisUtterance(tmp.textContent); u.onend=stopSpeak; u.onerror=stopSpeak;
+  speechSynthesis.cancel(); speechSynthesis.speak(u); speaking=true; $('#b-read').innerHTML=ic('vol',15)+'Stop';
+}
+
+/* ---- chat ---- */
+function openChat(seed){
+  const k=KPIS[cur], c=$('#chat');
+  c.classList.add('open'); c.setAttribute('aria-hidden','false');
+  $('#chat-s').textContent = k.label+' · '+k.val;
+  $('#chat-ctx').innerHTML = ['236 - Bressi Ranch','Week of Aug 3',k.label].map(x=>`<span>${x}</span>`).join('');
+  $('#chat-chips').innerHTML = k.prompts.map(p=>`<button type="button" data-q="${esc(p)}">${p}</button>`).join('');
+  if(!$('#thread').dataset.kpi || $('#thread').dataset.kpi!==k.id){
+    $('#thread').dataset.kpi=k.id;
+    $('#thread').innerHTML=`<div class="msg ai">${k.ai}<br><br>Ask me why, what to fix first, who is affected, or how big the impact is.</div>`;
+  }
+  if(seed) ask(seed);
+  setTimeout(()=>$('#chat-input').focus(),150);
+}
+function closeChat(){ const c=$('#chat'); c.classList.remove('open'); c.setAttribute('aria-hidden','true'); }
+function reply(q){
+  const k=KPIS[cur], t=q.toLowerCase();
+  const d = k.drivers.find(x=>t.includes(x.name.toLowerCase().slice(0,30)));
+  if(d) return `${d.insight}<br><br><strong>Fix:</strong> ${d.fix}`;
+  if(/who|employee|staff|people|affected|cover/.test(t)) return k.people;
+  if(/fix|do|first|cut|prevent|should|how do/.test(t)) return `Top actions for <strong>${k.label}</strong>:<ol>${k.recs.slice(0,3).map(r=>`<li>${r.t} <strong>(${r.imp})</strong></li>`).join('')}</ol>`;
+  if(/big|impact|cost|exposure|much/.test(t)){ const d0=k.drivers[0]; return `${k.label} is <strong>${k.val}</strong> (${k.hero.chip.replace(/[▲▼] ?/,'')}). The biggest driver is <strong>${d0.name.toLowerCase()}</strong> at <strong>${d0.impact}</strong>.`; }
+  if(/compare|last week|trend|rising|falling/.test(t)){ const v=k.trend.vals; return `Over 6 weeks ${k.label} moved from <strong>${fmtV(v[0],k.trend.fmt)}</strong> to <strong>${fmtV(v[v.length-1],k.trend.fmt)}</strong>. Last week it was ${fmtV(v[v.length-2],k.trend.fmt)}.`; }
+  if(/where|which day|worst|daypart/.test(t)){ const dd=k.daily; const idx = dd.bad==='down' ? dd.vals.indexOf(Math.min(...dd.vals)) : dd.vals.indexOf(Math.max(...dd.vals)); return `The worst day is <strong>${DAYS[idx]}</strong> at <strong>${fmtV(dd.vals[idx],dd.fmt)}</strong>. ${k.drivers[0].sub}`; }
+  if(/why/.test(t)) return k.ai;
+  return `In this mockup I can answer about <strong>${k.label}</strong>: why it moved, where it happens, who is affected, what to fix first, and how it compares with last week.`;
+}
+function ask(q){
+  const th=$('#thread');
+  th.insertAdjacentHTML('beforeend',`<div class="msg me">${esc(q)}</div>`);
+  const id='m'+Date.now();
+  th.insertAdjacentHTML('beforeend',`<div class="msg ai" id="${id}">Analyzing ${esc(KPIS[cur].label)} for Aug 3–9…</div>`);
+  th.scrollTop=th.scrollHeight;
+  setTimeout(()=>{ const el=document.getElementById(id); if(el) el.innerHTML=reply(q); th.scrollTop=th.scrollHeight; },650);
+}
+
+/* ---- events ---- */
+document.addEventListener('click', e=>{
+  const ra=e.target.closest('.ra'); if(ra){ select(+ra.dataset.i); return; }
+  const g=e.target.closest('[data-goto]'); if(g){ select(KPIS.findIndex(k=>k.id===g.dataset.goto)); return; }
+  const sg=e.target.closest('[data-seg]'); if(sg && !sg.classList.contains('dc')){
+    const el=document.querySelector(`.dc[data-seg="${sg.dataset.seg}"]`);
+    if(el){ el.classList.add('open'); el.querySelector('.dc-h').setAttribute('aria-expanded','true'); el.scrollIntoView({behavior:'smooth',block:'center'}); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1100); }
+    return;
+  }
+  const dh=e.target.closest('.dc-h'); if(dh){ const dc=dh.parentElement; const o=dc.classList.toggle('open'); dh.setAttribute('aria-expanded',o); return; }
+  const tst=e.target.closest('[data-toast]'); if(tst){ toast(tst.dataset.toast); return; }
+  const aq=e.target.closest('[data-ask]'); if(aq){ openChat(aq.dataset.ask); return; }
+  const q=e.target.closest('[data-q]'); if(q){ ask(q.dataset.q); return; }
+  if(e.target.closest('#b-ask')){ openChat(); return; }
+  if(e.target.closest('#b-read')){ toggleSpeak(); return; }
+  if(e.target.closest('#chat-x')){ closeChat(); return; }
+  if(e.target.closest('#b-refresh')){ toast('Refreshed · data as of 8:40 PM'); return; }
+  if(e.target.closest('#b-back')){ toast('Returns to the Schedule screen'); return; }
+});
+$('#chat-form').addEventListener('submit', e=>{ e.preventDefault(); const i=$('#chat-input'); const v=i.value.trim(); if(!v) return; i.value=''; ask(v); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeChat(); });
+
+/* light / dark toggle (defaults to light) */
+(function(){
+  const root=document.documentElement, btn=document.getElementById("b-theme");
+  let t="light"; try{ t=localStorage.getItem("sah-theme")||"light"; }catch(e){}
+  const apply=v=>{ root.setAttribute("data-theme",v); btn.textContent = v==="light" ? "Dark theme" : "Light theme"; try{ localStorage.setItem("sah-theme",v); }catch(e){} };
+  apply(t);
+  btn.addEventListener("click",()=>apply(root.getAttribute("data-theme")==="light"?"dark":"light"));
+})();
+renderRail(); renderMain();
+</script>
+</body>
+</html>
