@@ -320,7 +320,20 @@ tr:last-child td{border-bottom:0}
 .allset.on{display:flex}
 .plan{--per:4;--gap:14px;display:flex;gap:var(--gap);align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 2px 12px;scrollbar-width:thin}
 .plan>.pc{flex:0 0 calc((100% - var(--gap) * (var(--per) - 1)) / var(--per));scroll-snap-align:start;min-width:0}
-.pc{overflow:hidden}
+.pc{overflow:hidden;display:flex;flex-direction:column}
+/* long task lists scroll inside the card instead of stretching the page */
+.pc-list{max-height:520px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.pc-list::-webkit-scrollbar{width:6px}
+.pc-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+.plan{align-items:flex-start}
+/* Who's affected: expand / collapse */
+.ppl-tg{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:4px 6px 4px 2px;margin-left:-2px;border-radius:6px;font:inherit;font-weight:600;color:inherit;cursor:pointer}
+.ppl-tg:hover{background:var(--line-2)}
+.ppl-tg svg{transition:transform .18s;transform:rotate(90deg)}
+.ppl-sec.closed .ppl-tg svg{transform:rotate(0deg)}
+.ppl-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .2s ease}
+.ppl-body>div{min-height:0;overflow:hidden}
+.ppl-sec.closed .ppl-body{grid-template-rows:0fr}
 .pc-h{padding:14px 16px 12px;border-bottom:1px solid var(--line-2)}
 .pc-top{display:flex;align-items:center;gap:8px;justify-content:space-between}
 .pc-top .meta{display:flex;align-items:center;gap:8px}
@@ -757,9 +770,9 @@ function sectionHTML(p){
         :`<div class="reasons">${p.parts.map(x=>`<div class="rs"><b class="num">${x[1]}</b><span>${x[0]}</span><small>${x[2]}</small></div>`).join("")}</div>`}
       ${s.solved?`<div class="fixed-note">${IC.tick}All ${s.n} steps are done for this problem.</div>`:""}
     </div>
-    <div class="d-sec">
-      <div class="d-row"><h4>Who’s affected<span class="meta num">${plural(ppl.length,"person","people")}</span></h4><div class="days-in"><span class="meta">Affected days</span><div class="dchips">${WEEK.filter(w=>p.days.includes(w)).map(w=>`<span class="dchip num"><b>${w}</b>${DATES[w]}</span>`).join("")}</div></div></div>
-      <div class="ppl"><table class="ptbl">
+    <div class="d-sec ppl-sec${openSec.has(p.id+":ppl-open")?"":" closed"}">
+      <div class="d-row"><h4><button type="button" class="ppl-tg" data-pptg="${p.id}" aria-expanded="${openSec.has(p.id+":ppl-open")}">${caret}Who’s affected<span class="meta num">${plural(ppl.length,"person","people")}</span></button></h4><div class="days-in"><span class="meta">Affected days</span><div class="dchips">${WEEK.filter(w=>p.days.includes(w)).map(w=>`<span class="dchip num"><b>${w}</b>${DATES[w]}</span>`).join("")}</div></div></div>
+      <div class="ppl-body"><div><div class="ppl"><table class="ptbl">
         <colgroup><col class="c-nm"><col class="c-is"><col class="c-sh"><col class="c-go"></colgroup>
         <thead><tr><th scope="col">Employee</th><th scope="col">Issue</th><th scope="col">Shift</th><th scope="col"><span class="sr">Details</span></th></tr></thead>
         <tbody>${shown.map(x=>{const k=p.id+"-"+x.i,o=openPerson.has(k);return `<tr class="pr${o?" open":""}" data-k="${k}">
@@ -768,11 +781,7 @@ function sectionHTML(p){
           <tr class="pr-x" id="prx-${k}" ${o?"":"hidden"}><td colspan="4">${x.detail}</td></tr>`}).join("")}</tbody>
       </table></div>
       ${showAll?"":`<div class="ppl-more"><button class="linkbtn" data-allpeople="${p.id}">Show all ${ppl.length} people →</button></div>`}
-    </div>
-    <details class="more" data-sec="why" ${openSec.has(p.id+":why")?"open":""}><summary>${caret}<span class="sl">Why this happened</span><span class="pv">${p.chain[0]}</span></summary>
-      <div class="why"><p class="lead">${p.lead}</p>
-        <dl><dt>Cause</dt><dd>${p.chain[0]}</dd><dt>Impact</dt><dd>${p.chain[1]}</dd><dt class="rk">Risk</dt><dd>${p.chain[2]}</dd></dl></div>
-    </details>
+    </div></div></div>
     <details class="more" data-sec="num" ${openSec.has(p.id+":num")?"open":""}><summary>${caret}<span class="sl">See the calculation</span><span class="pv">${p.tables.map(t=>t.t).join(" · ")}</span></summary>
       ${p.note?`<p class="tnote">${p.note}</p>`:""}
       ${p.tables.map(tb=>`${tb.t?`<div class="tcap">${tb.t}</div>`:""}<div class="tblw"><table><thead><tr>${tb.h.map((h,i)=>`<th class="${tb.n.includes(i)?"r":""}">${h}</th>`).join("")}</tr></thead>
@@ -784,6 +793,12 @@ function renderSection(id){
   el.className="detail card "+(s.solved?"t-green":p.tier);
   el.innerHTML=sectionHTML(p);
   el.querySelectorAll("details.more").forEach(d=>d.addEventListener("toggle",()=>{const k=p.id+":"+d.dataset.sec;d.open?openSec.add(k):openSec.delete(k)}));
+  // Who's affected: expand / collapse (collapsed by default, remembered per problem)
+  el.querySelectorAll("[data-pptg]").forEach(b=>b.addEventListener("click",()=>{
+    const k=p.id+":ppl-open",sec=b.closest(".ppl-sec"),closed=!sec.classList.contains("closed");
+    sec.classList.toggle("closed",closed);b.setAttribute("aria-expanded",String(!closed));
+    closed?openSec.delete(k):openSec.add(k);
+  }));
 }
 function buildFeed(){
   feed.innerHTML=PROBS.map((p,i)=>`<section class="detail card" id="problem-${i+1}" data-p="${p.id}" aria-labelledby="ph-${p.id}"></section>`).join("")
@@ -907,7 +922,7 @@ function renderPlan(){
         <div class="pc-t">${liveShort(p)}</div>
         <div class="prog"><span class="bar"><i style="width:${s.pct}%"></i></span><span class="num">${s.d} of ${s.n}</span></div>
       </div>
-      <div>${taskList(s.fx,"pl")}</div>
+      <div class="pc-list">${taskList(s.fx,"pl")}</div>
     </div>`}).join("");
   planEl.scrollLeft=sl;
 }
