@@ -170,6 +170,33 @@ html.embed .wrap{padding:0 0 10px;max-width:none}
 .wr em{font-style:normal;font-size:13px;font-weight:600;color:var(--well-ac);background:var(--well-bg);border-radius:999px;padding:3px 10px;margin-left:auto;white-space:nowrap}
 .wr b{display:block;font-size:15px;font-weight:700;line-height:1.35;margin-top:4px}
 .wr p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink-3)}
+/* hero card + strengths grouped by area */
+#wellCount{color:var(--ink-3);font-weight:500;font-size:13px}
+.wh{display:flex;align-items:center;gap:24px;padding:18px 22px;margin-bottom:14px;background:var(--well-bg);border:1px solid color-mix(in srgb,var(--well-ac) 35%,transparent)}
+.wh-main{flex:1;min-width:0}
+.wh-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--well-ac);background:var(--surface);border-radius:999px;padding:3px 10px}
+.wh-tag svg{width:11px;height:11px}
+.wh h3{margin:10px 0 4px;font-size:19px;font-weight:700}
+.wh p{margin:0;font-size:14px;line-height:1.5;color:var(--ink-3);max-width:620px}
+.wh-stats{display:flex;flex:none}
+.wh-stats>div{padding:0 22px;display:flex;flex-direction:column;gap:2px}
+.wh-stats>div+div{border-left:1px solid color-mix(in srgb,var(--well-ac) 30%,transparent)}
+.wh-stats b{font-size:22px;font-weight:700;color:var(--well-ac);line-height:1.15}
+.wh-stats span{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+.wg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.wgc{overflow:hidden}
+.wgc-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line-2)}
+.wgc-h b{font-size:15px;font-weight:700}
+.wgc-h .meta{margin-left:auto;font-size:12.5px;color:var(--ink-4)}
+.wgc-ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--well-bg);color:var(--well-ac)}
+.wgi{display:flex;gap:12px;padding:14px 16px}
+.wgi+.wgi{border-top:1px solid var(--line-2)}
+.wgi .ck{width:22px;height:22px;flex:none;border-radius:50%;background:var(--well-bg);color:var(--well-ac);display:grid;place-items:center;margin-top:1px}
+.wgi .ck svg{width:12px;height:12px}
+.wgi em{display:block;font-style:normal;font-size:12.5px;font-weight:700;color:var(--well-ac)}
+.wgi b{display:block;font-size:14.5px;font-weight:600;line-height:1.35;margin-top:2px}
+.wgi p{margin:2px 0 0;font-size:13px;line-height:1.5;color:var(--ink-3)}
+@media (max-width:1100px){.wg{grid-template-columns:1fr}.wh{flex-direction:column;align-items:flex-start}.wh-stats>div:first-child{padding-left:0}}
 
 /* ===================== WENT WRONG: list | detail | fix ===================== */
 /* the workspace fills the rest of the viewport (--md-h is measured in JS);
@@ -440,8 +467,9 @@ tr:last-child td{border-bottom:0}
 
       <!-- WENT WELL -->
       <section class="view" id="v-well" role="tabpanel" aria-label="What went well">
-        <div class="vh"><div><h2>What went well</h2><p>Keep these patterns when you build next week.</p></div></div>
-        <div class="well" id="wellGrid"></div>
+        <div class="vh"><div><h2>What went well</h2><p>Keep these patterns when you build next week.</p></div><span class="vh-r num" id="wellCount"></span></div>
+        <div class="wh card" id="wellHero"></div>
+        <div class="wg" id="wellGrid"></div>
       </section>
 
       <!-- WENT WRONG -->
@@ -739,7 +767,28 @@ function renderSummary(){
 }
 
 /* ---------- went well ---------- */
-document.getElementById("wellGrid").innerHTML=WELL.map(w=>`<div class="wr card"><div class="wr-top"><span class="ck">${IC.tick}</span><em class="num">${w[2]}</em></div><b>${w[0]}</b><p>${w[1]}</p></div>`).join("");
+/* hero: the headline of what's working, with its three proof points */
+document.getElementById("wellCount").textContent=`${WELL.length} things working as expected`;
+document.getElementById("wellHero").innerHTML=`
+  <div class="wh-main"><span class="wh-tag"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>Keep doing this</span>
+    <h3>Your weekday schedule is working</h3>
+    <p>Mon – Wed track the forecast, stay within 0.7% of budget and add no daily overtime. Reuse the weekday template when you build next week.</p></div>
+  <div class="wh-stats">
+    <div><b class="num">63%</b><span>Shifts with no warnings</span></div>
+    <div><b class="num">0</b><span>Weekday daily OT</span></div>
+    <div><b class="num">3 of 3</b><span>Open shifts matched</span></div>
+  </div>`;
+/* strengths grouped by area */
+const WELL_GROUPS=[
+  ["Forecast & budget",'<path d="M3 20h18"/><path d="M6 16v-4M10 16V8M14 16v-6M18 16V5"/>',[0,1]],
+  ["Hours & compliance",'<path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',[2,4]],
+  ["Coverage",'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.5c2.4.2 4.5 2 4.5 4.5"/>',[3,5,6]],
+];
+document.getElementById("wellGrid").innerHTML=WELL_GROUPS.map(([t,ic,ix])=>`
+  <div class="wgc card">
+    <div class="wgc-h"><span class="wgc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic}</svg></span><b>${t}</b><span class="meta num">${plural(ix.length,"strength")}</span></div>
+    ${ix.map(i=>{const w=WELL[i];return `<div class="wgi"><span class="ck">${IC.tick}</span><div><em class="num">${w[2]}</em><b>${w[0]}</b><p>${w[1]}</p></div></div>`}).join("")}
+  </div>`).join("");
 
 /* ---------- went wrong ---------- */
 function renderList(){
