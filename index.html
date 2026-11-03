@@ -41,6 +41,10 @@
       // 'Enable KPI' flag — default OFF (KPI's button shows only when explicitly turned on)
       if (localStorage.getItem('zipKpiEnabled') === '1') document.documentElement.classList.add('kpi-on');
     } catch(e){}
+    try {
+      // 'Enable Insight V3' flag — default ON: V3 Insights + AI Hub tab, Deep Dive on the dashboard tabs
+      if (localStorage.getItem('zipInsightV3') !== '0') document.documentElement.classList.add('iv3-on');
+    } catch(e){}
   })();
 </script>
 
@@ -427,6 +431,9 @@ body.min-h-screen, .bg-\[\#eef2f6\] {
 .dm-ins-slate { background: #f8fafc; border-color: #e2e8f0; color: #475569; }
 #dollarModal.flex .dm-card { animation: uaDropIn .18s ease-out; }
 @media (max-width: 760px) { .dm-tiles { grid-template-columns: repeat(2, 1fr); } .dm-insights { grid-template-columns: 1fr; } }
+/* 'Enable Insight V3' flag: Deep Dive tab only when html.iv3-on */
+html:not(.iv3-on) .iv3-flag { display: none !important; }
+.dd-frame { display: block; width: 100%; height: calc(100vh - 150px); min-height: 560px; border: 0; border-radius: 14px; background: transparent; }
 /* 'Enable KPI' flag: KPI's button hidden unless html.kpi-on */
 html:not(.kpi-on) .kpi-flag { display: none !important; }
 /* Week control: < [calendar label] > */
@@ -704,6 +711,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         <div class="sd-tabs">
             <button id="tab-dashboard" onclick="switchTab('dashboard')" class="view-tab active">Dashboard</button>
             <button id="tab-analytics" onclick="switchTab('analytics')" class="view-tab">Analytics</button>
+            <button id="tab-deepdive" onclick="switchTab('deepdive')" class="view-tab iv3-flag">Deep Dive</button>
         </div>
 
         <!-- WEEK DISPLAY & CALENDAR -->
@@ -873,7 +881,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <div class="ai-insight-icon"><i data-lucide="lightbulb" class="w-4 h-4"></i></div>
             <span>AI INSIGHT</span>
         </div>
-        <button class="ai-insight-more" onclick="location.href='schedule-insight/index.html'" aria-label="Open Schedule AI Insight">View More</button>
+        <button class="ai-insight-more" onclick="openScheduleInsight()" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
         <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
@@ -1459,6 +1467,9 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <button id="tab-analytics" onclick="switchTab('analytics')" class="view-tab">
                 <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>Analytics
             </button>
+            <button id="tab-deepdive" onclick="switchTab('deepdive')" class="view-tab iv3-flag">
+                <i data-lucide="table-2" class="w-3.5 h-3.5"></i>Deep Dive
+            </button>
         </div>
 
         <!-- WEEK DISPLAY & CALENDAR -->
@@ -1653,7 +1664,7 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             <div class="ai-insight-icon"><i data-lucide="lightbulb" class="w-4 h-4"></i></div>
             <span>AI INSIGHT</span>
         </div>
-        <button class="ai-insight-more" onclick="location.href='schedule-insight/index.html'" aria-label="Open Schedule AI Insight">View More</button>
+        <button class="ai-insight-more" onclick="openScheduleInsight()" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
         <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
@@ -2236,9 +2247,18 @@ function renderDashboardUI(){
         document.getElementById('tab-dashboard').classList.remove('active');
         document.getElementById('tab-analytics').classList.add('active');
     }
+    const dd = document.getElementById('deepdiveTab');
+    if (dd && !dd.classList.contains('hidden')) {
+        document.getElementById('dashboardTab').classList.add('hidden');
+        document.getElementById('tab-dashboard').classList.remove('active');
+        document.getElementById('tab-deepdive')?.classList.add('active');
+    }
 }
 renderDashboardUI();
 </script>
+
+<!-- DEEP DIVE (Enable Insight V3): the Schedule Insight V3 Deep Dive, embedded -->
+<div id="deepdiveTab" class="hidden"><iframe id="deepdiveFrame" title="Schedule Deep Dive" data-src="schedule-insight-v3/index.html?embed=deepdive" class="dd-frame"></iframe></div>
 
 <div id="analyticsTab" class="hidden space-y-6">
 
@@ -4177,21 +4197,19 @@ function closeSwapApprovalModal() {
 }
 
 function switchTab(tab) {
+    if (tab === 'deepdive' && !document.documentElement.classList.contains('iv3-on')) tab = 'dashboard';
     const dashTab = document.getElementById('dashboardTab');
     const analyticsTab = document.getElementById('analyticsTab');
-    const btnDash = document.getElementById('tab-dashboard');
-    const btnAnalytics = document.getElementById('tab-analytics');
-
-    if (tab === 'dashboard') {
-        dashTab.classList.remove('hidden');
-        analyticsTab.classList.add('hidden');
-        btnDash.classList.add('active');
-        btnAnalytics.classList.remove('active');
-    } else {
-        analyticsTab.classList.remove('hidden');
-        dashTab.classList.add('hidden');
-        btnAnalytics.classList.add('active');
-        btnDash.classList.remove('active');
+    const ddTab = document.getElementById('deepdiveTab');
+    dashTab.classList.toggle('hidden', tab !== 'dashboard');
+    analyticsTab.classList.toggle('hidden', tab !== 'analytics');
+    ddTab.classList.toggle('hidden', tab !== 'deepdive');
+    ['dashboard', 'analytics', 'deepdive'].forEach(t => document.getElementById('tab-' + t)?.classList.toggle('active', t === tab));
+    if (tab === 'deepdive') {
+        const f = document.getElementById('deepdiveFrame');
+        if (!f.getAttribute('src')) f.setAttribute('src', f.dataset.src);   // load on first open
+    }
+    if (tab === 'analytics') {
         // Re-render charts since they may have been hidden during init
         requestAnimationFrame(() => {
             activeChartInstances.forEach(c => { if (c) c.resize(); });
@@ -4202,6 +4220,10 @@ function switchTab(tab) {
         });
     }
     lucide.createIcons();
+}
+// AI Insight "View More": V3 (Insights + AI Hub) when 'Enable Insight V3' is on, the original screen otherwise
+function openScheduleInsight() {
+    location.href = document.documentElement.classList.contains('iv3-on') ? 'schedule-insight-v3/index.html' : 'schedule-insight/index.html';
 }
 </script>
 <!-- KPI HANDBOOK MODAL (wrench) -->
@@ -4705,6 +4727,21 @@ function switchTab(tab) {
           <span class="block w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></span>
         </span>
       </label>
+      <label for="insightV3Toggle" class="mt-3 flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition cursor-pointer">
+        <div class="flex items-center gap-4">
+          <div class="bg-violet-100 text-violet-600 p-3 rounded-full">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="font-semibold text-slate-800 text-[14px]">Enable Insight V3</div>
+            <div class="text-slate-500 text-[12.5px]">New Schedule Insights, AI Hub tab, and Deep Dive on the dashboard</div>
+          </div>
+        </div>
+        <span class="relative inline-flex items-center shrink-0">
+          <input type="checkbox" id="insightV3Toggle" onchange="setInsightV3(this.checked)" class="sr-only peer">
+          <span class="block w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></span>
+        </span>
+      </label>
       <label for="kpiToggle" class="mt-3 flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition cursor-pointer">
         <div class="flex items-center gap-4">
           <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
@@ -5105,9 +5142,16 @@ function openUiSettings() {
     document.getElementById('profilePopup').classList.add('hidden');
     document.getElementById('newUiToggle').checked = document.documentElement.classList.contains('new-ui');
     document.getElementById('kpiToggle').checked = document.documentElement.classList.contains('kpi-on');
+    document.getElementById('insightV3Toggle').checked = document.documentElement.classList.contains('iv3-on');
     const m = document.getElementById('uiSettingsModal');
     m.classList.remove('hidden'); m.classList.add('flex');
     lucide.createIcons();
+}
+/* 'Enable Insight V3' flag (default ON): V3 Insights + AI Hub tab inside View More, Deep Dive tab on the dashboard */
+function setInsightV3(enabled) {
+    document.documentElement.classList.toggle('iv3-on', enabled);
+    try { localStorage.setItem('zipInsightV3', enabled ? '1' : '0'); } catch (err) {}
+    if (!enabled && document.getElementById('tab-deepdive')?.classList.contains('active')) switchTab('dashboard');
 }
 /* 'Enable KPI' flag (default OFF): shows the KPI's button on the dashboard */
 function setKpiEnabled(enabled) {

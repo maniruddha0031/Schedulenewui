@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule Dashboard — AI Insight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f2149;
+    --page:#eef1f7;
+    --teal:#12a37f;
+    --blue:#4d8cf5;
+    --purple:#8b4fbe;
+    --salmon:#f4685b;
+    --ink:#1f2937;
+    --line:#e6e9f0;
+    --sky:#7ecff0;
+    --sky-fill:#cfeefb;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--page);
+    font-family:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Geist,system-ui,sans-serif;
+    color:var(--ink);font-size:13px;
+  }
+  .app{display:flex;min-height:100vh}
+
+  /* ---------- left rail ---------- */
+  .rail{width:47px;flex:0 0 47px;background:var(--navy);display:flex;flex-direction:column;align-items:center;position:sticky;top:0;height:100vh}
+  .rail .logo{width:47px;height:42px;display:grid;place-items:center;background:#2ea3d8}
+  .rail .icons{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:6px;flex:1}
+  .rail button{width:38px;height:38px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;cursor:pointer;color:#9fc9e8}
+  .rail button:hover{background:rgba(255,255,255,.10);color:#fff}
+  .rail button.active{background:#fff;color:#1b8fc4}
+  .rail .fab{width:38px;height:38px;border-radius:50%;background:#1b8fc4;color:#fff;display:grid;place-items:center;border:3px solid #e9ebf5;margin-bottom:12px}
+
+  /* ---------- top bar ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:42px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:20px;padding:0 12px}
+  .tb{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+  .caret{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor}
+  .center{margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:14px;font-size:13px}
+  .center .divider{opacity:.45}
+  .clock{display:flex;align-items:baseline;gap:6px}
+  .clock .sup{font-size:11px;position:relative;top:-5px;left:-5px}
+  .clock .tz{font-weight:600;letter-spacing:.2px}
+  .right{display:flex;align-items:center;gap:12px;margin-left:auto}
+  .store-pill{background:#fff;color:var(--navy);border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+  .avatar-top{width:28px;height:28px;border-radius:50%;background:#8d93a8;display:grid;place-items:center;color:#e8eaf2}
+
+  /* ---------- content ---------- */
+  .content{padding:10px 10px 14px;display:flex;flex-direction:column;gap:10px}
+
+  /* KPI row */
+  .kpi-row{display:flex;gap:14px;align-items:stretch}
+  .kpi{flex:1 1 0;min-width:0;border-radius:6px;box-shadow:0 1px 2px rgba(21,29,74,.08);display:flex;align-items:stretch;overflow:hidden;height:62px}
+  .kpi .val{flex:1;border-radius:6px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;padding:0 8px;text-align:center}
+  .kpi .val b{font-size:22px;font-weight:600;white-space:nowrap}
+  .kpi .val span{font-size:12px}
+  .kpi.teal .val{background:var(--teal)}
+  .kpi.blue .val{background:var(--blue)}
+  .kpi.purple .val{background:var(--purple)}
+  .kpi.salmon .val{background:var(--salmon)}
+
+  /* AI INSIGHT tile */
+  .ai-wrap{flex:0 0 328px;display:flex;align-items:center}
+  .ai-tile{
+    width:100%;height:62px;border-radius:12px;
+    background:linear-gradient(100deg,#9b1ee6 0%,#a51fe0 38%,#c31fcf 72%,#d31fc4 100%);
+    color:#fff;padding:7px 14px 8px;display:flex;flex-direction:column;justify-content:center;gap:3px;
+    box-shadow:0 2px 6px rgba(155,30,230,.28);
+  }
+  .ai-head{display:flex;align-items:center;gap:8px}
+  .ai-head .label{font-size:13px;font-weight:700;letter-spacing:.2px;color:#fff}
+  .ai-head .more{margin-left:auto;font-size:13px;font-weight:700;color:#fff;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+  .ai-body{display:flex;align-items:center;gap:9px;padding-left:2px}
+  .ai-body .bar{width:2px;height:16px;background:rgba(255,255,255,.85);border-radius:2px}
+  .ai-body .msg{font-size:13px;font-weight:600;color:#fff}
+
+  /* panels */
+  .row{display:flex;gap:10px;align-items:flex-start}
+  .col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:10px}
+  .card{background:#fff;border-radius:4px;box-shadow:0 1px 2px rgba(21,29,74,.08);overflow:hidden}
+  .card-head{display:flex;align-items:center;gap:9px;padding:11px 14px;font-size:14px;font-weight:600;color:#2b3350;border-bottom:1px solid var(--line)}
+
+  /* shifts list */
+  .scroll{overflow-y:auto}
+  .scroll::-webkit-scrollbar{width:9px}
+  .scroll::-webkit-scrollbar-thumb{background:#c7ccd8;border-radius:9px}
+  .scroll::-webkit-scrollbar-track{background:#f1f3f8}
+  .shift{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px dashed #dfe3ec}
+  .ava{width:30px;height:30px;border-radius:50%;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600;flex:0 0 30px}
+  .shift .who{flex:0 0 42%}
+  .shift .name{font-size:13px;font-weight:600;color:#2b3350;margin-bottom:3px}
+  .shift .meta{font-size:12px;color:#7b8494;display:flex;gap:14px;align-items:center}
+  .shift .meta span{display:flex;align-items:center;gap:4px}
+  .role{font-size:12px;display:flex;align-items:center;gap:5px}
+  .role.lead{color:#e0566b}
+  .role.gsa{color:#4d8cf5}
+  .role.cook{color:#e3a008}
+
+  /* needing action */
+  .section-label{display:flex;align-items:center;gap:8px;background:#f3f6fb;padding:8px 14px;font-size:13px;font-weight:600;color:#2b3350;border-bottom:1px solid var(--line)}
+  .section-label i{width:3px;height:14px;background:#4d8cf5;border-radius:2px;display:inline-block}
+  .req{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #eef1f6}
+  .req .who{flex:0 0 42%}
+  .req .name{font-size:13px;font-weight:600;color:#2b3350;margin-bottom:3px}
+  .req .dates{font-size:12px;color:#7b8494}
+  .status{flex:1;display:flex;align-items:center;gap:7px;font-size:12px;color:#e0566b}
+  .status .dot{width:8px;height:8px;border-radius:50%;background:#f4685b}
+  .req .acts{display:flex;align-items:center;gap:12px}
+
+  /* chart */
+  .chart-body{padding:10px 14px 6px}
+  .legend{display:flex;align-items:center;gap:8px;font-size:12px;color:#4b5563;padding:2px 0 14px 46px}
+  .legend .swatch{width:26px;height:2px;background:var(--sky);position:relative}
+  .legend .swatch:after{content:"";position:absolute;left:9px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--sky)}
+
+  /* empty state */
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:56px 0 70px;color:#9aa2ae;font-size:13px}
+  .empty .halo{width:150px;height:150px;border-radius:50%;background:#f2f4f8;display:grid;place-items:center}
+
+  @media (max-width:1200px){
+    .kpi-row{flex-wrap:wrap}
+    .ai-wrap{flex:1 1 320px}
+    .row{flex-direction:column}
+  }
+</style>
+<!-- Eva chatbot (loaded from assets/eva) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="assets/eva/chatbot.css">
+<link rel="stylesheet" href="assets/typography.css?v=20260929t">
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= LEFT RAIL ================= -->
+  <aside class="rail">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h3M8 17h6"/></svg>
+    </div>
+    <div class="icons">
+      <button class="active" title="Dashboard">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      </button>
+      <button title="Schedule">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M4 9h16M8 2v4M16 2v4M8 13h3M8 17h6"/></svg>
+      </button>
+      <button title="Time clock">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg>
+      </button>
+      <button title="Employees">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><circle cx="4.6" cy="10" r="2"/><circle cx="19.4" cy="10" r="2"/><path d="M6.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/></svg>
+      </button>
+      <button title="Time off">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+      </button>
+      <button title="Requests">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m3 9 9 5 9-5"/></svg>
+      </button>
+      <button title="Team">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5M16 14.5c2.4.2 4.5 2 4.5 4.5"/></svg>
+      </button>
+    </div>
+    <div class="fab" title="Support">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+    </div>
+  </aside>
+
+  <div class="main">
+
+    <!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+      <div class="tb">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        My Apps <i class="caret"></i>
+      </div>
+      <div class="tb">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+        Dashboard
+      </div>
+      <div class="tb">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+        Schedule
+      </div>
+      <div class="tb">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+        007 - Encinitas <i class="caret"></i>
+      </div>
+
+      <div class="center">
+        <div class="tb" style="gap:6px">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#cfe3f5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.2 4.2 0 0 1-.4-8.4A5.7 5.7 0 0 1 17.6 10 4 4 0 0 1 17.2 18z"/></svg>
+          96 &deg;F
+        </div>
+        <span class="divider">|</span>
+        <div class="clock">
+          <span>09:09</span><span class="sup">A</span><span class="tz">AMERICA/LOS ANGELES</span>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="store-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16v11H4zM3 9l2-4h14l2 4"/><path d="M9 20v-6h6v6"/></svg>
+          Original Fish Taco, LLC <i class="caret"></i>
+        </div>
+        <div class="avatar-top">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= CONTENT ================= -->
+    <div class="content">
+
+      <!-- KPI ROW + AI INSIGHT -->
+      <div class="kpi-row">
+        <div class="kpi teal">
+          <div class="val"><b>431.25</b><span>Scheduled Hours</span></div>
+        </div>
+        <div class="kpi blue">
+          <div class="val"><b>$ 24,180.50</b><span>Forecasted Sales</span></div>
+        </div>
+        <div class="kpi purple">
+          <div class="val"><b>-12.75</b><span>Variance Hours</span></div>
+        </div>
+        <div class="kpi salmon">
+          <div class="val"><b>1,284</b><span>Forecasted Trans</span></div>
+        </div>
+
+        <!-- AI INSIGHT TILE -->
+        <div class="ai-wrap">
+          <a class="ai-tile" href="index.html" style="text-decoration:none;color:#fff;cursor:pointer;">
+            <div class="ai-head">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h5"/><path d="M8 3v4M16 3v4M4 10h16"/><path d="M17.5 13.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#fff"/></svg>
+              <span class="label">Schedule AI Insight</span>
+              <span class="more">View More</span>
+            </div>
+            <div class="ai-body">
+              <span class="bar"></span>
+              <span class="msg">Early clock In Count increases by 2%</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- PANELS -->
+      <div class="row">
+
+        <!-- ---------- LEFT COLUMN ---------- -->
+        <div class="col">
+
+          <div class="card">
+            <div class="card-head">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3aa6c9" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/></svg>
+              Upcoming Shifts
+            </div>
+            <div class="scroll" style="max-height:390px">
+              <div class="shift">
+                <div class="ava" style="background:#1b3a63">KL</div>
+                <div class="who">
+                  <div class="name">Kimberli Lopez</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 9:30a-4:00p</span></div>
+                </div>
+                <div class="role lead">&#128100; Shift Leader</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#2eb84c">SB</div>
+                <div class="who">
+                  <div class="name">Sofia Bagley</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 10:30a-4:00p</span></div>
+                </div>
+                <div class="role gsa">&#128100; GSA</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#8fb0a6">GA</div>
+                <div class="who">
+                  <div class="name">Graciela Atempa</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 1:00p-10:00p</span></div>
+                </div>
+                <div class="role lead">&#128100; Assistant Manager</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#1b3a63">JL</div>
+                <div class="who">
+                  <div class="name">Juan Lopez</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 2:00p-10:00p</span></div>
+                </div>
+                <div class="role cook">&#128100; Line 3-4 Cook</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#9aa2ae">AG</div>
+                <div class="who">
+                  <div class="name">Austin Gray</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 4:00p-9:45p</span></div>
+                </div>
+                <div class="role gsa">&#128100; GSA</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#7b3fe4">AG</div>
+                <div class="who">
+                  <div class="name">Alex Garcia</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 4:30p-10:00p</span></div>
+                </div>
+                <div class="role cook">&#128100; Line 3-4 Cook</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#2eb84c">EF</div>
+                <div class="who">
+                  <div class="name">Eliza Funes</div>
+                  <div class="meta"><span>&#128197; Mon, Sep 07</span><span>&#128337; 4:30p-10:00p</span></div>
+                </div>
+                <div class="role cook">&#128100; Line 3-4 Cook</div>
+              </div>
+              <div class="shift">
+                <div class="ava" style="background:#e21f8d">KL</div>
+                <div class="who">
+                  <div class="name">Kimberli Lopez</div>
+                  <div class="meta"><span>&#128197; Tue, Sep 08</span><span>&#128337; 7:00a-2:30p</span></div>
+                </div>
+                <div class="role lead">&#128100; Shift Leader</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3aa6c9" stroke-width="1.7" stroke-linecap="round"><path d="M18 15V10a6 6 0 1 0-12 0v5l-2 3h16z"/><path d="M10 21h4"/></svg>
+              Needing Action
+            </div>
+            <div class="section-label"><i></i>Time Off</div>
+            <div class="scroll" style="max-height:260px">
+              <div class="req">
+                <div class="ava" style="background:#7a1f2b">SB</div>
+                <div class="who"><div class="name">Sofia Bagley</div><div class="dates">Fri, Sep 18 - Fri, Sep 18</div></div>
+                <div class="status"><span class="dot"></span>Pending</div>
+                <div class="acts">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7ab8e0" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 15h6"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#22a06b"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.3 3 3 6-6.2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#e5342b"><circle cx="12" cy="12" r="10"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="req">
+                <div class="ava" style="background:#c62828">CR</div>
+                <div class="who"><div class="name">Cecilia Ramirez</div><div class="dates">Sat, Sep 19 - Sat, Sep 19</div></div>
+                <div class="status"><span class="dot"></span>Pending</div>
+                <div class="acts">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7ab8e0" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 15h6"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#22a06b"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.3 3 3 6-6.2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#e5342b"><circle cx="12" cy="12" r="10"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="req">
+                <div class="ava" style="background:#7a1f2b">SB</div>
+                <div class="who"><div class="name">Sofia Bagley</div><div class="dates">Sat, Sep 19 ,4:00p- 11:45p</div></div>
+                <div class="status"><span class="dot"></span>Pending</div>
+                <div class="acts">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7ab8e0" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 15h6"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#22a06b"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.3 3 3 6-6.2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#e5342b"><circle cx="12" cy="12" r="10"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="req">
+                <div class="ava" style="background:#c62828">CR</div>
+                <div class="who"><div class="name">Cecilia Ramirez</div><div class="dates">Sun, Sep 20 - Sun, Sep 20</div></div>
+                <div class="status"><span class="dot"></span>Pending</div>
+                <div class="acts">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7ab8e0" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 15h6"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#22a06b"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.3 3 3 6-6.2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#e5342b"><circle cx="12" cy="12" r="10"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="req">
+                <div class="ava" style="background:#7b3fe4">CR</div>
+                <div class="who"><div class="name">Cecilia Ramirez</div><div class="dates">Mon, Sep 21 - Mon, Sep 21</div></div>
+                <div class="status"><span class="dot"></span>Pending</div>
+                <div class="acts">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7ab8e0" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M9 11h6M9 15h6"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#22a06b"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.3 3 3 6-6.2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#e5342b"><circle cx="12" cy="12" r="10"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ---------- RIGHT COLUMN ---------- -->
+        <div class="col">
+
+          <div class="card">
+            <div class="card-head">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3aa6c9" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 13h4M7 16h8"/></svg>
+              Schedules Report
+            </div>
+            <div class="chart-body">
+              <svg viewBox="0 0 920 268" width="100%" height="248" font-family="Geist, Segoe UI, sans-serif">
+                <!-- range slider -->
+                <rect x="60" y="12" width="820" height="17" rx="2" fill="#f1f3f7" stroke="#e0e4ec"/>
+                <rect x="61" y="8" width="13" height="25" rx="2" fill="#fff" stroke="#9aa2ae"/>
+                <path d="M65 14v13M70 14v13" stroke="#9aa2ae" stroke-width="1"/>
+                <rect x="866" y="8" width="13" height="25" rx="2" fill="#fff" stroke="#9aa2ae"/>
+                <path d="M870 14v13M875 14v13" stroke="#9aa2ae" stroke-width="1"/>
+
+                <!-- axis frame -->
+                <g stroke="#e6e9f0" stroke-width="1">
+                  <line x1="60" y1="240" x2="900" y2="240"/>
+                  <line x1="180" y1="40" x2="180" y2="240"/>
+                  <line x1="390" y1="40" x2="390" y2="240"/>
+                  <line x1="600" y1="40" x2="600" y2="240"/>
+                  <line x1="810" y1="40" x2="810" y2="240"/>
+                </g>
+                <line x1="60" y1="40" x2="60" y2="240" stroke="#4bb8e8" stroke-width="4"/>
+
+                <!-- y labels : 460..420 mapped to y 40..240 -->
+                <g fill="#4b5563" font-size="12" text-anchor="end">
+                  <text x="50" y="44">460</text>
+                  <text x="50" y="94">450</text>
+                  <text x="50" y="144">440</text>
+                  <text x="50" y="194">430</text>
+                  <text x="50" y="244">420</text>
+                </g>
+
+                <!-- area + line -->
+                <path d="M75 120 L180 120 C260 120 310 120 390 120 C470 120 530 75 600 75 C680 75 745 145 810 165 L810 240 L75 240 Z"
+                      fill="#cfeefb" opacity=".85"/>
+                <path d="M75 120 L180 120 C260 120 310 120 390 120 C470 120 530 75 600 75 C680 75 745 145 810 165"
+                      fill="none" stroke="#5ec4ec" stroke-width="2"/>
+
+                <!-- x labels -->
+                <g fill="#4b5563" font-size="12.5" text-anchor="middle">
+                  <text x="180" y="262">Aug 17</text>
+                  <text x="390" y="262">Aug 24</text>
+                  <text x="600" y="262">Aug 31</text>
+                  <text x="810" y="262">Sep 07</text>
+                </g>
+              </svg>
+              <div class="legend"><span class="swatch"></span>Scheduled hours</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3aa6c9" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 8 9 5 9-5"/></svg>
+              Awaiting Action from Others
+            </div>
+            <div class="empty">
+              <div class="halo">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none" stroke="#c3c9d4" stroke-width="2" stroke-linejoin="round">
+                  <path d="M50 44 20 32l30-12 30 12z" fill="#e7eaf0"/>
+                  <path d="M20 32v32l30 12V44z" fill="#f0f2f6"/>
+                  <path d="M80 32v32L50 76V44z" fill="#dde1e9"/>
+                  <path d="M50 44 20 32M50 44l30-12"/>
+                  <g stroke="#c3c9d4" stroke-width="1.6" stroke-linecap="round">
+                    <path d="M50 14v-7M64 18l4-5M36 18l-4-5"/>
+                  </g>
+                </svg>
+              </div>
+              You are not awaiting actions from others.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Eva chatbot -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>window.EVA_ASSET_BASE = "assets/eva/";</script>
+<script src="assets/eva/eva-widget.js"></script>
+<script src="assets/eva/qa-attendance-scheduling.js"></script>
+<script src="assets/eva/qa-overtime-management.js"></script>
+<script src="assets/eva/qa-labor-cost-analysis.js"></script>
+<script src="assets/eva/qa-payroll-exceptions.js"></script>
+<script src="assets/eva/qa-analytics-insights.js"></script>
+<script src="assets/eva/qa-recommendations.js"></script>
+<script src="assets/eva/chatbot.js"></script>
+<script src="assets/eva/eva-schedule-rules.js"></script>
+</body>
+</html>

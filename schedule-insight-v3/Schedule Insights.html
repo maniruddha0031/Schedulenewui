@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Schedule Insights · 007 Encinitas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>if(window.parent!==window)document.documentElement.classList.add("embed");try{const t=localStorage.getItem("si-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  color-scheme:light;
+  --bg:#F3F5F9; --surface:#FFFFFF; --soft:#F7F9FC; --sunken:#EDF1F6;
+  --line:#DDE3EC; --line-3d:#CBD1DD; --line-2:#E9EDF3;
+  --ink:#172033; --ink-2:#475569; --ink-3:#64748B; --ink-4:#94A3B8;
+  --side:#14213D; --side-ink:#9FB0D0; --side-active:#2A3C68;
+  --blue:#1F5BD6; --blue-2:#1446B8; --blue-soft:#EAF1FE; --blue-line:#C3D5FA; --blue-ic:#1F5BD6;
+  --green:#1E8A3E; --green-2:#156B2F; --green-soft:#EAF7EE; --green-line:#BFE4C9; --green-ic:#24974A;
+  --red:#C62830; --red-2:#9C1B22; --red-soft:#FDEDEE; --red-line:#F4C3C7; --red-ic:#D63A3A;
+  --orange:#C2560A; --orange-soft:#FFF1E6; --orange-line:#F7D0AE; --orange-ic:#EE7212;
+  --yellow:#8A6400; --yellow-soft:#FEF8DA; --yellow-line:#F0DD8C; --yellow-ic:#E6A30B;
+  --chk:#FFFFFF;
+  --shadow:0 1px 2px rgba(20,26,43,.05),0 10px 28px -18px rgba(20,26,43,.28);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C111C; --surface:#141B2A; --soft:#182033; --sunken:#0F1522;
+    --line:#263049; --line-3d:#1D2639; --line-2:#1E273A;
+    --ink:#EDF1F8; --ink-2:#B7C0D2; --ink-3:#8791A6;
+    --side:#080C15; --side-ink:#7F8BA5; --side-active:#1D2945;
+    --blue:#7EA8FF; --blue-2:#1446B8; --blue-soft:#17264A; --blue-line:#2A4277; --blue-ic:#2F6BE6;
+    --green:#5FD38A; --green-2:#156B2F; --green-soft:#132C21; --green-line:#24503A; --green-ic:#24974A;
+    --red:#FF8088; --red-2:#9C1B22; --red-soft:#341A21; --red-line:#5C2A33; --red-ic:#D63A3A;
+    --orange:#FFA765; --orange-soft:#33220F; --orange-line:#5C3A1C; --orange-ic:#EE7212;
+    --yellow:#F2CA4E; --yellow-soft:#302810; --yellow-line:#5A4A1B; --yellow-ic:#E6A30B;
+    --chk:#141B2A;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -18px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C111C; --surface:#141B2A; --soft:#182033; --sunken:#0F1522;
+  --line:#263049; --line-3d:#1D2639; --line-2:#1E273A;
+  --ink:#EDF1F8; --ink-2:#B7C0D2; --ink-3:#8791A6;
+  --side:#080C15; --side-ink:#7F8BA5; --side-active:#1D2945;
+  --blue:#7EA8FF; --blue-2:#1446B8; --blue-soft:#17264A; --blue-line:#2A4277; --blue-ic:#2F6BE6;
+  --green:#5FD38A; --green-2:#156B2F; --green-soft:#132C21; --green-line:#24503A; --green-ic:#24974A;
+  --red:#FF8088; --red-2:#9C1B22; --red-soft:#341A21; --red-line:#5C2A33; --red-ic:#D63A3A;
+  --orange:#FFA765; --orange-soft:#33220F; --orange-line:#5C3A1C; --orange-ic:#EE7212;
+  --yellow:#F2CA4E; --yellow-soft:#302810; --yellow-line:#5A4A1B; --yellow-ic:#E6A30B;
+  --chk:#141B2A;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 30px -18px rgba(0,0,0,.7);
+}
+/* severity tiers */
+.t-red{--tc:var(--red);--tc-soft:var(--red-soft);--tc-line:var(--red-line);--tc-ic:var(--red-ic)}
+.t-orange{--tc:var(--orange);--tc-soft:var(--orange-soft);--tc-line:var(--orange-line);--tc-ic:var(--orange-ic)}
+.t-yellow{--tc:var(--yellow);--tc-soft:var(--yellow-soft);--tc-line:var(--yellow-line);--tc-ic:var(--yellow-ic)}
+.t-green{--tc:var(--green);--tc-soft:var(--green-soft);--tc-line:var(--green-line);--tc-ic:var(--green-ic)}
+/* depth system: level 1 = page containers, level 2 = items inside them */
+:root{--shadow-lg:0 2px 4px rgba(20,26,43,.05),0 22px 44px -26px rgba(20,26,43,.42);--shadow-sm:0 1px 2px rgba(20,26,43,.06)}
+:root[data-theme="dark"]{--shadow-lg:0 2px 4px rgba(0,0,0,.4),0 22px 44px -22px rgba(0,0,0,.85);--shadow-sm:0 1px 2px rgba(0,0,0,.4)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shadow-lg:0 2px 4px rgba(0,0,0,.4),0 22px 44px -22px rgba(0,0,0,.85);--shadow-sm:0 1px 2px rgba(0,0,0,.4)}}
+:root{--well-bg:#F0FAF3;--well-ac:#16A34A;--wrong-bg:#FFF3F3;--wrong-ac:#D92D36;--fix-bg:#F2F6FF;--fix-ac:#2563EB;--fixpanel-bg:#F7FAFF;--fixpanel-line:#D6E2FA;--on-ac:#FFFFFF}
+:root[data-theme="dark"]{--ink-4:#6B768C;--well-bg:#10241A;--well-ac:#4ADE80;--wrong-bg:#2B161B;--wrong-ac:#FF7A82;--fix-bg:#121F3B;--fix-ac:#7EA8FF;--fixpanel-bg:#111A2C;--fixpanel-line:#24375E;--on-ac:#0C111C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink-4:#6B768C;--well-bg:#10241A;--well-ac:#4ADE80;--wrong-bg:#2B161B;--wrong-ac:#FF7A82;--fix-bg:#121F3B;--fix-ac:#7EA8FF;--fixpanel-bg:#111A2C;--fixpanel-line:#24375E;--on-ac:#0C111C}}
+.edge-tc{border-bottom-color:color-mix(in srgb,var(--tc-line) 55%,var(--tc-ic))}
+
+.t-blue{--tc:var(--blue);--tc-soft:var(--blue-soft);--tc-line:var(--blue-line);--tc-ic:var(--blue-ic)}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 20px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--side)}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+[hidden]{display:none!important}
+
+/* ===================== SHELL ===================== */
+/* no rail / top bar of its own: index.html (flag "Enable New Insight design_V2")
+   hosts this page under its Schedule AI Insight sub-header, and the theme
+   comes from the profile menu there */
+.app{min-height:100vh}
+.page{min-width:0}
+.wrap{padding:24px 32px 20px;max-width:1680px;margin:0 auto}
+html.embed{color-scheme:normal!important}
+html.embed body{background:transparent}
+html.embed body::before{display:none}
+html.embed .app{min-height:0}
+html.embed .wrap{padding:0 0 10px;max-width:none}
+
+/* ===================== SHARED PATTERNS ===================== */
+/* one surface style for every group; nothing inside a card gets its own box */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm)}
+.meta{font-size:13px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.badge.risk{color:var(--red);background:var(--red-soft)}
+.badge.warn{color:var(--orange);background:var(--orange-soft)}
+.badge.ok{color:var(--green);background:var(--green-soft)}
+.badge.ai{color:var(--blue);background:var(--blue-soft)}
+.badge.today{color:var(--red);background:var(--red-soft);padding:3px 7px;font-size:11.5px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--tc-ic,var(--ink-3));flex:none}
+.bar{height:5px;border-radius:9px;background:var(--sunken);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green-ic);border-radius:9px;transition:width .35s}
+.prog{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-3)}
+.prog .bar{flex:1}
+.linkbtn{background:none;border:0;padding:0;color:var(--blue);font-weight:600;font-size:13.5px}
+.linkbtn:hover{text-decoration:underline}
+.caret{transition:transform .2s;flex:none}
+[aria-expanded="true"]>.caret,details[open]>summary .caret{transform:rotate(90deg)}
+
+/* ===================== AI EXECUTIVE SUMMARY ===================== */
+.sum{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"main kpis tools";gap:12px 32px;align-items:center;padding:12px 20px}
+.sum-main{grid-area:main;min-width:0}
+.sum-meta{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sum-meta .meta{color:var(--ink-4)}
+.sum h1{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.02em;font-weight:700}
+.sum p{margin:2px 0 0;font-size:15px;color:var(--ink-2);max-width:62ch}
+.sum .kpis{grid-area:kpis}
+.sum .tools{grid-area:tools;align-self:start}
+.kpis{display:flex;align-items:stretch}
+.kpi{--kc:var(--ink);background:none;border:0;border-left:1px solid var(--line);text-align:left;padding:0 20px;border-radius:0;min-width:0}
+.kpi:first-child{border-left:0;padding-left:0}
+.kpi:last-child{padding-right:0}
+.kpi b{display:block;font-size:22px;font-weight:700;line-height:1.15;color:var(--kc);letter-spacing:-.01em}
+.kpi span{display:block;font-size:13px;color:var(--ink-3);white-space:nowrap}
+.kpi:hover span{color:var(--blue)}
+.kpi.k-red{--kc:var(--red)} .kpi.k-amber{--kc:var(--orange)} .kpi.k-ok{--kc:var(--green)}
+.tools{display:flex;gap:8px}
+.week{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.week button{background:none;border:0;padding:7px 11px;color:var(--ink-3);font-size:17px;line-height:1}
+.week button:hover{color:var(--blue)}
+.week span{font-weight:600;font-size:13.5px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--ink-3)}
+.icon-btn:hover{color:var(--blue);border-color:var(--blue-line)}
+
+/* ===================== 3 STORY TABS ===================== */
+/* soft semantic surfaces: green = good, red = risk, blue = action */
+.tabs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.tc.t-green{--tc:var(--well-ac);--tbg:var(--well-bg)}
+.tc.t-red{--tc:var(--wrong-ac);--tbg:var(--wrong-bg)}
+.tc.t-blue{--tc:var(--fix-ac);--tbg:var(--fix-bg)}
+.tc{text-align:left;background:var(--tbg);border:1px solid color-mix(in srgb,var(--tc) 22%,var(--line));border-radius:12px;padding:10px 14px;display:flex;gap:12px;align-items:center;transition:border-color .15s,box-shadow .15s}
+.tc:hover{border-color:color-mix(in srgb,var(--tc) 45%,var(--line))}
+.tc-ic{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--tc);background:var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--tc) 18%,transparent)}
+.tc-l{font-size:15.5px;font-weight:700;line-height:1.3;color:var(--tc)}
+.tc[aria-selected="true"]{border-color:var(--tc);box-shadow:inset 0 0 0 1px var(--tc),0 8px 20px -10px color-mix(in srgb,var(--tc) 55%,transparent)}
+.tc[aria-selected="true"] .tc-ic{background:var(--tc);color:var(--on-ac);box-shadow:none}
+
+/* ===================== VIEWS ===================== */
+.view{display:none;padding-top:14px}
+.view.on{display:block;animation:in .2s ease}
+@keyframes in{from{opacity:0}to{opacity:1}}
+.vh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.vh h2{margin:0;font-size:18px;letter-spacing:-.01em}
+.vh p{margin:2px 0 0;color:var(--ink-3);font-size:14px}
+
+/* ===================== WENT WELL ===================== */
+/* one card per thing that's working: result first, then what it is and why */
+.well{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.wr{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px;border-top:3px solid var(--well-ac)}
+.wr-top{display:flex;align-items:center;gap:10px}
+.wr .ck{width:28px;height:28px;flex:none;border-radius:50%;background:var(--well-bg);color:var(--well-ac);display:grid;place-items:center}
+.wr em{font-style:normal;font-size:13px;font-weight:600;color:var(--well-ac);background:var(--well-bg);border-radius:999px;padding:3px 10px;margin-left:auto;white-space:nowrap}
+.wr b{display:block;font-size:15px;font-weight:700;line-height:1.35;margin-top:4px}
+.wr p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink-3)}
+
+/* ===================== WENT WRONG: list | detail | fix ===================== */
+/* the workspace fills the rest of the viewport (--md-h is measured in JS);
+   list, feed and fix panel each scroll on their own */
+.md{display:grid;grid-template-columns:232px minmax(0,1fr) 320px;grid-template-areas:"list detail fix";grid-template-rows:minmax(0,1fr);gap:14px;height:var(--md-h,640px)}
+/* side columns take the height of the problem detail and scroll inside it */
+.md>*{min-height:0}
+.md>.list-c,.md>.fixpanel{height:100%;max-height:none}
+.list-c{grid-area:list;display:flex;flex-direction:column;max-height:var(--col-h);overflow:hidden}
+.list-h{padding:10px 14px 4px;font-size:12.5px;color:var(--ink-4)}
+.list{display:flex;flex-direction:column;gap:1px;padding:2px 6px 6px;overflow-y:auto;scrollbar-width:thin}
+.li{position:relative;display:grid;grid-template-columns:8px minmax(0,1fr);gap:1px 10px;width:100%;text-align:left;background:none;border:0;border-radius:9px;padding:10px 10px 10px 12px;flex:none;align-items:start}
+.li .dot{margin-top:6px}
+.li-t{font-weight:600;font-size:14px;line-height:1.35}
+.li:hover{background:var(--soft)}
+.li[aria-selected="true"]{background:var(--tc-soft)}
+.li[aria-selected="true"]::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--tc-ic)}
+.li.solved .li-t{text-decoration:line-through;color:var(--ink-3)}
+
+/* center: a continuous feed of every problem */
+.feed{grid-area:detail;position:relative;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:14px;border-radius:14px;scrollbar-width:thin;padding-bottom:2px}
+.feed:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.detail{flex:none;overflow:hidden;scroll-margin-top:0}
+.feed-end{flex:none;margin:2px 0 6px;text-align:center;font-size:13px;color:var(--ink-4)}
+.fixpanel.swap .fp-h,.fixpanel.swap .fp-list{animation:fpin .22s ease}
+@keyframes fpin{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+.d-head{padding:16px 20px 14px}
+.d-title{display:flex;align-items:baseline;justify-content:space-between;gap:6px 16px;flex-wrap:wrap}
+.d-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.d-head h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.015em}
+.d-head>p{margin:0;color:var(--ink-2);font-size:14.5px;max-width:72ch}
+.reasons{display:flex;flex-wrap:wrap;gap:10px 32px;margin-top:12px}
+.rs{min-width:0}
+.rs b{display:block;font-size:19px;font-weight:700;line-height:1.2;color:var(--tc)}
+.rs span{display:block;font-size:13.5px;font-weight:500}
+.rs small{display:block;font-size:12.5px;color:var(--ink-3)}
+.reasons.hd{gap:10px 44px}
+.reasons.hd b{font-size:24px;line-height:1.15}
+.reasons.hd .rs:nth-child(2) b{color:var(--orange)}
+.reasons.hd span{font-size:13.5px;color:var(--ink-2)}
+/* one diagnostic line instead of four boxes */
+.drivers{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 0;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink-2)}
+.drivers .dr-l{font-size:12.5px;font-weight:600;color:var(--ink-3);margin-right:10px}
+.drivers .dr-i{white-space:nowrap}
+.detail{container-type:inline-size}
+@container (max-width:760px){.drivers .dr-l{flex-basis:100%;margin-bottom:2px}}
+.drivers .dr-i b{color:var(--tc);font-weight:700;margin-right:4px}
+.drivers .dr-i+.dr-i::before{content:"·";color:var(--ink-4);margin:0 8px}
+.tk-gh{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 6px 18px;font-size:12.5px;font-weight:600;color:var(--ink-3);background:var(--soft);border-top:1px solid var(--line-2)}
+.tk-gh:first-child{border-top:0}
+.tk-gh+.task{border-top:0}
+.fixpanel .task{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 6px 8px 10px;gap:2px 9px;grid-template-columns:20px minmax(0,1fr) 20px}
+.fixpanel .tk-more{width:20px}
+.fixpanel .task:first-child{border-top:1px solid var(--line)}
+.fixpanel .task:hover{border-color:var(--fixpanel-line);background:var(--surface);box-shadow:var(--shadow-sm)}
+.fixpanel .task.done{background:color-mix(in srgb,var(--surface) 55%,var(--fixpanel-bg))}
+.fixpanel .tk-gh{background:none;border:0;padding:6px 4px 0}
+.d-sec{padding:12px 20px;border-top:1px solid var(--line-2)}
+.d-sec h4{margin:0;font-size:14px;font-weight:600}
+.d-head>p{margin-top:2px}
+.days-in{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap}
+.days-in .meta{font-size:12.5px;color:var(--ink-4)}
+.d-sec h4 .meta{font-weight:400;margin-left:6px}
+.d-row{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.dchips{display:flex;gap:6px;flex-wrap:wrap}
+.dchip{font-size:12.5px;padding:2px 8px;border-radius:6px;background:var(--tc-soft);color:var(--tc)}
+.dchip b{font-weight:700;margin-right:4px}
+
+/* who it affects: compact rows that open for detail */
+/* who's affected: a real table in a bordered box, rows open for detail */
+.ppl{margin-top:8px;border:1px solid var(--line);border-radius:10px;overflow:hidden;overflow-x:auto}
+.ptbl{width:100%;min-width:520px;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.ptbl .c-nm{width:34%} .ptbl .c-is{width:30%} .ptbl .c-sh{width:auto} .ptbl .c-go{width:40px}
+.ptbl th{text-align:left;font-size:12.5px;font-weight:600;color:var(--ink-3);background:var(--soft);padding:8px 14px;border-bottom:1px solid var(--line)}
+.ptbl td{padding:8px 14px;border-bottom:1px solid var(--line-2);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptbl tbody tr:last-child td{border-bottom:0}
+.ptbl tr.pr{cursor:pointer;transition:background .12s}
+.ptbl tr.pr:hover td{background:var(--soft)}
+.ptbl tr.pr.open td{background:var(--soft);border-bottom-color:transparent}
+.ptbl .nm{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:0;text-align:left;font-weight:600;color:var(--ink);min-width:0}
+.ptbl .nm i{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:700;color:#fff}
+.ptbl .is{color:var(--ink-2)}
+.ptbl .sh{color:var(--ink-3)}
+.ptbl .go{text-align:right;color:var(--ink-4);padding-left:0}
+.ptbl tr.pr.open .caret{transform:rotate(90deg)}
+.ptbl tr.pr-x td{white-space:normal;padding:2px 14px 12px 48px;font-size:13.5px;color:var(--ink-2);background:var(--soft)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ppl-more{margin-top:10px}
+
+/* expandable deeper layers */
+details.more{border-top:1px solid var(--line-2)}
+details.more>summary{list-style:none;cursor:pointer;padding:11px 20px;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary .caret{color:var(--ink-3)}
+details.more>summary .pv{font-weight:400;color:var(--ink-3);font-size:13.5px;margin-left:4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.more>summary:hover{background:var(--soft)}
+details.more>summary .sl{white-space:nowrap;flex:none}
+details.more[open]>summary .pv{display:none}
+.why{padding:0 20px 16px 42px}
+.why .lead{margin:0 0 14px;color:var(--ink-2);font-size:14px;max-width:72ch}
+.why dl{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px 16px;margin:0}
+.why dt{font-size:13px;font-weight:600;color:var(--ink-3)}
+.why dt.rk{color:var(--red)}
+.why dd{margin:0;font-size:14px;line-height:1.5;max-width:70ch}
+.tcap{margin:0 20px 8px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.tnote{margin:0 20px 12px;font-size:13px;color:var(--ink-3)}
+.tblw{overflow-x:auto;margin:0 20px 16px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:13.5px}
+th{text-align:left;font-weight:600;color:var(--ink-3);font-size:12.5px;padding:9px 12px;background:var(--soft);border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid var(--line-2)}
+tr:last-child td{border-bottom:0}
+.r{text-align:right}
+.neg{color:var(--red);font-weight:600} .pos{color:var(--green);font-weight:600}
+.fixed-note{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--green-soft);color:var(--green);font-size:14px;font-weight:600}
+
+/* fix panel */
+.fixpanel{grid-area:fix;display:flex;flex-direction:column;max-height:var(--col-h);overflow:hidden;background:var(--fixpanel-bg);border-color:var(--fixpanel-line)}
+.fp-h{padding:12px 14px 10px;flex:none}
+.fp-l{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--fix-ac)}
+.fp-h h4{margin:2px 0 8px;font-size:16px;line-height:1.3;letter-spacing:-.01em}
+.fp-list{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;padding:0 8px 8px;display:flex;flex-direction:column;gap:6px}
+.fp-list>*{flex:none}
+.fp-f{flex:none;padding:10px 14px;border-top:1px solid var(--fixpanel-line)}
+.fp-h .bar{background:color-mix(in srgb,var(--fix-ac) 14%,var(--surface))}
+.outline{width:100%;display:flex;justify-content:center;align-items:center;gap:8px;border:1px solid var(--fixpanel-line);background:var(--surface);color:var(--fix-ac);border-radius:10px;padding:8px;font-weight:600;font-size:14px}
+.outline:hover{background:var(--blue-soft)}
+
+/* action: checkbox | what to do | expected result (+ when), detail on demand */
+.task{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:3px 12px;align-items:start;padding:12px 16px 12px 18px;border-top:1px solid var(--line-2);cursor:pointer;transition:background .15s}
+.task:first-child{border-top:0}
+.task:hover{background:var(--soft)}
+.chk{appearance:none;width:20px;height:20px;margin:1px 0 0;border:1.5px solid var(--ink-3);border-radius:6px;display:grid;place-items:center;cursor:pointer;background:var(--surface);grid-row:1 / span 2}
+.chk:hover{border-color:var(--blue)}
+.chk:checked{background:var(--green-ic);border-color:var(--green-ic)}
+.chk:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.tk-t{font-weight:600;font-size:14px;line-height:1.4;cursor:pointer}
+.tk-more{width:22px;height:22px;border:0;border-radius:6px;background:none;color:var(--ink-3);display:grid;place-items:center;padding:0}
+.tk-more:hover{background:var(--sunken);color:var(--ink)}
+.tk-g{grid-column:2;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
+.tk-g .imp{font-weight:600;color:var(--green)}
+.tk-d{grid-column:2 / -1;font-size:13px;color:var(--ink-2);margin-top:4px}
+.task.done .tk-t{text-decoration:line-through;color:var(--ink-3)}
+.task.done .tk-g .imp{color:var(--ink-3)}
+.task.done .badge.today{display:none}
+
+/* ===================== FULL FIX PLAN ===================== */
+.allset{display:none;align-items:center;gap:10px;background:var(--green-soft);color:var(--green);border-radius:12px;padding:12px 16px;font-weight:600;margin-bottom:14px}
+.allset.on{display:flex}
+.plan{--per:4;--gap:14px;display:flex;gap:var(--gap);align-items:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px 2px 12px;scrollbar-width:thin}
+.plan>.pc{flex:0 0 calc((100% - var(--gap) * (var(--per) - 1)) / var(--per));scroll-snap-align:start;min-width:0}
+.pc{overflow:hidden}
+.pc-h{padding:14px 16px 12px;border-bottom:1px solid var(--line-2)}
+.pc-top{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.pc-top .meta{display:flex;align-items:center;gap:8px}
+.pc-t{font-weight:700;font-size:15px;line-height:1.35;margin:8px 0 10px}
+.pc.solved .pc-t{text-decoration:line-through;color:var(--ink-3)}
+.vh-tools{display:flex;align-items:center;gap:14px}
+.vh-r{font-weight:600;color:var(--blue);font-size:14px}
+.pnav{display:flex;align-items:center;gap:8px}
+.pnav-c{font-size:13px;color:var(--ink-3);white-space:nowrap}
+.pnav button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--blue)}
+.pnav button:hover:not(:disabled){border-color:var(--blue-line);background:var(--blue-soft)}
+.pnav button:disabled{color:var(--ink-3);opacity:.45;cursor:default}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;transition:.25s;pointer-events:none;z-index:70;display:flex;gap:12px;align-items:center}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{background:none;border:0;color:var(--blue);font-weight:700;padding:0}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width:1440px){ .plan{--per:3} }
+@media (max-width:1320px){ .md{grid-template-columns:224px minmax(0,1fr) 308px;gap:12px} }
+/* laptop / small desktop: the problem list becomes a strip above, detail + fix side by side */
+@media (max-width:1180px){
+  .md{grid-template-columns:minmax(0,1fr) 312px;grid-template-areas:"list list" "detail fix";grid-template-rows:auto minmax(0,1fr)}
+  .md>.list-c{height:auto}
+  .list-h{display:none}
+  .list{flex-direction:row;overflow-x:auto;padding:6px;gap:4px}
+  .li{flex:0 0 220px}
+  .li[aria-selected="true"]::before{left:10px;right:10px;top:auto;bottom:0;width:auto;height:3px}
+}
+@media (max-width:1100px){
+  .sum{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main tools" "kpis kpis"}
+  .plan{--per:2}
+}
+/* tablet: one column, action plan directly under the problem */
+@media (max-width:860px){
+  .wrap{padding:16px 16px 56px}
+  html.embed .wrap{padding:0 0 10px}
+  .sum{padding:14px 16px}
+  .sum h1{font-size:20px}
+  .tabs3{gap:8px}
+  .tc{padding:9px 12px;gap:10px}
+  .tc-ic{width:26px;height:26px}
+  .tc-l{font-size:14.5px}
+  .md{grid-template-columns:1fr;grid-template-areas:"list" "detail" "fix";grid-template-rows:auto auto auto;height:auto}
+  .feed{height:var(--md-h,560px)}
+  .md>.fixpanel{height:auto}
+  .fp-list{overflow:visible}
+  .d-head,.d-sec{padding-left:18px;padding-right:18px}
+  details.more>summary{padding-left:18px;padding-right:18px}
+  .why{padding:0 18px 16px 18px}
+  .tblw{margin:0 18px 18px} .tcap,.tnote{margin-left:18px;margin-right:18px}
+  .plan{--per:1}
+  .plan>.pc{flex-basis:88%}
+}
+@media (max-width:560px){
+  .sum{grid-template-columns:1fr;grid-template-areas:"main" "kpis" "tools"}
+  .sum .tools{align-self:auto}
+  .tabs3{gap:6px}
+  .tc{padding:9px 10px;justify-content:center;text-align:center}
+  .tc-ic{display:none}
+  .tc-l{font-size:13.5px}
+  .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi{padding:2px 10px}
+  .kpi b{font-size:20px}
+  .kpi span{white-space:normal;font-size:12.5px}
+  .ptbl th,.ptbl td{padding-left:10px;padding-right:10px}
+  .why dl{grid-template-columns:1fr;gap:2px}
+  .why dd{margin-bottom:8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="page">
+    <main class="wrap">
+      <!-- AI executive summary: "what do I need to know this week?" -->
+      <section class="sum card" aria-labelledby="sumH">
+        <div class="sum-main">
+          <div class="sum-meta"><span class="badge ai"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>AI summary</span><span class="meta">Updated 7:04 PM</span></div>
+          <h1 id="sumH">Schedule needs attention</h1>
+          <p id="sumP">6 shifts have compliance risks and $972 in projected overtime.</p>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="tools">
+            <div class="week"><button aria-label="Previous week">‹</button><span class="num">Sep 1 – 7, 2026</span><button aria-label="Next week">›</button></div>
+            <button class="icon-btn" id="refresh" aria-label="Refresh insights" title="Refresh insights"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+        </div>
+      </section>
+
+      <nav class="tabs3" role="tablist" aria-label="Insight sections">
+        <button class="tc t-green" role="tab" data-v="well" aria-selected="false" aria-controls="v-well">
+          <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <span class="tc-l">What went well</span>
+        </button>
+        <button class="tc t-red" role="tab" data-v="wrong" aria-selected="true" aria-controls="v-wrong">
+          <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg></span>
+          <span class="tc-l">What went wrong</span>
+        </button>
+        <button class="tc t-blue" role="tab" data-v="fix" aria-selected="false" aria-controls="v-fix">
+          <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>
+          <span class="tc-l">How to fix it</span>
+        </button>
+      </nav>
+
+      <!-- WENT WELL -->
+      <section class="view" id="v-well" role="tabpanel" aria-label="What went well">
+        <div class="vh"><div><h2>What went well</h2><p>Keep these patterns when you build next week.</p></div></div>
+        <div class="well" id="wellGrid"></div>
+      </section>
+
+      <!-- WENT WRONG -->
+      <section class="view on" id="v-wrong" role="tabpanel" aria-label="What went wrong">
+        <div class="md">
+          <div class="list-c card">
+            <div class="list-h num" id="listH">5 problems, most urgent first</div>
+            <div class="list" role="listbox" aria-label="Problems" id="probList"></div>
+          </div>
+          <div class="feed" id="feed" tabindex="0" aria-label="Problem details, one after another"></div>
+          <aside class="fixpanel card" id="fixpanel" aria-label="How to fix this" aria-live="polite"></aside>
+        </div>
+      </section>
+
+      <!-- FIX PLAN -->
+      <section class="view" id="v-fix" role="tabpanel" aria-label="The full fix plan">
+        <div class="vh"><div><h2>Full fix plan</h2><p id="planSub">Legal risks first, then overtime and coverage.</p></div><div class="vh-tools"><span class="vh-r num" id="planDone">0 of 30 done</span>
+          <div class="pnav" aria-label="Browse problems"><span class="pnav-c num" id="pnavC"></span>
+            <button class="prev" id="pPrev" aria-label="Previous problems"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button class="next" id="pNext" aria-label="Next problems"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div></div></div>
+        <div class="allset" id="allset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span id="allsetText"></span></div>
+        <div class="plan" id="plan"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="undo">Undo</button></div>
+
+<script>
+/* ---------- host page (index.html) ----------
+   Embedded in the Insights tab: the theme comes from the host's profile
+   menu, the host sizes the frame to our height and shows our toasts
+   (a fixed toast inside a full-height frame would sit off-screen). */
+const EMBED=window.parent!==window;
+const toHost=m=>{if(EMBED)parent.postMessage(m,"*")};
+addEventListener("message",e=>{
+  if(e.source!==parent)return;
+  const d=e.data||{};
+  if(d.type==="si-theme")document.documentElement.setAttribute("data-theme",d.theme==="dark"?"dark":"light");
+  else if(d.type==="si-v3-undo")undoLast();
+  else if(d.type==="si-v3-viewport"){hostVP={vh:+d.vh||0,top:+d.top||0};sizeMd()}
+});
+function postHeight(){toHost({type:"si-v3-height",h:Math.ceil(document.body.getBoundingClientRect().height)})}
+if(EMBED){new ResizeObserver(postHeight).observe(document.body);toHost({type:"si-v3-ready"})}
+
+/* ---------- icons ---------- */
+const IC={
+  tick:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  alert:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></svg>',
+  caret:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  arrow:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+};
+
+/* ---------- data ---------- */
+const WEEK=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const DATES={Mon:"Sep 1",Tue:"Sep 2",Wed:"Sep 3",Thu:"Sep 4",Fri:"Sep 5",Sat:"Sep 6",Sun:"Sep 7"};
+const AVC=["#2F6BE6","#24974A","#D9620A","#7C3AED","#0E7490","#BE185D","#B45309","#475569"];
+const ini=n=>n.split(" ").map(x=>x[0]).join("").slice(0,2);
+
+const WELL=[
+ ["Weekdays are on track","Mon – Wed sit within 4–6 hrs of forecast. The weekday template works.","Weekday template"],
+ ["Tuesday and Wednesday are near budget","20.32% and 20.65% labor against a 20% target.","Within 0.7%"],
+ ["62 of 98 shifts have no warnings","Monday is a completely clean day.","63% clean"],
+ ["Every open shift has a ready replacement","All 3 unassigned Friday shifts have a free line cook in the same position.","3 of 3 matched"],
+ ["Weekday shifts stay under 8 hrs","No Mon – Fri shift goes past 8 hrs, so all daily overtime sits on the weekend.","0 weekday daily OT"],
+ ["A manager or shift lead covers every open hour","Management is on the floor from open to close on Sunday.","19 of 19 hrs"],
+ ["Every Sunday shift is assigned and published","Employees have all their Sunday shift details.","17 of 17 shifts"]
+];
+
+/* Problems are grouped by root cause: one card per topic (labor law, time off,
+   overtime, ...) with "parts" breaking it down, instead of one card per KPI.
+   Rules and warning text follow the Zip Schedule pad (HW Release:
+   BNEShiftWarningService + messages.json). */
+const PROBS=[
+ {id:"law",tier:"t-red",tag:"Legal risk",short:"6 shifts have labor compliance risks",impact:"6",impactL:"legal risks",days:["Thu","Fri","Sat","Sun"],
+  title:"6 shifts break labor-law rules, and the same long weekend shifts drive the overtime",
+  lead:"The schedule pad flagged every legal risk before the week was published. The long weekend shifts that miss meal breaks also create most of the daily overtime, and 2 employees pass 40 hrs.",
+  head:[["6","Compliance risks","Fix before the shifts are worked"],["$972","Projected overtime","$971.99 · daily $853.30 · weekly $118.69"]],
+  parts:[["Minor rules","2","Mia Lee, Noah Davis"],["Meal breaks","2","Shifts over 10 hrs"],["Rest violation","1","Under 8 hrs off between shifts"],["Seventh-day violation","1","Mei Tanaka"]],
+  chain:["The schedule went out with compliance warnings still open, and the weekend template builds most shifts 9 to 10 hrs long.","2 minors are past their limits, 2 long shifts miss the 2nd meal break, 1 closer opens the next morning, 1 employee works all 7 days, and 24 shifts run past 8 hrs.","6 legal risks on Fri – Sun and $971.99 of overtime, plus $155.06 more if both accepted offers are approved."],
+  people:[["Mia Lee","Age 16 · Fri 5.08 hrs on a school day (limit 4)"],["Noah Davis","Age 17 · Sun until 12:25 AM (limit 10:00 PM)"],["Daniel Reyes","GM · Sat over 10 hrs, no 2nd meal break · $99.96 daily OT"],["Omar Haddad","AM · Sun over 10 hrs, no 2nd meal break · $69.35 daily OT"],["Olivia Martinez","Closes Fri 11:00 PM, opens Sat 6:30 AM"],["Mei Tanaka","Scheduled Mon – Sun, 7 days in a row · $54.41 daily OT on Sun"],["Priya Nair","GM · Sun 7:15 AM – 4:55 PM · $70.98 daily OT"],["Chris Walker","Shift Leader · 42.75 hrs · $80.44 weekly OT"],["Jasmine Ortiz","Line Cook · 41.50 hrs · $38.25 weekly OT"],["Kimberli Lopez","Accepted Tyler Brooks’s Thu offer · 42.25 hrs"],["Alex Garcia","Accepted Eliza Funes’s Sun offer · 43.50 hrs"]],
+  note:"The daily overtime table shows the 8 most expensive of 24 shifts. Managers hold 49% of the daily overtime cost.",
+  tables:[{t:"Schedule pad warnings",h:["Employee","Day","Shift","Rule breached","Fix"],r:[
+   ["Mia Lee (16)","Fri","11:15 AM – 4:20 PM","Minor: max 4 hrs on a school day (5.08 hrs)","End at 3:15 PM"],
+   ["Noah Davis (17)","Sun","5:30 PM – 12:25 AM","Minor Employee cannot be scheduled after 10:00 PM","End at 10:00 PM"],
+   ["Daniel Reyes","Sat","7:00 AM – 5:25 PM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
+   ["Omar Haddad","Sun","2:45 PM – 12:45 AM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
+   ["Olivia Martinez","Sat","6:30 AM – 12:30 PM","Minimum Time Off Between the Punch rule of 8 Hrs (7.50 hrs)","Start at 7:00 AM"],
+   ["Mei Tanaka","Sun","6:45 AM – 4:35 PM","7th Consecutive Day rule has been breached","Move to Jordan Price"]],n:[]},
+   {t:"Daily overtime · 8 most expensive of 24 shifts",h:["Employee","Day","Shift","OT hrs","OT cost","Suggested employee"],r:[["Daniel Reyes","Sat","7:00 AM – 5:25 PM","2.38",'<span class="neg">$99.96</span>',"Priya Nair"],["Priya Nair","Sun","7:15 AM – 4:55 PM","1.69",'<span class="neg">$70.98</span>',"Daniel Reyes"],["Omar Haddad","Sun","2:45 PM – 12:45 AM","2.01",'<span class="neg">$69.35</span>',"Marcus Bell"],["Graciela Atempa","Sat","10:00 AM – 7:50 PM","1.82",'<span class="neg">$62.79</span>',"Hannah Cho"],["Marcus Bell","Sat","2:30 PM – 12:10 AM","1.67",'<span class="neg">$57.62</span>',"Omar Haddad"],["Hannah Cho","Sun","10:15 AM – 7:55 PM","1.64",'<span class="neg">$56.58</span>',"Graciela Atempa"],["Mei Tanaka","Sun","6:45 AM – 4:35 PM","1.86",'<span class="neg">$54.41</span>',"Jordan Price"],["Kimberli Lopez","Sat","6:30 AM – 4:10 PM","1.69",'<span class="neg">$49.43</span>',"Ana Morales"]],n:[3,4]},
+   {t:"Weekly overtime · over 40 hrs",h:["Employee","Position","Week hrs","OT hrs","OT cost","Move this shift","Suggested employee","Their week after"],r:[["Chris Walker","Shift Leader","42.75","2.75",'<span class="neg">$80.44</span>',"Sun 2:00 – 8:00 PM","Ana Morales","26.00 hrs"],["Jasmine Ortiz","Line Cook","41.50","1.50",'<span class="neg">$38.25</span>',"Sun 10:00 AM – 3:30 PM","Andre Wilson","21.75 hrs"]],n:[2,3,4,7]},
+   {t:"Accepted shift offers waiting for approval",h:["Offered by","Shift","Accepted by","Their week if approved","OT if approved","Suggested instead","Their week after"],r:[["Tyler Brooks","Thu 2:00 – 8:00 PM · Shift Leader","Kimberli Lopez","42.25 hrs",'<span class="neg">2.25 hrs · $65.81</span>',"Jordan Price","24.50 hrs"],["Eliza Funes","Sun 3:00 – 9:00 PM · Line Cook","Alex Garcia","43.50 hrs",'<span class="neg">3.50 hrs · $89.25</span>',"Nicole Ramos","25.25 hrs"]],n:[3,4,6]}]},
+ {id:"avail",tier:"t-red",tag:"Conflict",short:"3 shifts clash with time off or availability",impact:"3",impactL:"conflicts",days:["Thu","Sat"],
+  title:"3 employees are scheduled when they’re off or unavailable",
+  lead:"Time off was approved or requested after the shifts were built, and one closer runs past her availability. Each shift needs a replacement or a shorter end time.",
+  parts:[["Approved time off","1","Juan Lopez · Sat"],["Pending time off","1","Sofia Bagley · Sat"],["Outside availability","1","Ava Thompson · Thu"]],
+  chain:["Time off was decided after the schedule was built, and availability wasn’t checked on Thursday’s close.","Juan Lopez is on approved time off, Sofia Bagley’s Saturday request is still pending, and Ava Thompson is booked 1.92 hrs past 9:00 PM.","2 likely no-shows on Saturday night and 1 availability breach on Thursday."],
+  people:[["Juan Lopez","Line Cook · Sat 4:00 – 11:30 PM · approved off"],["Sofia Bagley","GSA · Sat 4:00 – 10:50 PM · request pending 9 days"],["Ava Thompson","GSA · Thu 4:00 – 10:55 PM · available until 9:00 PM"],["Ethan Kim","Free Line Cook · 18.50 hrs this week"],["Chloe Adams","Free GSA · 15.75 hrs this week"]],
+  tables:[{t:"Conflicts and who can take the shift",h:["Employee","Day","Shift","Conflict","Suggested employee","Their week after"],r:[
+   ["Juan Lopez","Sat","4:00 – 11:30 PM","Approved time off · Family wedding","Ethan Kim","26.00 hrs"],
+   ["Sofia Bagley","Sat","4:00 – 10:50 PM","Pending time off · Personal errand","Chloe Adams","22.58 hrs"],
+   ["Ava Thompson","Thu","4:00 – 10:55 PM","Not available after 9:00 PM (1.92 hrs past)","End at 9:00 PM, no cover needed","—"]],n:[5]}]},
+
+ {id:"open",tier:"t-orange",tag:"Fix first",short:"3 Friday shifts are unassigned",impact:"3",impactL:"unassigned",days:["Fri"],
+  title:"3 Friday Line Cook shifts are unassigned after approved time off",
+  lead:"Approved time off moved 3 shifts to Unassigned and nobody picked them up. Friday’s dinner rush is short until they have an employee, and unassigned shifts can’t be published.",
+  parts:[["Unassigned shifts","3","Fri · Line Cook"],["Hours open","17.50","10:30 AM – 9:00 PM"],["Ready matches","3 of 3","Same position, free Friday"]],
+  chain:["Luis Hernandez, Diego Ruiz and Maria Santos were approved off; their shifts were left unassigned.","Friday has 9.26 hrs scheduled vs 17.15 hrs needed from 4:00 PM to close.","The dinner rush is 7.89 staff-hours short and the 3 shifts can’t be published."],
+  people:[["Luis Hernandez","Line Cook · approved off Fri"],["Diego Ruiz","Line Cook · approved off Fri"],["Maria Santos","Line Cook · approved off Fri"],["Kevin Tran","Free to cover · 5.37 hrs this week"],["Carlos Mendoza","Free to cover · 5.39 hrs this week"],["Rosa Delgado","Free to cover · 5.87 hrs this week"]],
+  tables:[{t:"Unassigned shifts and suggested employees",h:["Open shift","Position","Hrs","Suggested employee","Their week after","Backup"],r:[["Fri 10:30 AM – 5:00 PM","Line Cook","6.50","Kevin Tran","11.87 hrs","Carlos Mendoza"],["Fri 3:00 – 9:00 PM","Line Cook","6.00","Carlos Mendoza","11.39 hrs","Rosa Delgado"],["Fri 4:00 – 9:00 PM","Line Cook","5.00","Rosa Delgado","10.87 hrs","Andre Wilson"]],n:[2]}]},
+
+ {id:"staff",tier:"t-yellow",tag:"Fix soon",short:"Overstaffed afternoons, short Friday night",impact:"+114.54 hrs",impactL:"overstaffed",days:["Mon","Thu","Fri","Sat","Sun"],
+  title:"Staffing doesn’t follow the forecast: too many people mid-afternoon, too few on Friday night",
+  lead:"Store-level staffing against the forecast, hour by hour. Afternoons are padded on 4 days and Thursday carries an extra closer, while Friday’s dinner rush is short because of the open shifts.",
+  parts:[["Overstaffed","114.54 hrs","Biggest: Sun 1:00 – 5:00 PM"],["Understaffed","9.35 hrs","Mostly Fri 4:00 PM – close"],["Over budget","59.90 hrs","20% labor budget"],["Staffing efficiency","81.1%","Scheduled vs forecast staff"]],
+  chain:["The templates add the same afternoon overlap every day, whatever the forecast says.","Thursday runs 14 shifts instead of 13; Sat and Sun afternoons carry 3 to 4 more people than needed; Friday dinner is short.","114.54 hrs over forecast and 59.90 hrs over budget, while Friday’s dinner rush runs 7.89 staff-hours short."],
+  people:[["Ava Thompson","Thu closer 4:00 – 10:55 PM"],["Daniel Reyes","About 40 min of padding on Thu"],["Hannah Cho","About 40 min of padding on Thu"],["Mei Tanaka","About 40 min of padding on Thu"]],
+  tables:[
+   {t:"Biggest gaps by hour",h:["Day","Time window","Scheduled staff-hrs","Forecast staff-hrs","Gap"],r:[["Mon Sep 1 (Labor Day)","2:00 – 5:00 PM","17.12","11.00",'<span class="neg">+6.12 over</span>'],["Thu Sep 4","1:00 – 6:00 PM","29.37","22.00",'<span class="neg">+7.37 over</span>'],["Sat Sep 6","2:00 – 6:00 PM","35.84","24.00",'<span class="neg">+11.84 over</span>'],["Sun Sep 7","1:00 – 5:00 PM","34.06","22.00",'<span class="neg">+12.06 over</span>'],["Sun Sep 7","9:00 PM – close","10.10","6.00",'<span class="neg">+4.10 over</span>'],["Fri Sep 5","4:00 PM – close","9.26","17.15",'<span class="neg">−7.89 short</span>'],["Sat Sep 6","11:00 AM – 12:00 PM","8.54","10.00",'<span class="neg">−1.46 short</span>']],n:[2,3,4]},
+   {t:"Budget vs scheduled by day",h:["Day","Budget hrs","Scheduled hrs","Difference"],r:[["Mon Sep 1","63.38","73.90",'<span class="neg">−10.52</span>'],["Tue Sep 2","71.69","72.56",'<span class="neg">−0.87</span>'],["Wed Sep 3","69.30","71.28",'<span class="neg">−1.98</span>'],["<b>Thu Sep 4</b>","70.52","89.06",'<span class="neg"><b>−18.54</b></span>'],["Fri Sep 5","72.68","59.74",'<span class="pos">+12.94 (understaffed)</span>'],["Sat Sep 6","128.45","145.01",'<span class="neg">−16.56</span>'],["Sun Sep 7","120.41","144.79",'<span class="neg">−24.38</span>'],["<b>Week</b>","596.44","656.34",'<span class="neg"><b>−59.90</b></span>']],n:[1,2,3]}]},
+
+ {id:"publish",tier:"t-yellow",tag:"Fix soon",short:"Week published, 8 shifts still unpublished",impact:"8",impactL:"unpublished",days:["Tue","Wed","Fri"],
+  title:"The week is published, but 8 shifts are still unpublished",
+  lead:"8 shifts unpublished, employees don’t have the shift details. 4 time-off requests for the next schedule are also still undecided.",
+  parts:[["Unpublished shifts","8","44.56 hrs · 7 employees"],["Pending requests","4","Sep 18 – 20"]],
+  chain:["The week is in Published state, but 8 shifts on Tue, Wed and Fri are still unpublished.","7 employees don’t have their shift details (44.56 hrs).","Risk of no-shows, and the next schedule is being built on undecided time off."],
+  people:[["Priya Nair","GM · 2 unpublished shifts"],["Daniel Reyes","GM · Tue 7:00 AM – 1:35 PM"],["Luis Hernandez","Line Cook · Tue 3:00 – 8:30 PM"],["Aaliyah Brown","Dishwasher · Tue 10:30 AM – 3:35 PM"],["Kevin Tran","Line Cook · Wed 3:15 – 8:35 PM"],["Hector Cruz","Dishwasher · Wed 10:45 AM – 3:00 PM"],["Grace Park","Prep Cook · Fri 9:15 AM – 1:50 PM"]],
+  tables:[{t:"Unpublished shifts",h:["Employee","Day","Shift","Hrs"],r:[["Daniel Reyes","Tue","7:00 AM – 1:35 PM","6.57"],["Luis Hernandez","Tue","3:00 – 8:30 PM","5.52"],["Aaliyah Brown","Tue","10:30 AM – 3:35 PM","5.05"],["Priya Nair","Wed","7:15 AM – 1:45 PM","6.54"],["Kevin Tran","Wed","3:15 – 8:35 PM","5.37"],["Hector Cruz","Wed","10:45 AM – 3:00 PM","4.23"],["Priya Nair","Fri","7:15 AM – 2:00 PM","6.71"],["Grace Park","Fri","9:15 AM – 1:50 PM","4.57"],["<b>Total</b>","","","<b>44.56</b>"]],n:[3]}]}
+];
+
+const WHEN={today:"Today",shift:"Before Sunday",publish:"Before publish",next:"Next schedule"};
+const FIXES=[
+ {id:"a1",p:"law",grp:"risk",ph:"today",t:"End Mia Lee’s Friday shift at 3:15 PM",d:"Minor, age 16, school day.",g:"Clears 1 legal risk"},
+ {id:"a2",p:"law",grp:"risk",ph:"today",t:"End Noah Davis’s Sunday shift at 10:00 PM",d:"Minor, age 17, school day next.",g:"Clears 1 legal risk"},
+ {id:"a3",p:"law",grp:"risk",ph:"today",t:"Cut Daniel Reyes and Omar Haddad to 8 hrs",d:"Or add a second meal break to each shift.",g:"Clears 2 legal risks"},
+ {id:"l4",p:"law",grp:"risk",ph:"today",t:"Start Olivia Martinez’s Saturday shift at 7:00 AM",d:"Gives her 8 hrs off between Friday close and Saturday open.",g:"Clears 1 legal risk"},
+ {id:"l5",p:"law",grp:"risk",ph:"shift",t:"Give Mei Tanaka Sunday off",d:"Move her 6:45 AM shift to Jordan Price, capped at 8 hrs. His week goes to 26.50 hrs.",g:"Clears 1 legal risk, −1.86 OT hrs"},
+ {id:"l6",p:"law",grp:"risk",ph:"publish",t:"Clear the schedule pad warnings before you publish",d:"All 6 risks showed a warning icon on the shift before the week went out.",g:"No new legal risks"},
+ {id:"t1",p:"avail",ph:"today",t:"Move Juan Lopez’s Saturday shift to Ethan Kim",d:"Line Cook, free Saturday night. His week goes to 26.00 hrs.",g:"Clears the time-off conflict"},
+ {id:"t2",p:"avail",ph:"today",t:"Decide Sofia Bagley’s Sat Sep 6 request",d:"Waiting 9 days. If you approve it, give her 4:00 – 10:50 PM shift to Chloe Adams (22.58 hrs).",g:"No surprise no-show"},
+ {id:"t3",p:"avail",ph:"shift",t:"End Ava Thompson’s Thursday shift at 9:00 PM",d:"Thursday is overstaffed at close, so nobody needs to cover 9:00 – 10:55 PM.",g:"−1.92 hrs, 1 warning cleared"},
+ {id:"o1",p:"law",grp:"ot",ph:"today",t:"Approve Tyler Brooks’s Thursday offer for Jordan Price, not Kimberli Lopez",d:"Kimberli would reach 42.25 hrs. Jordan is a Shift Leader at 18.50 hrs.",g:"Avoids $65.81 OT"},
+ {id:"o2",p:"law",grp:"ot",ph:"today",t:"Approve Eliza Funes’s Sunday offer for Nicole Ramos, not Alex Garcia",d:"Alex would reach 43.50 hrs. Nicole is a Line Cook at 19.25 hrs.",g:"Avoids $89.25 OT"},
+ {id:"w1",p:"law",grp:"ot",ph:"shift",t:"Move Chris Walker’s Sun 2:00 – 8:00 PM shift to Ana Morales",d:"Shift Leader. Chris drops to 36.75 hrs; Ana goes to 26.00 hrs.",g:"−$80.44 weekly OT"},
+ {id:"w2",p:"law",grp:"ot",ph:"shift",t:"Move Jasmine Ortiz’s Sun 10:00 AM – 3:30 PM shift to Andre Wilson",d:"Line Cook. Jasmine drops to 36.00 hrs; Andre goes to 21.75 hrs.",g:"−$38.25 weekly OT"},
+ {id:"b5",p:"law",grp:"ot",ph:"shift",t:"Cap every Saturday shift at 8 hrs",d:"Daniel Reyes, Graciela Atempa, Marcus Bell, Kimberli Lopez and 8 more. The suggested employee takes the extra hours.",g:"−14.47 hrs, −$448.13 OT"},
+ {id:"b1",p:"law",grp:"ot",ph:"shift",t:"Cap every Sunday shift at 8 hrs",d:"Omar Haddad, Priya Nair, Hannah Cho and 9 more.",g:"−13.27 hrs, −$405.17 OT"},
+ {id:"c1",p:"law",grp:"ot",ph:"publish",t:"Turn on the 8-hour daily check",d:"Any shift over 8 hrs is flagged before the schedule goes out.",g:"Stops long shifts coming back"},
+ {id:"d1",p:"law",grp:"ot",ph:"next",t:"Cap Saturday and Sunday template shifts at 8 hrs",d:"Start with the 6 GM and AM shifts ($417.27 of OT).",g:"−27.74 hrs, all weekend OT"},
+ {id:"d2",p:"law",grp:"ot",ph:"next",t:"End the 3 past-midnight closers by 11:00 PM",d:"Do this together with the 8-hour cap.",g:"About −29 extra weekend hrs"},
+ {id:"a5",p:"open",ph:"today",t:"Assign Kevin Tran to Fri 10:30 AM – 5:00 PM",d:"Line Cook. His week goes to 11.87 hrs. Backup: Carlos Mendoza.",g:"Shift can be published"},
+ {id:"a6",p:"open",ph:"today",t:"Assign Carlos Mendoza to Fri 3:00 – 9:00 PM",d:"Line Cook. His week goes to 11.39 hrs. Backup: Rosa Delgado.",g:"Covers the dinner rush"},
+ {id:"a7",p:"open",ph:"today",t:"Assign Rosa Delgado to Fri 4:00 – 9:00 PM",d:"Line Cook. Her week goes to 10.87 hrs. Backup: Andre Wilson.",g:"Covers the dinner rush"},
+ {id:"d5",p:"open",ph:"next",t:"Offer shifts for pick-up when time off is approved",d:"Use Unassign and Offer Shift instead of leaving them in the Unassigned row.",g:"No silent coverage gaps"},
+ {id:"b2",p:"staff",ph:"shift",t:"Shorten the longest overlapping Sunday shifts",d:"Sunday 1:00 – 5:00 PM carries 12.06 staff-hours more than forecast.",g:"Up to −12.06 staff-hours"},
+ {id:"b4",p:"staff",ph:"shift",t:"End Sunday closers by 11:00 PM",d:"Omar, Hector, Noah, Olivia and Luis.",g:"−4.10 hrs after 9:00 PM"},
+ {id:"s1",p:"staff",ph:"next",t:"Cut one 2:00 – 6:00 PM shift from the Saturday template",d:"Saturday afternoon has about 3 more people than the forecast needs.",g:"Up to −11.84 staff-hours"},
+ {id:"d3",p:"staff",ph:"next",t:"Drop one of the two 4:00 – 10:55 PM Thursday closers",d:"6.95 hrs. If you drop Ava Thompson’s, her availability conflict goes too.",g:"−6.95 hrs"},
+ {id:"d4",p:"staff",ph:"next",t:"Remove the ~40 min of padding per Thursday shift",d:"Start or end Daniel Reyes, Hannah Cho and Mei Tanaka about an hour earlier or later.",g:"About −8.6 hrs"},
+ {id:"s2",p:"staff",ph:"next",t:"Trim Labor Day afternoon to the holiday forecast",d:"Mon 2:00 – 5:00 PM ran 6.12 staff-hours over; build holidays from their own forecast.",g:"−6.12 staff-hours"},
+ {id:"a9",p:"publish",ph:"today",t:"Publish the 8 unpublished shifts",d:"All 8 shifts reach the 7 employees.",g:"7 employees get their shifts"},
+ {id:"c2",p:"publish",ph:"publish",t:"Decide the 4 pending requests for Sep 18 – 20",d:"Liam Rodriguez and Isabella Flores are under 11 hrs and can cover Sat Sep 19.",g:"Next schedule on decided time off"}
+];
+
+
+/* ---------- presentation layer ----------
+   The data above is unchanged. UI keeps a short, manager-facing layer on top:
+   a scannable title, one-line summary, category, severity, the fix-panel
+   heading, and a short issue + shift per affected person (same order as
+   p.people, whose long text stays as the row's expanded detail). */
+const UI={
+ law:{short:"6 shifts have labor compliance risks",sum:"Six shifts break labor rules, and the same long weekend shifts drive most of the overtime.",cat:"Compliance",impact:"$972",impactL:"projected overtime",fixH:"Clear risks, then cut overtime",
+  who:[["Minor rule","Fri 11:15 AM – 4:20 PM"],["Minor rule","Sun 5:30 PM – 12:25 AM"],["Meal break + daily OT","Sat 7:00 AM – 5:25 PM"],["Meal break + daily OT","Sun 2:45 PM – 12:45 AM"],["Rest period","Sat 6:30 AM – 12:30 PM"],["7th day + daily OT","Sun 6:45 AM – 4:35 PM"],["Daily OT · $70.98","Sun 7:15 AM – 4:55 PM"],["Weekly OT · $80.44","42.75 hrs this week"],["Weekly OT · $38.25","41.50 hrs this week"],["Offer would add OT","Thu 2:00 – 8:00 PM"],["Offer would add OT","Sun 3:00 – 9:00 PM"]]},
+ avail:{short:"3 shifts conflict with availability",sum:"Three employees are scheduled when they’re off or unavailable.",cat:"Schedule conflict",impact:"3",impactL:"conflicts",fixH:"Resolve 3 conflicts",
+  who:[["Approved time off","Sat 4:00 – 11:30 PM"],["Pending time off","Sat 4:00 – 10:50 PM"],["Outside availability","Thu 4:00 – 10:55 PM"],["Can cover","Free Saturday night"],["Can cover","Free Saturday night"]]},
+ open:{short:"3 Friday shifts are unassigned",sum:"Approved time off left 3 Line Cook shifts with nobody assigned.",cat:"Coverage",impact:"3",impactL:"unassigned",fixH:"Fill 3 Friday shifts",
+  who:[["Approved off","Fri"],["Approved off","Fri"],["Approved off","Fri"],["Can cover","Fri 10:30 AM – 5:00 PM"],["Can cover","Fri 3:00 – 9:00 PM"],["Can cover","Fri 4:00 – 9:00 PM"]]},
+ staff:{short:"Staffing doesn’t match the forecast",sum:"Afternoons are overstaffed on 4 days while Friday dinner runs short.",cat:"Staffing",impact:"+114.54 hrs",impactL:"over forecast",fixH:"Match staffing to the forecast",
+  who:[["Extra closer","Thu 4:00 – 10:55 PM"],["~40 min padding","Thu"],["~40 min padding","Thu"],["~40 min padding","Thu"]]},
+ publish:{short:"8 shifts aren’t published",sum:"The week is published, but 7 employees can’t see 8 of their shifts.",cat:"Publishing",impact:"8",impactL:"unpublished",fixH:"Get every shift published",
+  who:[["2 unpublished","Wed & Fri"],["Unpublished","Tue 7:00 AM – 1:35 PM"],["Unpublished","Tue 3:00 – 8:30 PM"],["Unpublished","Tue 10:30 AM – 3:35 PM"],["Unpublished","Wed 3:15 – 8:35 PM"],["Unpublished","Wed 10:45 AM – 3:00 PM"],["Unpublished","Fri 9:15 AM – 1:50 PM"]]}
+};
+/* severity: only two badges are used; lower tiers read as plain text */
+const SEV={"t-red":["risk","High risk"],"t-orange":["warn","Needs attention"],"t-yellow":[null,"Fix this week"]};
+const PH_ORDER={today:0,shift:1,publish:2,next:3};
+const PEOPLE_SHOWN=4;
+
+/* ---------- state ---------- */
+const done=new Set();
+let selected="law", lastToggle=null;
+const openTask=new Set(), openPerson=new Set(), allPeople=new Set(), openSec=new Set();
+try{JSON.parse(localStorage.getItem("si5-done")||"[]").forEach(x=>{if(FIXES.some(f=>f.id===x))done.add(x)})}catch(e){}
+const save=()=>{try{localStorage.setItem("si5-done",JSON.stringify([...done]))}catch(e){}};
+const P=id=>PROBS.find(p=>p.id===id);
+const GRP={risk:[0,"Compliance risks"],ot:[1,"Overtime"]};
+const gOrd=f=>f.grp?GRP[f.grp][0]:0;
+const fxOf=id=>FIXES.filter(f=>f.p===id).map((f,i)=>[f,i]).sort((a,b)=>gOrd(a[0])-gOrd(b[0])||PH_ORDER[a[0].ph]-PH_ORDER[b[0].ph]||a[1]-b[1]).map(x=>x[0]);
+/* actions list, with a small sub-heading per group when a problem mixes them (compliance + overtime) */
+function taskList(fx,ctx){
+  const groups=[...new Set(fx.map(f=>f.grp||""))];
+  if(groups.length<2)return fx.map(f=>task(f,ctx)).join("");
+  return groups.map(g=>{const gf=fx.filter(f=>(f.grp||"")===g),d=gf.filter(f=>done.has(f.id)).length;
+    return `<div class="tk-gh"><span>${GRP[g][1]}</span><span class="num">${d} of ${gf.length}</span></div>`+gf.map(f=>task(f,ctx)).join("")}).join("");
+}
+const stat=id=>{const fx=fxOf(id),d=fx.filter(f=>done.has(f.id)).length;return{fx,d,n:fx.length,solved:d===fx.length,pct:Math.round(d/fx.length*100)}};
+const plural=(n,one,many)=>`${n} ${n===1?one:(many||one+"s")}`;
+
+/* "Fri, Sat, Sun" → "Fri–Sun"; runs shorter than 3 stay as a list */
+function dayRange(days){
+  const ix=days.map(d=>WEEK.indexOf(d)).sort((a,b)=>a-b),out=[];
+  for(let i=0;i<ix.length;){let j=i;while(j+1<ix.length&&ix[j+1]===ix[j]+1)j++;
+    if(j-i>=2)out.push(WEEK[ix[i]]+"–"+WEEK[ix[j]]);else for(let k=i;k<=j;k++)out.push(WEEK[ix[k]]);i=j+1}
+  return out.join(", ");
+}
+
+/* live counts behind the summary: each legal-risk fix says how many it clears */
+function counts(){
+  const risksTotal=FIXES.filter(f=>f.p==="law").reduce((s,f)=>s+(+((f.g.match(/Clears (\d+) legal risk/)||[])[1]||0)),0);
+  const risks=FIXES.filter(f=>f.p==="law"&&!done.has(f.id)).reduce((s,f)=>s+(+((f.g.match(/Clears (\d+) legal risk/)||[])[1]||0)),0);
+  const conflicts=FIXES.filter(f=>f.p==="avail"&&!done.has(f.id)).length;
+  const unassigned=FIXES.filter(f=>f.p==="open"&&/^Assign /.test(f.t)&&!done.has(f.id)).length;
+  const open=PROBS.filter(p=>!stat(p.id).solved).length;
+  const todayLeft=FIXES.filter(f=>f.ph==="today"&&!done.has(f.id)).length;
+  return{risksTotal,risks,conflicts,unassigned,open,todayLeft};
+}
+
+/* the compliance title and headline count follow the legal-risk fixes,
+   so they always match the AI summary above */
+function liveShort(p){
+  const u=UI[p.id];if(p.id!=="law")return u.short;
+  const r=counts().risks;
+  return r?`${plural(r,"shift has","shifts have")} labor compliance risks`:"Compliance risks cleared, overtime remains";
+}
+function liveHead(p){
+  if(!p.head)return null;if(p.id!=="law")return p.head;
+  const c=counts();
+  return [[String(c.risks),"Compliance risks",c.risks===c.risksTotal?"Fix before the shifts are worked":`${c.risksTotal-c.risks} of ${c.risksTotal} cleared`],p.head[1]];
+}
+function task(f,ctx){
+  const key=ctx+"-"+f.id, isOpen=openTask.has(key), isDone=done.has(f.id);
+  return `<div class="task ${isDone?"done":""}">
+    <input type="checkbox" class="chk" id="chk-${key}" data-id="${f.id}" ${isDone?"checked":""}>
+    <label class="tk-t" for="chk-${key}">${f.t}</label>
+    <button class="tk-more" data-task="${key}" aria-expanded="${isOpen}" aria-controls="tkd-${key}" aria-label="${isOpen?"Hide":"Show"} details">${IC.caret.replace("<svg","<svg class=\"caret\"")}</button>
+    <div class="tk-g"><span class="imp">${f.g}</span>${f.ph==="today"?`<span class="badge today">Today</span>`:`<span>${WHEN[f.ph]}</span>`}</div>
+    <div class="tk-d" id="tkd-${key}" ${isOpen?"":"hidden"}>${f.d}</div>
+  </div>`;
+}
+const caret=IC.caret.replace("<svg","<svg class=\"caret\" aria-hidden=\"true\"");
+
+/* ---------- views ---------- */
+function show(v){
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll(".tc").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+  if(location.hash!=="#"+v) history.replaceState(null,"","#"+v);
+  if(v==="fix")planNav();   // card widths are only measurable once the view is shown
+  if(v==="wrong"){sizeMd();queueSpy()}
+}
+document.querySelectorAll(".tc").forEach(b=>b.onclick=()=>show(b.dataset.v));
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["well","wrong","fix"].includes(h))show(h)});
+document.addEventListener("click",e=>{
+  const w=e.target.closest("[data-why]");
+  if(w){e.preventDefault();const id=w.dataset.why,from=document.getElementById("v-wrong").classList.contains("on");show("wrong");
+    if(!from)scrollTo({top:0,behavior:"smooth"});requestAnimationFrame(()=>goTo(id,from));return}
+  const tm=e.target.closest(".tk-more");
+  if(tm){const k=tm.dataset.task;openTask.has(k)?openTask.delete(k):openTask.add(k);
+    const o=openTask.has(k);tm.setAttribute("aria-expanded",o);tm.setAttribute("aria-label",(o?"Hide":"Show")+" details");document.getElementById("tkd-"+k).hidden=!o;return}
+  const pr=e.target.closest(".pr");
+  if(pr){const k=pr.dataset.k;openPerson.has(k)?openPerson.delete(k):openPerson.add(k);
+    const o=openPerson.has(k);pr.classList.toggle("open",o);pr.querySelector(".nm").setAttribute("aria-expanded",o);document.getElementById("prx-"+k).hidden=!o;return}
+  const pm=e.target.closest("[data-allpeople]");
+  if(pm){allPeople.add(pm.dataset.allpeople);renderSection(pm.dataset.allpeople);return}
+  /* the whole action row is a target, not just the box and the words */
+  const t=e.target.closest(".task");
+  if(t&&!e.target.closest("input,label,button,a"))t.querySelector(".chk").click();
+});
+
+/* ---------- AI summary + section tiles ---------- */
+function renderSummary(){
+  const c=counts(), all=done.size===FIXES.length;
+  const h=document.getElementById("sumH"), p=document.getElementById("sumP");
+  if(all){h.textContent="Schedule is in good shape";p.textContent="Every action is done. Refresh to re-check the schedule."}
+  else if(c.risks+c.conflicts===0){h.textContent="Schedule is compliant";p.textContent=`No compliance risks or conflicts left. ${plural(c.open,"issue")} on cost and coverage can be fixed next.`}
+  else if(c.risks===0){h.textContent="Schedule needs attention";p.textContent=`Compliance risks are cleared. ${plural(c.conflicts,"time-off conflict")} still need a decision.`}
+  else{h.textContent="Schedule needs attention";p.textContent=`${plural(c.risks,"shift has","shifts have")} compliance risks and $972 in projected overtime.`}
+  const k=(n,l,cls,why)=>`<button class="kpi ${n===0||n==="0"?"k-ok":cls}" data-why="${why}" title="Open: ${P(why)?liveShort(P(why)):""}"><b class="num">${n}</b><span>${l}</span></button>`;
+  document.getElementById("kpis").innerHTML=
+    k(c.risks,"Compliance risks","k-red","law")+
+    k("$972","Projected overtime","k-amber","law")+
+    k(c.conflicts,"Time-off conflicts","k-red","avail");
+
+  const n=done.size,t=FIXES.length;
+}
+
+/* ---------- went well ---------- */
+document.getElementById("wellGrid").innerHTML=WELL.map(w=>`<div class="wr card"><div class="wr-top"><span class="ck">${IC.tick}</span><em class="num">${w[2]}</em></div><b>${w[0]}</b><p>${w[1]}</p></div>`).join("");
+
+/* ---------- went wrong ---------- */
+function renderList(){
+  const el=document.getElementById("probList"),sl=el.scrollLeft,st=el.scrollTop;
+  el.innerHTML=PROBS.map(p=>{
+    const s=stat(p.id),u=UI[p.id];
+    return `<button class="li ${s.solved?"t-green solved":p.tier}" role="option" aria-selected="${p.id===selected}" data-p="${p.id}" title="${s.solved?"Fixed":u.cat} · ${dayRange(p.days)}${s.solved?"":" · "+u.impact+" "+u.impactL}">
+      <span class="dot" aria-hidden="true"></span><span class="li-t">${liveShort(p)}</span>
+    </button>`}).join("");
+  el.scrollLeft=sl;el.scrollTop=st;
+  el.querySelectorAll(".li").forEach(b=>b.onclick=()=>goTo(b.dataset.p));
+  document.getElementById("listH").textContent=`${PROBS.length} problems, most urgent first`;
+}
+
+/* one problem = one <section id="problem-N" data-p="id"> in the feed */
+const feed=document.getElementById("feed");
+const secOf=id=>document.getElementById("problem-"+(PROBS.findIndex(p=>p.id===id)+1));
+function sectionHTML(p){
+  const u=UI[p.id],s=stat(p.id),sev=SEV[p.tier];
+  const ppl=p.people.map((x,i)=>({name:x[0],detail:x[1],issue:(u.who[i]||[])[0]||"",shift:(u.who[i]||[])[1]||"",i}));
+  const showAll=allPeople.has(p.id)||ppl.length<=PEOPLE_SHOWN+1, shown=showAll?ppl:ppl.slice(0,PEOPLE_SHOWN);
+  return `
+    <div class="d-head">
+      <div class="d-title"><h3 id="ph-${p.id}">${liveShort(p)}</h3><div class="d-meta">${s.solved?`<span class="badge ok">Fixed</span>`:sev[0]?`<span class="badge ${sev[0]}">${sev[1]}</span>`:`<span class="meta" style="font-weight:600;color:var(--tc)">${sev[1]}</span>`}<span class="meta">${u.cat} · ${dayRange(p.days)}</span></div></div>
+      <p>${u.sum}</p>
+      ${p.head?`<div class="reasons hd">${liveHead(p).map(x=>`<div class="rs" title="${x[2]}"><b class="num">${x[0]}</b><span>${x[1]}</span></div>`).join("")}</div>`:""}
+      ${p.head?`<div class="drivers"><span class="dr-l">What’s driving the risk</span>${p.parts.map(x=>`<span class="dr-i" title="${x[2]}"><b class="num">${x[1]}</b>${x[0]}</span>`).join("")}</div>`
+        :`<div class="reasons">${p.parts.map(x=>`<div class="rs"><b class="num">${x[1]}</b><span>${x[0]}</span><small>${x[2]}</small></div>`).join("")}</div>`}
+      ${s.solved?`<div class="fixed-note">${IC.tick}All ${s.n} steps are done for this problem.</div>`:""}
+    </div>
+    <div class="d-sec">
+      <div class="d-row"><h4>Who’s affected<span class="meta num">${plural(ppl.length,"person","people")}</span></h4><div class="days-in"><span class="meta">Affected days</span><div class="dchips">${WEEK.filter(w=>p.days.includes(w)).map(w=>`<span class="dchip num"><b>${w}</b>${DATES[w]}</span>`).join("")}</div></div></div>
+      <div class="ppl"><table class="ptbl">
+        <colgroup><col class="c-nm"><col class="c-is"><col class="c-sh"><col class="c-go"></colgroup>
+        <thead><tr><th scope="col">Employee</th><th scope="col">Issue</th><th scope="col">Shift</th><th scope="col"><span class="sr">Details</span></th></tr></thead>
+        <tbody>${shown.map(x=>{const k=p.id+"-"+x.i,o=openPerson.has(k);return `<tr class="pr${o?" open":""}" data-k="${k}">
+          <td><button class="nm" aria-expanded="${o}" aria-controls="prx-${k}"><i style="background:${AVC[x.i%AVC.length]}" aria-hidden="true">${ini(x.name)}</i>${x.name}</button></td>
+          <td class="is">${x.issue}</td><td class="sh num">${x.shift}</td><td class="go">${caret}</td></tr>
+          <tr class="pr-x" id="prx-${k}" ${o?"":"hidden"}><td colspan="4">${x.detail}</td></tr>`}).join("")}</tbody>
+      </table></div>
+      ${showAll?"":`<div class="ppl-more"><button class="linkbtn" data-allpeople="${p.id}">Show all ${ppl.length} people →</button></div>`}
+    </div>
+    <details class="more" data-sec="why" ${openSec.has(p.id+":why")?"open":""}><summary>${caret}<span class="sl">Why this happened</span><span class="pv">${p.chain[0]}</span></summary>
+      <div class="why"><p class="lead">${p.lead}</p>
+        <dl><dt>Cause</dt><dd>${p.chain[0]}</dd><dt>Impact</dt><dd>${p.chain[1]}</dd><dt class="rk">Risk</dt><dd>${p.chain[2]}</dd></dl></div>
+    </details>
+    <details class="more" data-sec="num" ${openSec.has(p.id+":num")?"open":""}><summary>${caret}<span class="sl">See the calculation</span><span class="pv">${p.tables.map(t=>t.t).join(" · ")}</span></summary>
+      ${p.note?`<p class="tnote">${p.note}</p>`:""}
+      ${p.tables.map(tb=>`${tb.t?`<div class="tcap">${tb.t}</div>`:""}<div class="tblw"><table><thead><tr>${tb.h.map((h,i)=>`<th class="${tb.n.includes(i)?"r":""}">${h}</th>`).join("")}</tr></thead>
+      <tbody>${tb.r.map(r=>`<tr>${r.map((c,i)=>`<td class="${tb.n.includes(i)?"r num":""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("")}
+    </details>`;
+}
+function renderSection(id){
+  const p=P(id),s=stat(id),el=secOf(id);if(!el)return;
+  el.className="detail card "+(s.solved?"t-green":p.tier);
+  el.innerHTML=sectionHTML(p);
+  el.querySelectorAll("details.more").forEach(d=>d.addEventListener("toggle",()=>{const k=p.id+":"+d.dataset.sec;d.open?openSec.add(k):openSec.delete(k)}));
+}
+function buildFeed(){
+  feed.innerHTML=PROBS.map((p,i)=>`<section class="detail card" id="problem-${i+1}" data-p="${p.id}" aria-labelledby="ph-${p.id}"></section>`).join("")
+    +`<p class="feed-end">That’s all ${plural(PROBS.length,"problem")} for this week.</p>`;
+  PROBS.forEach(p=>renderSection(p.id));
+}
+/* re-render content in place: same section elements, same scroll position */
+function renderFeed(){const st=feed.scrollTop;PROBS.forEach(p=>renderSection(p.id));feed.scrollTop=st}
+
+/* ---------- scroll spy: left list = table of contents, right panel = actions ----------
+   The active problem is the section crossing a "reading line" near the top of
+   the feed (an IntersectionObserver band), with a small dead zone so the
+   boundary never flickers. The first/last sections win at the very top/bottom,
+   so short sections at the end can still become active. */
+const SPY_LINE=.28, SPY_DEAD=14;
+let navTarget=null, navTimer=0, pinned=null, spyRaf=0;
+function spyLine(){const r=feed.getBoundingClientRect();return r.top+Math.min(170,r.height*SPY_LINE)}
+function spyPick(){
+  if(!feed.clientHeight)return selected;
+  if(feed.scrollTop<=2)return PROBS[0].id;
+  if(feed.scrollTop+feed.clientHeight>=feed.scrollHeight-2)return PROBS[PROBS.length-1].id;
+  const line=spyLine();let pick=PROBS[0].id;
+  for(const p of PROBS){if(secOf(p.id).getBoundingClientRect().top<=line)pick=p.id;else break}
+  if(pick===selected)return pick;
+  const iNew=PROBS.findIndex(p=>p.id===pick), iCur=PROBS.findIndex(p=>p.id===selected);
+  /* dead zone: the boundary has to be clearly past the line before we switch */
+  if(iNew>iCur&&secOf(pick).getBoundingClientRect().top>line-SPY_DEAD)return selected;
+  if(iNew<iCur&&secOf(selected).getBoundingClientRect().top<line+SPY_DEAD)return selected;
+  return pick;
+}
+function spy(){
+  spyRaf=0;
+  if(navTarget)return;                                   // a click-scroll is running
+  if(pinned){if(Math.abs(feed.scrollTop-pinned.st)<48)return;pinned=null}
+  const id=spyPick();if(id!==selected)setActive(id);
+}
+const queueSpy=()=>{if(!spyRaf)spyRaf=requestAnimationFrame(spy)};
+function endNav(){if(!navTarget)return;pinned={id:navTarget,st:feed.scrollTop};navTarget=null}
+feed.addEventListener("scroll",()=>{
+  if(navTarget){clearTimeout(navTimer);navTimer=setTimeout(endNav,160)}   // scrollend fallback
+  queueSpy();
+},{passive:true});
+feed.addEventListener("scrollend",()=>{if(navTarget){clearTimeout(navTimer);endNav()}queueSpy()});
+/* the user taking over cancels a running click-scroll */
+["wheel","touchstart","keydown","pointerdown"].forEach(ev=>feed.addEventListener(ev,e=>{
+  if(ev==="pointerdown"&&e.target!==feed)return;
+  if(navTarget||pinned){navTarget=null;pinned=null;clearTimeout(navTimer)}
+},{passive:true}));
+let spyIO=null;
+function observeSections(){
+  if(spyIO)spyIO.disconnect();
+  if(!("IntersectionObserver" in window))return;
+  spyIO=new IntersectionObserver(queueSpy,{root:feed,rootMargin:`-${SPY_LINE*100}% 0px -${100-SPY_LINE*100-1}% 0px`,threshold:[0,1]});
+  feed.querySelectorAll(".detail").forEach(el=>spyIO.observe(el));
+}
+if("ResizeObserver" in window)new ResizeObserver(queueSpy).observe(feed);
+
+function setActive(id){
+  if(id===selected)return;
+  selected=id;markActive();renderFixPanel(true);
+}
+/* left click / KPI / "Why it happened": jump the feed to that problem */
+function goTo(id,smooth=true){
+  const el=secOf(id);if(!el)return;
+  setActive(id);
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const top=Math.min(el.offsetTop,feed.scrollHeight-feed.clientHeight);
+  navTarget=id;clearTimeout(navTimer);
+  if(Math.abs(feed.scrollTop-top)<2){endNav();return}
+  feed.scrollTo({top,behavior:smooth&&!reduce?"smooth":"auto"});
+  navTimer=setTimeout(endNav,smooth&&!reduce?1200:60);
+}
+function markActive(){
+  const list=document.getElementById("probList");let cur=null;
+  list.querySelectorAll(".li").forEach(b=>{const on=b.dataset.p===selected;b.setAttribute("aria-selected",on);if(on)cur=b});
+  if(!cur)return;
+  /* keep the active item visible in the list (vertical, or the strip on smaller screens) */
+  const lr=list.getBoundingClientRect(),cr=cur.getBoundingClientRect();
+  if(cr.top<lr.top||cr.bottom>lr.bottom)list.scrollBy({top:cr.top<lr.top?cr.top-lr.top-6:cr.bottom-lr.bottom+6,behavior:"smooth"});
+  if(cr.left<lr.left||cr.right>lr.right)list.scrollBy({left:cr.left<lr.left?cr.left-lr.left-6:cr.right-lr.right+6,behavior:"smooth"});
+}
+
+/* ---------- workspace height: fill what's left of the (host) viewport ---------- */
+let hostVP=null;
+function sizeMd(){
+  const md=document.querySelector(".md");if(!md||!md.offsetParent)return;
+  const top=md.getBoundingClientRect().top+scrollY;
+  const vh=hostVP?hostVP.vh-hostVP.top:innerHeight;
+  if(EMBED&&!hostVP)return;
+  const single=matchMedia("(max-width:860px)").matches;
+  const h=single?Math.max(420,Math.round(vh*.72)):Math.max(480,Math.min(1600,Math.round(vh-top-(EMBED?40:20))));
+  document.documentElement.style.setProperty("--md-h",h+"px");
+}
+addEventListener("resize",()=>{sizeMd();queueSpy()});
+
+let fixShown=null;
+function renderFixPanel(anim){
+  const p=P(selected),u=UI[p.id],s=stat(p.id),fpEl=document.getElementById("fixpanel");
+  const old=fpEl.querySelector(".fp-list"),st=old&&fixShown===p.id?old.scrollTop:0;
+  document.getElementById("fixpanel").innerHTML=`
+    <div class="fp-h"><div class="fp-l"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>How to fix this</div>
+      <h4>${u.fixH}</h4>
+      <div class="prog"><span class="bar"><i style="width:${s.pct}%"></i></span><span class="num">${s.d} of ${s.n} done</span></div></div>
+    <div class="fp-list">${taskList(s.fx,"fp")}</div>
+    <div class="fp-f"><button class="outline" id="seePlan">Open the full fix plan ${IC.arrow}</button></div>`;
+  fpEl.querySelector(".fp-list").scrollTop=st;
+  if(anim&&fixShown!==p.id){fpEl.classList.remove("swap");void fpEl.offsetWidth;fpEl.classList.add("swap")}
+  fixShown=p.id;
+  document.getElementById("seePlan").onclick=()=>{show("fix");document.getElementById("v-fix").scrollIntoView({behavior:"smooth",block:"start"})};
+}
+function renderWrong(){renderList();renderFeed();renderFixPanel()}
+
+/* ---------- full plan ---------- */
+function renderPlan(){
+  const sl=planEl.scrollLeft;
+  planEl.innerHTML=PROBS.map(p=>{
+    const s=stat(p.id),u=UI[p.id];
+    return `<div class="pc card ${s.solved?"t-green solved":p.tier}">
+      <div class="pc-h">
+        <div class="pc-top"><span class="meta"><span class="dot" aria-hidden="true"></span>${s.solved?"Fixed":u.cat} · ${dayRange(p.days)}</span><button class="linkbtn" data-why="${p.id}">Why it happened</button></div>
+        <div class="pc-t">${liveShort(p)}</div>
+        <div class="prog"><span class="bar"><i style="width:${s.pct}%"></i></span><span class="num">${s.d} of ${s.n}</span></div>
+      </div>
+      <div>${taskList(s.fx,"pl")}</div>
+    </div>`}).join("");
+  planEl.scrollLeft=sl;
+}
+
+function progress(){
+  const n=done.size,t=FIXES.length;
+  document.getElementById("planDone").textContent=`${n} of ${t} done`;
+  document.getElementById("planSub").textContent=`${t} actions across ${PROBS.length} problems. Legal risks first, then overtime and coverage.`;
+  const today=FIXES.filter(f=>f.ph==="today").every(f=>done.has(f.id));
+  document.getElementById("allset").classList.toggle("on",today);
+  document.getElementById("allsetText").textContent=n===t?"Every action is done. Refresh to re-check the schedule.":"Today’s actions are done: no legal risks left and the schedule can be published.";
+  renderSummary();
+}
+
+/* ---------- fix plan carousel: arrows page through the problem cards ---------- */
+const planEl=document.getElementById("plan");
+function planStep(){const c=planEl.querySelector(".pc");return c?c.getBoundingClientRect().width+14:planEl.clientWidth}
+function planNav(){
+  const n=PROBS.length,step=planStep();if(!step)return;
+  const first=Math.round(planEl.scrollLeft/step),per=Math.max(1,Math.round((planEl.clientWidth+14)/step));
+  const last=Math.min(n,first+per);
+  document.getElementById("pnavC").textContent=`${first+1}${last>first+1?"–"+last:""} of ${n} problems`;
+  document.getElementById("pPrev").disabled=planEl.scrollLeft<4;
+  document.getElementById("pNext").disabled=planEl.scrollLeft+planEl.clientWidth>=planEl.scrollWidth-4;
+  document.querySelector(".pnav").style.display=per>=n?"none":"";
+}
+document.getElementById("pPrev").onclick=()=>planEl.scrollBy({left:-planStep()});
+document.getElementById("pNext").onclick=()=>planEl.scrollBy({left:planStep()});
+planEl.addEventListener("scroll",()=>requestAnimationFrame(planNav),{passive:true});
+addEventListener("resize",planNav);
+
+function rerender(){renderWrong();renderPlan();progress();planNav()}
+document.addEventListener("change",e=>{
+  if(!e.target.matches(".chk[data-id]"))return;
+  const id=e.target.dataset.id;
+  e.target.checked?done.add(id):done.delete(id);
+  lastToggle={id,was:!e.target.checked};
+  save();rerender();toast(e.target.checked?"Marked done":"Marked not done");
+});
+let tt;
+function toast(m,undo=true){if(EMBED){toHost({type:"si-v3-toast",msg:m,undo});return}const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=m;document.getElementById("undo").style.display=undo?"":"none";t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2600)}
+function undoLast(){if(!lastToggle)return;lastToggle.was?done.add(lastToggle.id):done.delete(lastToggle.id);lastToggle=null;save();rerender();document.getElementById("toast").classList.remove("on")}
+document.getElementById("undo").onclick=undoLast;
+document.getElementById("refresh").onclick=()=>toast("Insights refreshed",false);
+
+buildFeed();observeSections();rerender();sizeMd();
+const h=location.hash.slice(1);
+show(["well","wrong","fix"].includes(h)?h:"wrong");
+</script>
+</body>
+</html>
