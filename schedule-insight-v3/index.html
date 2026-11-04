@@ -124,6 +124,10 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
                 <span class="pm-toggle-tx">Enable New Insight Design</span>
                 <button type="button" class="pm-switch" id="si-newdesign-switch" role="switch" aria-checked="false" onclick="siSetNewDesign(!document.body.classList.contains('si-newdesign'))"><i></i></button>
               </label>
+              <label class="pm-toggle" title="Hide the How to fix it tile and the fix panel on the Insights tab">
+                <span class="pm-toggle-tx">Hide how to fix</span>
+                <button type="button" class="pm-switch" id="si-hidefix-switch" role="switch" aria-checked="true" onclick="siSetHideFix(!document.body.classList.contains('si-hide-fix'))"><i></i></button>
+              </label>
               <label class="pm-toggle" title="Show the Schedule Insights screen (went well, went wrong, fix plan) on the Insights tab">
                 <span class="pm-toggle-tx">Enable New Insight design_V2</span>
                 <button type="button" class="pm-switch" id="si-newdesign-v2-switch" role="switch" aria-checked="true" onclick="siSetNewDesignV2(!document.body.classList.contains('si-newdesign-v2'))"><i></i></button>
@@ -194,6 +198,24 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
 <script src="assets/ai-hub-data.js?v=20261013u"></script>
 <script src="assets/ai-hub-render.js?v=20261013g"></script>
 <script src="assets/app.js?v=20261103b"></script>
+<script>
+/* Profile menu flag "Hide how to fix" (default on): the Insights screen hides only the How to fix it
+   tile; the fix steps stay in Needs Attention. Remembered per browser. */
+function siSetHideFix(on){
+  document.body.classList.toggle('si-hide-fix', !!on);
+  const sw = document.getElementById('si-hidefix-switch');
+  if (sw) sw.setAttribute('aria-checked', on ? 'true' : 'false');
+  try { localStorage.setItem('si-hide-fix', on ? '1' : '0'); } catch (e) {}
+  if (window.siV3Post) siV3Post({ type: 'si-hide-fix', on: !!on });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  let on = true; try { on = localStorage.getItem('si-hide-fix') !== '0'; } catch (e) {}
+  siSetHideFix(on);
+  const f = document.getElementById('si-v3-frame');
+  if (f) f.addEventListener('load', () => siSetHideFix(document.body.classList.contains('si-hide-fix')));
+});
+window.addEventListener('message', e => { if ((e.data || {}).type === 'si-v3-ready') siSetHideFix(document.body.classList.contains('si-hide-fix')); });
+</script>
 <script>document.addEventListener("DOMContentLoaded",()=>{if(document.documentElement.classList.contains("si-embed-dd"))setTimeout(()=>siSwitchTab("deepdive"),0);});</script>
 
 <!-- Eva chatbot (self-contained copy in assets/eva) -->

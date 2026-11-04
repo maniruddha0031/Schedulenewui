@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>if(window.parent!==window)document.documentElement.classList.add("embed");try{const t=localStorage.getItem("si-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<script>if(window.parent!==window)document.documentElement.classList.add("embed");try{const t=localStorage.getItem("si-theme");if(t)document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("si-hide-fix")!=="0")document.documentElement.classList.add("hide-fix")}catch(e){}</script>
 <style>
 /* ===================== TOKENS ===================== */
 :root{
@@ -152,6 +152,35 @@ html.embed .wrap{padding:0 0 10px;max-width:none}
 .tc-l{font-size:15.5px;font-weight:700;line-height:1.3;color:var(--tc)}
 .tc[aria-selected="true"]{border-color:var(--tc);box-shadow:inset 0 0 0 1px var(--tc),0 8px 20px -10px color-mix(in srgb,var(--tc) 55%,transparent)}
 .tc[aria-selected="true"] .tc-ic{background:var(--tc);color:var(--on-ac);box-shadow:none}
+/* tiles: title + one-line description, icon tinted like the reference */
+.tc{align-items:flex-start;padding:14px 16px;border-radius:14px;cursor:pointer}
+.tc .tc-ic{width:28px;height:28px;margin-top:1px}
+.tc-tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tc-l{font-size:16px;color:var(--ink)}
+.tc-d{font-size:13px;line-height:1.4;color:var(--ink-3);font-weight:500}
+.tc[aria-selected="true"] .tc-l{color:var(--tc)}
+.tc:hover{transform:translateY(-1px)}
+.tc{transition:border-color .15s,box-shadow .15s,transform .15s,background-color .15s}
+/* selected vs not: unselected tiles go neutral, the selected one is filled, outlined,
+   carries an accent bar + "Viewing" pill and points down at the content it opened */
+.tc{position:relative;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.tc .tc-ic{background:color-mix(in srgb,var(--tc) 10%,var(--surface));color:var(--tc);box-shadow:none}
+.tc .tc-l{color:var(--ink-2,var(--ink))}
+.tc:hover{border-color:color-mix(in srgb,var(--tc) 40%,var(--line));background:color-mix(in srgb,var(--tc) 4%,var(--surface))}
+.tc[aria-selected="true"]{background:var(--tbg);border:1.5px solid var(--tc);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 16%,transparent),0 10px 24px -14px color-mix(in srgb,var(--tc) 70%,transparent);transform:none}
+.tc[aria-selected="true"]::before{content:"";position:absolute;left:-1.5px;top:-1.5px;bottom:-1.5px;width:5px;border-radius:14px 0 0 14px;background:var(--tc)}
+.tc[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;background:var(--tbg);border-right:1.5px solid var(--tc);border-bottom:1.5px solid var(--tc);transform:translateX(-50%) rotate(45deg)}
+.tc[aria-selected="true"] .tc-ic{background:var(--tc);color:var(--on-ac)}
+.tc[aria-selected="true"] .tc-l{color:var(--tc)}
+.tc[aria-selected="true"] .tc-d{color:var(--ink-2,var(--ink))}
+.tc-n{margin-left:auto;align-self:center;display:flex;align-items:center;gap:8px;flex:none}
+.tc-n b{min-width:28px;height:28px;padding:0 8px;border-radius:999px;display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--tc);background:color-mix(in srgb,var(--tc) 12%,var(--surface))}
+.tc-n em{display:none;font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:var(--on-ac);background:var(--tc);border-radius:999px;padding:3px 9px}
+.tc[aria-selected="true"] .tc-n em{display:inline-flex}
+.tc[aria-selected="true"] .tc-n b{background:var(--surface)}
+/* flag "hide how to fix": only the How to fix it tile / full plan view go; the fix steps stay in Needs Attention */
+html.hide-fix .tc[data-v="fix"], html.hide-fix #v-fix, html.hide-fix #seePlan{display:none !important}
+html.hide-fix .tabs3{grid-template-columns:repeat(2,minmax(0,1fr))}
 
 /* ===================== VIEWS ===================== */
 .view{display:none;padding-top:14px}
@@ -235,7 +264,7 @@ html.embed .wrap{padding:0 0 10px;max-width:none}
 .rs small{display:block;font-size:12.5px;color:var(--ink-3)}
 .reasons.hd{gap:10px 44px}
 .reasons.hd b{font-size:24px;line-height:1.15}
-.reasons.hd .rs:nth-child(2) b{color:var(--orange)}
+.reasons.hd .rs:nth-child(n+2) b{color:var(--orange)}
 .reasons.hd span{font-size:13.5px;color:var(--ink-2)}
 /* one diagnostic line instead of four boxes */
 .drivers{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 0;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink-2)}
@@ -430,7 +459,66 @@ tr:last-child td{border-bottom:0}
   .why dl{grid-template-columns:1fr;gap:2px}
   .why dd{margin-bottom:8px}
 }
-</style>
+/* compliance type pills in the consolidated table */
+.tblw{overflow-x:auto}.tblw td:nth-child(-n+3),.tblw td.r{white-space:nowrap}
+/* calculation tables: same look as the Who's affected table */
+.tcap{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.tcap::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--tc)}
+.tblw{background:var(--surface);box-shadow:var(--shadow-sm)}
+.tblw table{font-size:14px}
+.tblw th{position:sticky;top:0;font-size:12.5px;font-weight:600;color:var(--ink-3);background:var(--soft);padding:10px 14px;white-space:nowrap}
+.tblw td{padding:10px 14px;vertical-align:middle;color:var(--ink-2)}
+.tblw td:first-child{color:var(--ink);font-weight:600}
+.tblw tbody tr{transition:background .12s}
+.tblw tbody tr:hover td{background:var(--soft)}
+.tblw tbody tr.tot td{background:var(--soft);border-top:1px solid var(--line);color:var(--ink);font-weight:600}
+.tblw td.r{font-variant-numeric:tabular-nums;color:var(--ink)}
+.tnm{display:inline-flex;align-items:center;gap:10px}
+.tnm i{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-style:normal;font-size:10.5px;font-weight:700;color:#fff}
+.tblw table:has(.ct){table-layout:fixed;min-width:980px}.tblw table:has(.ct) td:nth-child(8){white-space:normal}.tblw table:has(.ct) td,.tblw table:has(.ct) th{padding:10px 12px}.tblw table:has(.ct) td:nth-child(3){white-space:normal}
+.tblw table:has(.ct) th:nth-child(1){width:150px}.tblw table:has(.ct) th:nth-child(2){width:56px}.tblw table:has(.ct) th:nth-child(3){width:150px}.tblw table:has(.ct) th:nth-child(4){width:190px}.tblw table:has(.ct) th:nth-child(5){width:108px}.tblw table:has(.ct) th:nth-child(6){width:76px}.tblw table:has(.ct) th:nth-child(7){width:82px}.tblw table:has(.ct) tr:last-child td{background:var(--soft)}
+.ct{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.ct-law{background:var(--red-soft);color:var(--red);border:1px solid var(--red-line)}
+.ct-ot{background:var(--orange-soft);color:var(--orange);border:1px solid var(--orange-line)}
+.ct-offer{background:var(--yellow-soft);color:var(--yellow);border:1px solid var(--yellow-line)}
+/* ===================== VISUAL POLISH (styling only) ===================== */
+/* page: soft blue-grey canvas so the white cards read as cards */
+:root:not([data-theme="dark"]){--bg:#EDF2F9}
+/* top summary bar: pastel schedule-blue band with an accent edge */
+.sum{background:linear-gradient(100deg,#EEF4FF 0%,#F4F1FF 55%,#FBFCFF 100%);border-color:#CFDCF5;border-left:4px solid var(--blue);box-shadow:0 1px 2px rgba(31,91,214,.06),0 12px 28px -20px rgba(31,91,214,.45)}
+:root[data-theme="dark"] .sum{background:linear-gradient(100deg,#15223F 0%,#1A1B3A 60%,var(--surface) 100%);border-color:#26385F}
+.sum h1{font-size:23px}
+.sum .kpi{padding:6px 18px;border-left:0}
+.sum .kpis{gap:10px}
+.sum .kpi{background:rgba(255,255,255,.7);border:1px solid #DCE5F5;border-radius:12px;min-width:118px}
+:root[data-theme="dark"] .sum .kpi{background:rgba(255,255,255,.04);border-color:#26385F}
+.sum .kpi:first-child{padding-left:18px}
+.sum .kpi:last-child{padding-right:18px}
+.sum .kpi b{font-size:21px}
+.sum .kpi span{font-size:12.5px;font-weight:500;color:var(--ink-2)}
+/* problem cards: tinted header in the card's risk colour */
+.detail .d-head{background:linear-gradient(180deg,color-mix(in srgb,var(--tc-soft,var(--soft)) 70%,var(--surface)) 0%,var(--surface) 100%);border-left:4px solid var(--tc)}
+.d-head h3{font-size:20px;font-weight:700}
+.d-head>p{font-size:14.5px;color:var(--ink-2)}
+.rs span{font-size:13.5px;color:var(--ink-2)}
+/* "What's driving the risk": coloured chips instead of a dotted line of text */
+.drivers{align-items:center;gap:8px;border-top:1px solid var(--line-2);padding-top:12px}
+.drivers .dr-l{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-right:4px}
+.drivers .dr-i+.dr-i::before{content:none}
+.drivers .dr-i{display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 5px;border-radius:999px;background:var(--tc-soft);border:1px solid var(--tc-line);color:var(--ink);font-size:13px;font-weight:600}
+.drivers .dr-i b{margin:0;min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-grid;place-items:center;background:var(--tc);color:#fff;font-size:12px}
+:root[data-theme="dark"] .drivers .dr-i b{color:var(--on-ac)}
+/* expandable rows: light band + clearer labels */
+.d-sec{background:var(--soft)}
+.ppl-tg{font-size:14.5px}
+details.more>summary{background:var(--soft)}
+details.more>summary:hover,.ppl-tg:hover{background:var(--sunken)}
+.dchip{font-weight:600;border:1px solid var(--tc-line)}
+/* problem list (left): larger, clearer selection */
+.list-h{font-weight:600;color:var(--ink-3)}
+.li-t{font-size:14px;font-weight:600;color:var(--ink)}
+.li:hover{background:var(--soft)}
+.li[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--tc)}</style>
 </head>
 <body>
 <div class="app">
@@ -453,21 +541,21 @@ tr:last-child td{border-bottom:0}
       <nav class="tabs3" role="tablist" aria-label="Insight sections">
         <button class="tc t-green" role="tab" data-v="well" aria-selected="false" aria-controls="v-well">
           <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-          <span class="tc-l">What went well</span>
+          <span class="tc-tx"><span class="tc-l">What's Going Well</span><span class="tc-d">Positive schedule performance and achievements.</span></span>
         </button>
         <button class="tc t-red" role="tab" data-v="wrong" aria-selected="true" aria-controls="v-wrong">
           <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg></span>
-          <span class="tc-l">What went wrong</span>
+          <span class="tc-tx"><span class="tc-l">Needs Attention</span><span class="tc-d">Schedule issues, risks and improvement opportunities.</span></span>
         </button>
         <button class="tc t-blue" role="tab" data-v="fix" aria-selected="false" aria-controls="v-fix">
           <span class="tc-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span>
-          <span class="tc-l">How to fix it</span>
+          <span class="tc-tx"><span class="tc-l">How to fix it</span><span class="tc-d">Step-by-step actions to clear the problems.</span></span>
         </button>
       </nav>
 
       <!-- WENT WELL -->
       <section class="view" id="v-well" role="tabpanel" aria-label="What went well">
-        <div class="vh"><div><h2>What went well</h2><p>Keep these patterns when you build next week.</p></div><span class="vh-r num" id="wellCount"></span></div>
+        <div class="vh"><div><h2>What's Going Well</h2><p>Keep these patterns when you build next week.</p></div><span class="vh-r num" id="wellCount"></span></div>
         <div class="wh card" id="wellHero"></div>
         <div class="wg" id="wellGrid"></div>
       </section>
@@ -511,6 +599,7 @@ addEventListener("message",e=>{
   if(e.source!==parent)return;
   const d=e.data||{};
   if(d.type==="si-theme")document.documentElement.setAttribute("data-theme",d.theme==="dark"?"dark":"light");
+  else if(d.type==="si-hide-fix"){document.documentElement.classList.toggle("hide-fix",!!d.on);if(d.on&&document.getElementById("v-fix").classList.contains("on"))show("wrong");sizeMd()}
   else if(d.type==="si-v3-undo")undoLast();
   else if(d.type==="si-v3-viewport"){hostVP={vh:+d.vh||0,top:+d.top||0};sizeMd()}
 });
@@ -546,24 +635,34 @@ const WELL=[
    Rules and warning text follow the Zip Schedule pad (HW Release:
    BNEShiftWarningService + messages.json). */
 const PROBS=[
- {id:"law",tier:"t-red",tag:"Legal risk",short:"6 shifts have labor compliance risks",impact:"6",impactL:"legal risks",days:["Thu","Fri","Sat","Sun"],
-  title:"6 shifts break labor-law rules, and the same long weekend shifts drive the overtime",
+ {id:"law",tier:"t-red",tag:"Legal risk",short:"6 labor-law risks and 26 overtime issues",impact:"32",impactL:"compliance issues",days:["Thu","Fri","Sat","Sun"],
+  title:"32 compliance issues: 6 labor-law risks and 26 overtime issues from the same long weekend shifts",
   lead:"The schedule pad flagged every legal risk before the week was published. The long weekend shifts that miss meal breaks also create most of the daily overtime, and 2 employees pass 40 hrs.",
-  head:[["6","Compliance risks","Fix before the shifts are worked"],["$972","Projected overtime","$971.99 · daily $853.30 · weekly $118.69"]],
-  parts:[["Minor rules","2","Mia Lee, Noah Davis"],["Meal breaks","2","Shifts over 10 hrs"],["Rest violation","1","Under 8 hrs off between shifts"],["Seventh-day violation","1","Mei Tanaka"]],
+  head:[["6","Labor-law risks","Fix before the shifts are worked"],["26","Overtime issues","24 shifts over 8 hrs · 2 employees over 40 hrs"],["$972","Projected overtime","$971.99 · daily $853.30 · weekly $118.69"]],
+  parts:[["Minor rules","2","Mia Lee, Noah Davis"],["Meal breaks","2","Shifts over 10 hrs"],["Rest violation","1","Under 8 hrs off between shifts"],["Seventh-day violation","1","Mei Tanaka"],["Daily overtime","24","Shifts over 8 hrs"],["Weekly overtime","2","Employees over 40 hrs"],["Offers adding OT","2","Waiting for approval"]],
   chain:["The schedule went out with compliance warnings still open, and the weekend template builds most shifts 9 to 10 hrs long.","2 minors are past their limits, 2 long shifts miss the 2nd meal break, 1 closer opens the next morning, 1 employee works all 7 days, and 24 shifts run past 8 hrs.","6 legal risks on Fri – Sun and $971.99 of overtime, plus $155.06 more if both accepted offers are approved."],
   people:[["Mia Lee","Age 16 · Fri 5.08 hrs on a school day (limit 4)"],["Noah Davis","Age 17 · Sun until 12:25 AM (limit 10:00 PM)"],["Daniel Reyes","GM · Sat over 10 hrs, no 2nd meal break · $99.96 daily OT"],["Omar Haddad","AM · Sun over 10 hrs, no 2nd meal break · $69.35 daily OT"],["Olivia Martinez","Closes Fri 11:00 PM, opens Sat 6:30 AM"],["Mei Tanaka","Scheduled Mon – Sun, 7 days in a row · $54.41 daily OT on Sun"],["Priya Nair","GM · Sun 7:15 AM – 4:55 PM · $70.98 daily OT"],["Chris Walker","Shift Leader · 42.75 hrs · $80.44 weekly OT"],["Jasmine Ortiz","Line Cook · 41.50 hrs · $38.25 weekly OT"],["Kimberli Lopez","Accepted Tyler Brooks’s Thu offer · 42.25 hrs"],["Alex Garcia","Accepted Eliza Funes’s Sun offer · 43.50 hrs"]],
-  note:"The daily overtime table shows the 8 most expensive of 24 shifts. Managers hold 49% of the daily overtime cost.",
-  tables:[{t:"Schedule pad warnings",h:["Employee","Day","Shift","Rule breached","Fix"],r:[
-   ["Mia Lee (16)","Fri","11:15 AM – 4:20 PM","Minor: max 4 hrs on a school day (5.08 hrs)","End at 3:15 PM"],
-   ["Noah Davis (17)","Sun","5:30 PM – 12:25 AM","Minor Employee cannot be scheduled after 10:00 PM","End at 10:00 PM"],
-   ["Daniel Reyes","Sat","7:00 AM – 5:25 PM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
-   ["Omar Haddad","Sun","2:45 PM – 12:45 AM","Meal Break rule breached: 2nd meal break over 10 hrs","Cut to 8 hrs or add a break"],
-   ["Olivia Martinez","Sat","6:30 AM – 12:30 PM","Minimum Time Off Between the Punch rule of 8 Hrs (7.50 hrs)","Start at 7:00 AM"],
-   ["Mei Tanaka","Sun","6:45 AM – 4:35 PM","7th Consecutive Day rule has been breached","Move to Jordan Price"]],n:[]},
-   {t:"Daily overtime · 8 most expensive of 24 shifts",h:["Employee","Day","Shift","OT hrs","OT cost","Suggested employee"],r:[["Daniel Reyes","Sat","7:00 AM – 5:25 PM","2.38",'<span class="neg">$99.96</span>',"Priya Nair"],["Priya Nair","Sun","7:15 AM – 4:55 PM","1.69",'<span class="neg">$70.98</span>',"Daniel Reyes"],["Omar Haddad","Sun","2:45 PM – 12:45 AM","2.01",'<span class="neg">$69.35</span>',"Marcus Bell"],["Graciela Atempa","Sat","10:00 AM – 7:50 PM","1.82",'<span class="neg">$62.79</span>',"Hannah Cho"],["Marcus Bell","Sat","2:30 PM – 12:10 AM","1.67",'<span class="neg">$57.62</span>',"Omar Haddad"],["Hannah Cho","Sun","10:15 AM – 7:55 PM","1.64",'<span class="neg">$56.58</span>',"Graciela Atempa"],["Mei Tanaka","Sun","6:45 AM – 4:35 PM","1.86",'<span class="neg">$54.41</span>',"Jordan Price"],["Kimberli Lopez","Sat","6:30 AM – 4:10 PM","1.69",'<span class="neg">$49.43</span>',"Ana Morales"]],n:[3,4]},
-   {t:"Weekly overtime · over 40 hrs",h:["Employee","Position","Week hrs","OT hrs","OT cost","Move this shift","Suggested employee","Their week after"],r:[["Chris Walker","Shift Leader","42.75","2.75",'<span class="neg">$80.44</span>',"Sun 2:00 – 8:00 PM","Ana Morales","26.00 hrs"],["Jasmine Ortiz","Line Cook","41.50","1.50",'<span class="neg">$38.25</span>',"Sun 10:00 AM – 3:30 PM","Andre Wilson","21.75 hrs"]],n:[2,3,4,7]},
-   {t:"Accepted shift offers waiting for approval",h:["Offered by","Shift","Accepted by","Their week if approved","OT if approved","Suggested instead","Their week after"],r:[["Tyler Brooks","Thu 2:00 – 8:00 PM · Shift Leader","Kimberli Lopez","42.25 hrs",'<span class="neg">2.25 hrs · $65.81</span>',"Jordan Price","24.50 hrs"],["Eliza Funes","Sun 3:00 – 9:00 PM · Line Cook","Alex Garcia","43.50 hrs",'<span class="neg">3.50 hrs · $89.25</span>',"Nicole Ramos","25.25 hrs"]],n:[3,4,6]}]},
+  note:"Every compliance issue in one list, labor-law risks first, then overtime by cost. Daily overtime shows the 8 most expensive of 24 shifts over 8 hrs (managers hold 49% of that cost); the other 16 add $282.16.",
+  tables:[{t:"All compliance issues · 18 shown of 32",h:["Employee","Day","Shift","Compliance rule","Type","Over","Cost","Fix"],r:[
+   ["Mia Lee (16)","Fri","11:15 AM – 4:20 PM","Minor: max 4 hrs on a school day (5.08 hrs)",'<span class="ct ct-law">Labor law</span>',"1.08 hrs","—","End at 3:15 PM"],
+   ["Noah Davis (17)","Sun","5:30 PM – 12:25 AM","Minor cannot be scheduled after 10:00 PM",'<span class="ct ct-law">Labor law</span>',"2.42 hrs","—","End at 10:00 PM"],
+   ["Daniel Reyes","Sat","7:00 AM – 5:25 PM","2nd meal break missing on a shift over 10 hrs",'<span class="ct ct-law">Labor law</span>',"0.42 hrs","—","Cut to 8 hrs or add a break"],
+   ["Omar Haddad","Sun","2:45 PM – 12:45 AM","2nd meal break missing on a shift over 10 hrs",'<span class="ct ct-law">Labor law</span>',"0.01 hrs","—","Cut to 8 hrs or add a break"],
+   ["Olivia Martinez","Sat","6:30 AM – 12:30 PM","Min 8 hrs off between shifts (7.50 hrs)",'<span class="ct ct-law">Labor law</span>',"0.50 hrs","—","Start at 7:00 AM"],
+   ["Mei Tanaka","Sun","6:45 AM – 4:35 PM","7th consecutive day",'<span class="ct ct-law">Labor law</span>',"1 day","—","Move to Jordan Price"],
+   ["Daniel Reyes","Sat","7:00 AM – 5:25 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"2.38 hrs",'<span class="neg">$99.96</span>',"Cap at 8 hrs · rest to Priya Nair"],
+   ["Priya Nair","Sun","7:15 AM – 4:55 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.69 hrs",'<span class="neg">$70.98</span>',"Cap at 8 hrs · rest to Daniel Reyes"],
+   ["Omar Haddad","Sun","2:45 PM – 12:45 AM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"2.01 hrs",'<span class="neg">$69.35</span>',"Cap at 8 hrs · rest to Marcus Bell"],
+   ["Graciela Atempa","Sat","10:00 AM – 7:50 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.82 hrs",'<span class="neg">$62.79</span>',"Cap at 8 hrs · rest to Hannah Cho"],
+   ["Marcus Bell","Sat","2:30 PM – 12:10 AM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.67 hrs",'<span class="neg">$57.62</span>',"Cap at 8 hrs · rest to Omar Haddad"],
+   ["Hannah Cho","Sun","10:15 AM – 7:55 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.64 hrs",'<span class="neg">$56.58</span>',"Cap at 8 hrs · rest to Graciela Atempa"],
+   ["Mei Tanaka","Sun","6:45 AM – 4:35 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.86 hrs",'<span class="neg">$54.41</span>',"Move to Jordan Price"],
+   ["Kimberli Lopez","Sat","6:30 AM – 4:10 PM","Daily overtime: over 8 hrs",'<span class="ct ct-ot">Daily OT</span>',"1.69 hrs",'<span class="neg">$49.43</span>',"Cap at 8 hrs · rest to Ana Morales"],
+   ["Chris Walker","Week","42.75 hrs · Shift Leader","Weekly overtime: over 40 hrs",'<span class="ct ct-ot">Weekly OT</span>',"2.75 hrs",'<span class="neg">$80.44</span>',"Move Sun 2:00 – 8:00 PM to Ana Morales (26.00 hrs)"],
+   ["Jasmine Ortiz","Week","41.50 hrs · Line Cook","Weekly overtime: over 40 hrs",'<span class="ct ct-ot">Weekly OT</span>',"1.50 hrs",'<span class="neg">$38.25</span>',"Move Sun 10:00 AM – 3:30 PM to Andre Wilson (21.75 hrs)"],
+   ["Kimberli Lopez","Thu","2:00 – 8:00 PM · Tyler Brooks’s offer","Accepted offer would take her to 42.25 hrs",'<span class="ct ct-offer">OT if approved</span>',"2.25 hrs",'<span class="neg">$65.81</span>',"Approve for Jordan Price instead (24.50 hrs)"],
+   ["Alex Garcia","Sun","3:00 – 9:00 PM · Eliza Funes’s offer","Accepted offer would take him to 43.50 hrs",'<span class="ct ct-offer">OT if approved</span>',"3.50 hrs",'<span class="neg">$89.25</span>',"Approve for Nicole Ramos instead (25.25 hrs)"],
+   ["<b>Total</b>","","","<b>6 labor-law risks · 26 overtime issues</b>","","",'<b class="neg">$971.99</b> <small>+ $155.06 if offers approved</small>',""]],n:[5,6]}]},
  {id:"avail",tier:"t-red",tag:"Conflict",short:"3 shifts clash with time off or availability",impact:"3",impactL:"conflicts",days:["Thu","Sat"],
   title:"3 employees are scheduled when they’re off or unavailable",
   lead:"Time off was approved or requested after the shifts were built, and one closer runs past her availability. Each shift needs a replacement or a shorter end time.",
@@ -643,7 +742,7 @@ const FIXES=[
    heading, and a short issue + shift per affected person (same order as
    p.people, whose long text stays as the row's expanded detail). */
 const UI={
- law:{short:"6 shifts have labor compliance risks",sum:"Six shifts break labor rules, and the same long weekend shifts drive most of the overtime.",cat:"Compliance",impact:"$972",impactL:"projected overtime",fixH:"Clear risks, then cut overtime",
+ law:{short:"6 labor-law risks and 26 overtime issues",sum:"Six shifts break labor rules, 24 shifts run past 8 hrs and 2 employees pass 40 hrs, mostly from the same long weekend shifts.",cat:"Compliance",impact:"$972",impactL:"projected overtime",fixH:"Clear risks, then cut overtime",
   who:[["Minor rule","Fri 11:15 AM – 4:20 PM"],["Minor rule","Sun 5:30 PM – 12:25 AM"],["Meal break + daily OT","Sat 7:00 AM – 5:25 PM"],["Meal break + daily OT","Sun 2:45 PM – 12:45 AM"],["Rest period","Sat 6:30 AM – 12:30 PM"],["7th day + daily OT","Sun 6:45 AM – 4:35 PM"],["Daily OT · $70.98","Sun 7:15 AM – 4:55 PM"],["Weekly OT · $80.44","42.75 hrs this week"],["Weekly OT · $38.25","41.50 hrs this week"],["Offer would add OT","Thu 2:00 – 8:00 PM"],["Offer would add OT","Sun 3:00 – 9:00 PM"]]},
  avail:{short:"3 shifts conflict with availability",sum:"Three employees are scheduled when they’re off or unavailable.",cat:"Schedule conflict",impact:"3",impactL:"conflicts",fixH:"Resolve 3 conflicts",
   who:[["Approved time off","Sat 4:00 – 11:30 PM"],["Pending time off","Sat 4:00 – 10:50 PM"],["Outside availability","Thu 4:00 – 10:55 PM"],["Can cover","Free Saturday night"],["Can cover","Free Saturday night"]]},
@@ -703,12 +802,12 @@ function counts(){
 function liveShort(p){
   const u=UI[p.id];if(p.id!=="law")return u.short;
   const r=counts().risks;
-  return r?`${plural(r,"shift has","shifts have")} labor compliance risks`:"Compliance risks cleared, overtime remains";
+  return r?`${plural(r,"labor-law risk")} and 26 overtime issues`:"Labor-law risks cleared, 26 overtime issues remain";
 }
 function liveHead(p){
   if(!p.head)return null;if(p.id!=="law")return p.head;
   const c=counts();
-  return [[String(c.risks),"Compliance risks",c.risks===c.risksTotal?"Fix before the shifts are worked":`${c.risksTotal-c.risks} of ${c.risksTotal} cleared`],p.head[1]];
+  return [[String(c.risks),"Labor-law risks",c.risks===c.risksTotal?"Fix before the shifts are worked":`${c.risksTotal-c.risks} of ${c.risksTotal} cleared`],p.head[1],p.head[2]];
 }
 function task(f,ctx){
   const key=ctx+"-"+f.id, isOpen=openTask.has(key), isDone=done.has(f.id);
@@ -724,6 +823,7 @@ const caret=IC.caret.replace("<svg","<svg class=\"caret\" aria-hidden=\"true\"")
 
 /* ---------- views ---------- */
 function show(v){
+  if(v==="fix"&&document.documentElement.classList.contains("hide-fix"))v="wrong";
   document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
   document.querySelectorAll(".tc").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
   if(location.hash!=="#"+v) history.replaceState(null,"","#"+v);
@@ -731,6 +831,9 @@ function show(v){
   if(v==="wrong"){sizeMd();queueSpy()}
 }
 document.querySelectorAll(".tc").forEach(b=>b.onclick=()=>show(b.dataset.v));
+/* count + "Viewing" pill on each tile */
+{const n={well:WELL.length,wrong:PROBS.length,fix:FIXES.length};
+ document.querySelectorAll(".tc").forEach(b=>{if(!b.querySelector(".tc-n"))b.insertAdjacentHTML("beforeend",`<span class="tc-n"><em>Viewing</em><b class="num">${n[b.dataset.v]??""}</b></span>`)})}
 addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(["well","wrong","fix"].includes(h))show(h)});
 document.addEventListener("click",e=>{
   const w=e.target.closest("[data-why]");
@@ -834,8 +937,15 @@ function sectionHTML(p){
     <details class="more" data-sec="num" ${openSec.has(p.id+":num")?"open":""}><summary>${caret}<span class="sl">See the calculation</span><span class="pv">${p.tables.map(t=>t.t).join(" · ")}</span></summary>
       ${p.note?`<p class="tnote">${p.note}</p>`:""}
       ${p.tables.map(tb=>`${tb.t?`<div class="tcap">${tb.t}</div>`:""}<div class="tblw"><table><thead><tr>${tb.h.map((h,i)=>`<th class="${tb.n.includes(i)?"r":""}">${h}</th>`).join("")}</tr></thead>
-      <tbody>${tb.r.map(r=>`<tr>${r.map((c,i)=>`<td class="${tb.n.includes(i)?"r num":""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("")}
+      <tbody>${tb.r.map(r=>`<tr${/^<b>/.test(r[0])?' class="tot"':""}>${r.map((c,i)=>`<td class="${tb.n.includes(i)?"r num":""}">${i===0?calcName(c):c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`).join("")}
     </details>`;
+}
+/* first column of a calculation table: employee names get the same initials avatar as Who's affected */
+function calcName(c){
+  const name=String(c).replace(/\s*\(.*?\)\s*$/,"");
+  if(!c||/^</.test(c)||!/^[A-Z][a-z’']+ [A-Z][a-z’']+/.test(name))return c;
+  const k=[...name].reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  return `<span class="tnm"><i style="background:${AVC[k%AVC.length]}" aria-hidden="true">${ini(name)}</i>${c}</span>`;
 }
 function renderSection(id){
   const p=P(id),s=stat(id),el=secOf(id);if(!el)return;
