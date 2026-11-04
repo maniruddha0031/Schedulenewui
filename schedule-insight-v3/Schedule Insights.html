@@ -168,7 +168,7 @@ html.embed .wrap{padding:0 0 10px;max-width:none}
 .tc .tc-l{color:var(--ink-2,var(--ink))}
 .tc:hover{border-color:color-mix(in srgb,var(--tc) 40%,var(--line));background:color-mix(in srgb,var(--tc) 4%,var(--surface))}
 .tc[aria-selected="true"]{background:var(--tbg);border:1.5px solid var(--tc);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 16%,transparent),0 10px 24px -14px color-mix(in srgb,var(--tc) 70%,transparent);transform:none}
-.tc[aria-selected="true"]::before{content:"";position:absolute;left:-1.5px;top:-1.5px;bottom:-1.5px;width:5px;border-radius:14px 0 0 14px;background:var(--tc)}
+
 .tc[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;background:var(--tbg);border-right:1.5px solid var(--tc);border-bottom:1.5px solid var(--tc);transform:translateX(-50%) rotate(45deg)}
 .tc[aria-selected="true"] .tc-ic{background:var(--tc);color:var(--on-ac)}
 .tc[aria-selected="true"] .tc-l{color:var(--tc)}
@@ -203,7 +203,7 @@ html.hide-fix .tabs3{grid-template-columns:repeat(2,minmax(0,1fr))}
 #wellCount{color:var(--ink-3);font-weight:500;font-size:13px}
 .wh{display:flex;align-items:center;gap:24px;padding:18px 22px;margin-bottom:14px;background:var(--well-bg);border:1px solid color-mix(in srgb,var(--well-ac) 35%,transparent)}
 .wh-main{flex:1;min-width:0}
-.wh-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--well-ac);background:var(--surface);border-radius:999px;padding:3px 10px}
+.wh-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;line-height:1.5;color:var(--well-ac);background:var(--surface);border:1px solid color-mix(in srgb,var(--well-ac) 30%,transparent);border-radius:999px;padding:3px 10px;position:relative;z-index:1}
 .wh-tag svg{width:11px;height:11px}
 .wh h3{margin:10px 0 4px;font-size:19px;font-weight:700}
 .wh p{margin:0;font-size:14px;line-height:1.5;color:var(--ink-3);max-width:620px}
@@ -874,8 +874,8 @@ function renderSummary(){
 document.getElementById("wellCount").textContent=`${WELL.length} things working as expected`;
 document.getElementById("wellHero").innerHTML=`
   <div class="wh-main"><span class="wh-tag"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg>Keep doing this</span>
-    <h3>Your weekday schedule is working</h3>
-    <p>Mon – Wed track the forecast, stay within 0.7% of budget and add no daily overtime. Reuse the weekday template when you build next week.</p></div>
+    <h3>Your weekday schedule is on track</h3>
+    <p>Mon – Wed match the forecast, stay within 0.7% of the labor budget and add no daily overtime. Reuse the weekday template when you build next week.</p></div>
   <div class="wh-stats">
     <div><b class="num">63%</b><span>Shifts with no warnings</span></div>
     <div><b class="num">0</b><span>Weekday daily OT</span></div>
