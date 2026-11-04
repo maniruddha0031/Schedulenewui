@@ -1342,6 +1342,34 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .df-sales .stats-content-area { background: #fdf3dc; }
 .df-sales .stats-content-area .border-r { border-color: #f1e2bd !important; }
 .df-leg { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+/* Analysis row (header of the expanded day footer) + KPI picker */
+.df-row.df-ana { height: 34px; background: #fff; }
+.df-ana-lbl { font-size: 13px; font-weight: 700; color: #0f172a; font-style: normal !important; }
+.df-ana-h { font-size: 11.5px; font-weight: 700; color: #475569; background: #fff; }
+.flt-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #2563eb; color: #fff; font-size: 11px; font-weight: 700; margin-left: 2px; }
+.popover-btn { white-space: nowrap; }
+#filtersBtn.flt-on { border-color: #93c5fd !important; background: #eff6ff !important; color: #1d4ed8 !important; }
+.df-hr-click { cursor: pointer; transition: background .12s, color .12s; }
+.df-hr-click:hover { background: #eef2ff; color: #4338ca; }
+#mainScheduleTable.day-q thead th:not(:first-child) { cursor: pointer; transition: background-color .12s, color .12s; }
+#mainScheduleTable.day-q thead th:not(:first-child):hover { background-color: #eef2ff; color: #4338ca; }
+.df-kpi-btn { width: 26px; height: 26px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; transition: all .12s; }
+.df-kpi-btn:hover, .df-kpi-btn.on { background: #2563eb; color: #fff; border-color: #2563eb; }
+#dayKpiPop { position: fixed; z-index: 10001; display: none; width: 300px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 18px 44px -12px rgba(15, 23, 42, .32); overflow: hidden; }
+#dayKpiPop .dkp-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 12px 14px 10px; border-bottom: 1px solid #f1f5f9; }
+#dayKpiPop .dkp-h b { display: block; font-size: 14px; color: #0f172a; }
+#dayKpiPop .dkp-h span { font-size: 12px; color: #64748b; }
+#dayKpiPop .dkp-h button { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+#dayKpiPop .dkp-h button:hover { background: #f1f5f9; color: #334155; }
+#dayKpiPop .dkp-list { padding: 6px; max-height: 300px; overflow-y: auto; }
+#dayKpiPop .dkp-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 13px; color: #1e293b; cursor: pointer; }
+#dayKpiPop .dkp-item:hover { background: #f8fafc; }
+#dayKpiPop .dkp-item input { width: 16px; height: 16px; accent-color: #2563eb; }
+#dayKpiPop .dkp-item em { margin-left: auto; font-style: normal; font-size: 10.5px; font-weight: 600; color: #b45309; background: #fdf3dc; border-radius: 999px; padding: 1px 7px; }
+#dayKpiPop .dkp-f { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-top: 1px solid #f1f5f9; }
+#dayKpiPop .dkp-link { font-size: 12px; font-weight: 600; color: #2563eb; }
+#dayKpiPop .dkp-link:hover { text-decoration: underline; }
+#dayKpiPop .dkp-done { margin-left: auto; height: 30px; padding: 0 14px; border-radius: 8px; background: #2563eb; color: #fff; font-size: 12.5px; font-weight: 600; }
 /* Day footer chart panel: opens above the footer, caret points at the chart icon */
 .dcp { position: fixed; display: flex; gap: 16px; padding: 14px 16px 12px; background: #fff; border-radius: 14px; box-shadow: 0 18px 48px -12px rgba(15,23,42,.35); animation: dcpUp .16s ease-out; }
 @keyframes dcpUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -1359,8 +1387,11 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #dfTip .df-tip-row { display: flex; justify-content: space-between; gap: 16px; padding: 6px 14px; color: #64748b; }
 #dfTip .df-tip-row + .df-tip-row { border-top: 1px solid #f1f5f9; }
 #dfTip .df-tip-row b { color: #0f172a; font-weight: 600; font-variant-numeric: tabular-nums; }
-#overShortPop { position: fixed; z-index: 10000; display: none; min-width: 460px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.2); overflow: hidden; }
-#overShortPop .os-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 14px 12px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 15px; font-weight: 700; color: #0f172a; }
+#overShortPop { position: fixed; z-index: 10000; display: none; min-width: 460px; background: #fff; border: 1px solid #c7d2fe; border-radius: 14px; box-shadow: 0 0 0 4px rgba(99,102,241,.12), 0 24px 56px -12px rgba(15,23,42,.45); overflow: hidden; animation: ppIn .14s ease-out; }
+#overShortPop .os-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 14px 12px 18px; background: linear-gradient(180deg, #eef2ff, #f5f7ff); border-bottom: 1px solid #c7d2fe; border-left: 4px solid #4f46e5; font-size: 15px; font-weight: 700; color: #1e1b4b; }
+#overShortPop thead th { background: #f8fafc; }
+#overShortPop tbody tr:nth-child(even) th, #overShortPop tbody tr:nth-child(even) td { background: #fbfcfe; }
+#overShortPop tbody tr:hover th, #overShortPop tbody tr:hover td { background: #f5f7ff; }
 #overShortPop .os-head .os-sub { display: block; font-style: normal; font-size: 12px; font-weight: 500; color: #64748b; margin-top: 2px; }
 #overShortPop .os-head button { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
 #overShortPop .os-head button:hover { background: #e2e8f0; color: #334155; }
@@ -1371,6 +1402,31 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #overShortPop tbody th { text-align: left; font-weight: 500; color: #475569; }
 #overShortPop td { color: #0f172a; font-weight: 600; }
 #overShortPop td.text-red-500 { color: #dc2626; }
+/* Forecasted Staff / Staff Variance by position */
+#posPop { position: fixed; z-index: 10000; display: none; min-width: 520px; background: #fff; border: 1px solid #c7d2fe; border-radius: 14px; box-shadow: 0 0 0 4px rgba(99,102,241,.12), 0 24px 56px -12px rgba(15,23,42,.45); overflow: hidden; animation: ppIn .14s ease-out; }
+@keyframes ppIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* dim the grid behind the footer pop-ups so they stand out from the white table */
+#ppBackdrop { position: fixed; inset: 0; z-index: 9999; background: rgba(15,23,42,.32); display: none; }
+.pp-src { box-shadow: inset 0 0 0 2px #4f46e5 !important; background: #eef2ff !important; position: relative; z-index: 2; }
+#posPop .os-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 14px 12px 18px; background: linear-gradient(180deg, #eef2ff, #f5f7ff); border-bottom: 1px solid #c7d2fe; border-left: 4px solid #4f46e5; font-size: 15px; font-weight: 700; color: #1e1b4b; }
+#posPop thead th { background: #f8fafc; }
+#posPop tbody tr:nth-child(even) th, #posPop tbody tr:nth-child(even) td { background: #fbfcfe; }
+#posPop tbody tr:hover th, #posPop tbody tr:hover td { background: #f5f7ff; }
+#posPop tfoot th, #posPop tfoot td { background: #eef2ff !important; color: #1e1b4b; }
+#posPop .os-head .os-sub { display: block; font-style: normal; font-size: 12px; font-weight: 500; color: #64748b; margin-top: 2px; }
+#posPop .os-head button { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+#posPop .os-head button:hover { background: #e2e8f0; color: #334155; }
+#posPop table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+#posPop th, #posPop td { border: 0 !important; border-bottom: 1px solid #f1f5f9 !important; height: auto !important; padding: 9px 16px !important; text-align: center; font-variant-numeric: tabular-nums; }
+#posPop thead th { font-size: 12px; font-weight: 600; color: #64748b; }
+#posPop thead th.pp-grp { border-bottom: 1px solid #e2e8f0 !important; color: #334155; }
+#posPop thead th.pp-sub { font-size: 11px; font-weight: 500; color: #94a3b8; padding-top: 4px !important; }
+#posPop th.l { text-align: left; }
+#posPop td { color: #0f172a; font-weight: 600; }
+#posPop tfoot th, #posPop tfoot td { background: #f8fafc; font-weight: 700; border-bottom: 0 !important; border-top: 1px solid #e2e8f0 !important; }
+#posPop td.pp-neg { color: #dc2626; } #posPop td.pp-pos { color: #059669; } #posPop td.pp-zero { color: #94a3b8; font-weight: 500; }
+#posPop .pp-pill { display: inline-block; min-width: 128px; max-width: 150px; padding: 3px 10px; border-radius: 7px; border: 1px solid; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#posPop .pp-empty { padding: 18px; color: #64748b; font-size: 13px; }
 #overShortPop td.text-emerald-600 { color: #059669; }
 
 /* ===== SIDEBAR + TOP BAR — same look as the dashboard (dashboard-redesign.css, new UI) ===== */
@@ -1988,7 +2044,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         <button type="button" id="densityCompact" onclick="setRowDensity('compact')" title="Compact rows"><i data-lucide="align-justify" class="w-4 h-4"></i></button>
                     </div>
                     <div class="relative">
-                        <button onclick="customTogglePopover('filtersPopover')" class="popover-btn">
+                        <button onclick="customTogglePopover('filtersPopover')" class="popover-btn" id="filtersBtn">
                             Filters <i data-lucide="sliders-horizontal" class="w-5 h-5 text-slate-400"></i>
                         </button>
                         <div id="filtersPopover" class="hidden popover-container right-0 w-[400px]">
@@ -2000,14 +2056,14 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                                     <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterDept" value="manager" onchange="setFilterDept(this)"> <span>Manager</span></label>
                                 </div>
                                 <div class="popover-column">
-                                    <div class="popover-column-title">Highlight Shifts For</div>
+                                    <div class="popover-column-title">Positions</div>
                                     <label class="popover-item" style="cursor:pointer;"><input type="radio" name="filterPos" value="all" checked onchange="setFilterPos(this)"> <span>All Positions</span></label>
                                     <div id="highlightPositionOptions"></div>
                                 </div>
                             </div>
                             <div class="popover-footer">
-                                <button class="btn-clear" onclick="resetFilters()">Clear</button>
-                                <button class="btn-apply" onclick="customTogglePopover('filtersPopover')">Apply</button>
+                                <button class="btn-clear" onclick="resetFilters(); applyFilters()">Clear</button>
+                                <button class="btn-apply" onclick="applyFilters()">Apply</button>
                             </div>
                         </div>
                     </div>
@@ -3509,6 +3565,20 @@ let employeeData = Array.from({length:50},(_,i)=>({
 // Stored shift assignments: key 'd_${empId}' for day view, 'w_${empId}_${colIdx}' for week view
 const shiftAssignments = {};
 
+// Unscheduled employees: no shifts in day / week / month until someone adds one
+// (null = no shift). Lets the "View By → Unscheduled" filter and drag-to-create be tested.
+const UNSCHEDULED_EMPS = [
+    [9,  'Kevin Brooks', 'Line Cook'], [17, 'Maria Lopez', 'Shift Leader'], [23, 'Nina Patel', 'Line Cook'],
+    [31, 'Omar Haddad', 'Line Cook'],  [38, 'Sara Nguyen', 'Shift Leader'], [45, 'Tom Reyes', 'General Manager'],
+];
+UNSCHEDULED_EMPS.forEach(([id, name, position]) => {
+    const emp = employeeData.find(e => e.id === id);
+    if (!emp) return;
+    Object.assign(emp, { name, initials: name.split(' ').map(w => w[0]).join(''), position, totalHours: '0.00', alerts: [] });
+    shiftAssignments[`d_${id}`] = null;
+    for (let c = 0; c < 31; c++) shiftAssignments[`w_${id}_${c}`] = null;
+});
+
 // ── Typeable time combobox (.tc) ────────────────────────────────────────────
 // Users can type a time ("9", "930", "9:30", "9:30p", "21:30") or pick it from the
 // 15-minute list; the list follows what is typed. The value lives in .tc-value (HH:MM)
@@ -4637,6 +4707,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleUnassignedVisibility() { isUnassignedVisible = !isUnassignedVisible; renderScheduleTable(); }
 
 function renderScheduleTable(list=employeeData){
+    list = list.filter(_empMatchesFilter);
+    _footerEmps = list;
     // Show up to 4 General Managers at the top
     const _gmTop = list.filter(e => e.position === 'General Manager').slice(0, 4);
     const _gmIds = new Set(_gmTop.map(e => e.id));
@@ -4826,7 +4898,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                     const pDuration = partial.end - partial.start;
                     cellContent = `
                         <div class="partial-unavailable shiftBox" 
-                             style="position:absolute; left:0; top:2px; height:calc(100% - 4px); width:${pDuration * cellWidth}px; z-index:4;"
+                             style="position:absolute; left:0; top:7px; height:calc(100% - 14px); width:${pDuration * cellWidth}px; z-index:4;"
                              title="Restricted availability: ${partial.label}">
                             <div class="flex flex-col items-center justify-center h-full text-center">
                                 <div class="font-bold text-[10px]">PARTIAL AVAILABLE</div>
@@ -4844,10 +4916,14 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                     const dCls     = dClsMap[dayPos] || "shift-kitchen";
 
                     if (dayShift && hourAtCol === dayShift.start) {
-                        const duration = dayShift.end - dayShift.start;
+                        // quarter-hour precise: offset inside the start hour and exact length
+                        const _sm = dayShift.startHHMM ? _hhmmToMin(dayShift.startHHMM) : dayShift.start * 60;
+                        let _em = dayShift.endHHMM ? _hhmmToMin(dayShift.endHHMM) : dayShift.end * 60;
+                        if (_em <= _sm) _em += 1440;
+                        const duration = (_em - _sm) / 60, _off = (_sm % 60) / 60;
                         cellContent = `
                             <div class="shiftBox ${dCls}" data-start="${dayShift.start}" data-end="${dayShift.end}" data-position="${dayPos}"
-                                 style="position:absolute; left:0; top:2px; height:100%; width:${duration * cellWidth}px; z-index:5;">
+                                 style="position:absolute; left:${_off * cellWidth}px; top:7px; height:calc(100% - 14px); width:${duration * cellWidth}px; z-index:5;">
                                 <div class="flex flex-col items-center justify-center h-full text-center px-2">
                                     <div class="font-bold text-[11px]">${dayShift.time}</div>
                                     <div class="text-[9px] font-extrabold opacity-80 uppercase">${dayPos}</div>
@@ -4867,7 +4943,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                             const addCls = addClsMap[addS.position] || "shift-kitchen";
                             cellContent = `
                                 <div class="shiftBox ${addCls}"
-                                     style="position:absolute; left:0; top:2px; height:100%; width:${addDuration * cellWidth}px; z-index:5;">
+                                     style="position:absolute; left:0; top:7px; height:calc(100% - 14px); width:${addDuration * cellWidth}px; z-index:5;">
                                     <div class="flex flex-col items-center justify-center h-full text-center">
                                         <div class="font-bold text-[11px]">${addS.time}</div>
                                         <div class="text-[9px] font-extrabold opacity-80 uppercase">${addS.position}</div>
@@ -5092,12 +5168,13 @@ function _weekFooterData(n) {
     const wFctFact  = [1.05, 0.97, 1.08, 1.03, 0.96, 1.07, 1.04];   // forecast hrs vs scheduled
     const wBudget   = [36, 37, 37, 37, 38, 35, 36];
     const rate = Object.fromEntries(employeeData.map(e => [e.id, +e.payrate || _coverageAvgWage]));
-    const shifts = _aiCurrent();
+    const inList = new Set(_footerEmpList().map(e => e.id));
+    const shifts = _aiCurrent().filter(s => inList.has(s.empId));
     const avgRate = employeeData.reduce((a, e) => a + rate[e.id], 0) / (employeeData.length || 1);
     // Overtime per day: hours over 8 in a day, plus regular hours once the week passes 40
     // (walking Sun → Sat); OT is paid at 1.5× the employee's rate.
     const otHrs = Array(n).fill(0), otD = Array(n).fill(0);
-    employeeData.forEach(emp => {
+    _footerEmpList().forEach(emp => {
         let reg = 0;
         for (let c = 0; c < n; c++) {
             const h = shifts.filter(s => s.empId === emp.id && s.day === c).reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
@@ -5193,14 +5270,14 @@ function _dayFooterData(n) {
     const startOfMock = new Date(2026, 1, 2);
     const mockIdx = Math.floor(Math.abs(activeDate - startOfMock) / 86400000);
     const shifts = [];
-    employeeData.forEach(emp => {
+    _footerEmpList().forEach(emp => {
         if (emp.unavailableDays && emp.unavailableDays.includes(mockIdx)) return;
         const k = `d_${emp.id}`;
         const sh = Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift;
         const push = (s, pos) => {
             if (!s) return;
             const st = s.startHHMM ? _hhmmToMin(s.startHHMM) / 60 : s.start, en = s.endHHMM ? _hhmmToMin(s.endHHMM) / 60 : s.end;
-            shifts.push({ start: st, end: en, mgmt: ['General Manager', 'Assistant Manager', 'Shift Leader'].includes(pos || emp.position) });
+            shifts.push({ start: st, end: en, pos: pos || emp.position, mgmt: ['General Manager', 'Assistant Manager', 'Shift Leader'].includes(pos || emp.position) });
         };
         push(sh, sh && sh.position);
         (emp.additionalShifts || []).forEach(a => push(a, a.position));
@@ -5235,9 +5312,74 @@ function _dayFooterData(n) {
     tot.tplh = tot.sch ? tot.fTxn / tot.sch : 0;
     tot.labour = tot.fSales ? tot.sch * _coverageAvgWage / tot.fSales * 100 : 0;
     tot.budgetPct = [19, 20, 20, 20, 21, 18, 19][dow];
-    return { cols, tot };
+    return { cols, tot, shifts };
 }
 
+// Day footer KPIs: a fixed default set, plus extras the user adds from the "+" on the Analysis row
+const DAY_KPIS = [
+    { key: 'sch',      label: 'Total Sch. Staff', fmt: 'num', def: true },
+    { key: 'fixed',    label: 'Fixed Staff', fmt: 'num' },
+    { key: 'variable', label: 'Variable Staff', fmt: 'num' },
+    { key: 'fct',      label: 'Forecasted Staff', fmt: 'ivl', opt: { click: true, pop: 'openFctStaff' }, def: true },
+    { key: 'variance', label: 'Staff Variance', fmt: 'num', opt: { signed: true, click: true, pop: 'openStaffVariance' }, def: true },
+    { key: 'mgmt',     label: 'Management', fmt: 'num', def: true },
+    { key: 'splh',     label: 'SPLH', fmt: 'money', opt: { sub: '(Sales/Labor Hrs)' }, def: true },
+    { key: 'tplh',     label: 'TPLH', fmt: 'money', opt: { sub: '(Transactions/Labor Hrs)' } },
+    { key: 'labour',   label: 'Scheduled Labor %', fmt: 'money', def: true },
+    { key: 'fSales',   label: 'Forecasted Sales ($)', fmt: 'money', opt: { sales: true }, def: true },
+    { key: 'aSales',   label: 'Actual Sales ($)', fmt: 'sales2', opt: { sales: true }, def: true },
+    { key: 'fTxn',     label: 'Forecasted Transactions', fmt: 'ivl', opt: { sales: true } },
+    { key: 'aTxn',     label: 'Actual Transactions', fmt: 'ivl', opt: { sales: true } },
+    { key: 'fItems',   label: 'Forecasted No. of Items Sold', fmt: 'ivl', opt: { sales: true } },
+    { key: 'aItems',   label: 'Actual No. of Items Sold', fmt: 'ivl', opt: { sales: true } },
+];
+let _dfArgs = null;
+function _dayKpiExtra() { try { return JSON.parse(localStorage.getItem('zipDayFooterKpis') || '[]'); } catch (e) { return []; } }
+function _dayKpiShown() { return new Set([...DAY_KPIS.filter(k => k.def).map(k => k.key), ..._dayKpiExtra()]); }
+function _dayKpiRerender() {
+    if (!_dfArgs) return;
+    renderDayFooter(..._dfArgs);
+    requestAnimationFrame(syncFooterToTable);
+}
+function openDayKpiPicker(btn) {
+    let p = document.getElementById('dayKpiPop');
+    if (p && p.style.display === 'block') { closeDayKpiPicker(); return; }
+    if (!p) { p = document.createElement('div'); p.id = 'dayKpiPop'; document.body.appendChild(p); }
+    const extra = new Set(_dayKpiExtra());
+    const opts = DAY_KPIS.filter(k => !k.def);
+    p.innerHTML = `
+        <div class="dkp-h"><div><b>Add KPIs</b><span>Choose extra KPIs to show in the footer</span></div><button type="button" onclick="closeDayKpiPicker()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="dkp-list">${opts.map(k => `<label class="dkp-item"><input type="checkbox" value="${k.key}" ${extra.has(k.key) ? 'checked' : ''} onchange="toggleDayKpi('${k.key}', this.checked)"><span>${k.label}</span>${k.opt && k.opt.sales ? '<em>Sales</em>' : ''}</label>`).join('')}</div>
+        <div class="dkp-f"><button type="button" class="dkp-link" onclick="setDayKpis(${JSON.stringify(opts.map(k => k.key)).replace(/"/g, "'")})">Select all</button><button type="button" class="dkp-link" onclick="setDayKpis([])">Reset to default</button><button type="button" class="dkp-done" onclick="closeDayKpiPicker()">Done</button></div>`;
+    p.style.display = 'block';
+    const r = btn.getBoundingClientRect();
+    p.style.left = Math.max(8, Math.min(r.left, innerWidth - p.offsetWidth - 8)) + 'px';
+    p.style.top = Math.max(8, r.top - p.offsetHeight - 8) + 'px';
+    btn.classList.add('on');
+    lucide.createIcons();
+}
+function closeDayKpiPicker() {
+    const p = document.getElementById('dayKpiPop'); if (p) p.style.display = 'none';
+    document.getElementById('dfKpiBtn')?.classList.remove('on');
+}
+function toggleDayKpi(key, on) {
+    const s = new Set(_dayKpiExtra());
+    on ? s.add(key) : s.delete(key);
+    setDayKpis([...s], true);
+}
+function setDayKpis(keys, keepOpen) {
+    try { localStorage.setItem('zipDayFooterKpis', JSON.stringify(keys)); } catch (e) {}
+    _dayKpiRerender();
+    const btn = document.getElementById('dfKpiBtn');
+    if (btn && document.getElementById('dayKpiPop')?.style.display === 'block') {
+        document.querySelectorAll('#dayKpiPop .dkp-item input').forEach(i => { i.checked = keys.includes(i.value); });
+        btn.classList.add('on');
+    }
+}
+document.addEventListener('mousedown', e => {
+    const p = document.getElementById('dayKpiPop');
+    if (p && p.style.display === 'block' && !p.contains(e.target) && !e.target.closest('#dfKpiBtn')) closeDayKpiPicker();
+});
 function renderDayFooter(columns, cellWidth) {
     const n = columns.length, rowWidth = n * cellWidth;
     const d = _dayFooterData(n);
@@ -5253,7 +5395,7 @@ function renderDayFooter(columns, cellWidth) {
     label.onmouseenter = label.onmouseleave = null;
 
     document.getElementById('summaryStatsRow').innerHTML = cols.map((c, i) => `
-        <div class="flex flex-col items-center justify-center border-r shrink-0 cursor-pointer hover:bg-blue-50/60 transition-colors" style="width:${cellWidth}px" onclick="event.stopPropagation(); openOverShort(event, ${i})" title="Shift over/short details">
+        <div class="flex flex-col items-center justify-center border-r shrink-0 cursor-pointer hover:bg-blue-50/60 transition-colors" style="width:${cellWidth}px" onclick="event.stopPropagation(); openOverShort(event, ${i})" title="Daily statistics">
             <span class="text-[13px] font-bold text-slate-800">${num(c.sch)}</span>
             <span class="text-[11.5px] font-semibold ${c.variance < -0.005 ? 'text-red-500' : 'text-emerald-600'}">${c.variance > 0.005 ? '+' : ''}${num(c.variance)}</span>
         </div>`).join('');
@@ -5270,29 +5412,30 @@ function renderDayFooter(columns, cellWidth) {
                     ${cols.map((c, i) => {
                         const v = c[key];
                         const cls = opt.signed && v < -0.005 ? 'text-red-500 font-bold' : Math.abs(v) < 0.005 ? 'text-slate-400' : 'text-slate-700';
-                        return `<div class="flex items-center justify-center border-r shrink-0 text-center${opt.click ? ' cursor-pointer hover:bg-blue-50/60' : ''}" style="width:${cellWidth}px"${opt.click ? ` onclick="openOverShort(event, ${i})"` : ''}><span class="text-[12.5px] ${cls}">${fmt(v)}</span></div>`;
+                        return `<div class="flex items-center justify-center border-r shrink-0 text-center${opt.click ? ' cursor-pointer hover:bg-blue-50/60' : ''}" style="width:${cellWidth}px"${opt.click ? ` onclick="${opt.pop || 'openOverShort'}(event, ${i})"` : ''}><span class="text-[12.5px] ${cls}">${fmt(v)}</span></div>`;
                     }).join('')}
                 </div>
             </div>
         </div>`;
     };
     const ivl = v => String(Math.round(v));
-    document.getElementById('detailsRowsContainer').innerHTML =
-        row('Total Sch. Staff', 'sch', num, { click: true }) +
-        row('Fixed Staff', 'fixed', num) +
-        row('Variable Staff', 'variable', num) +
-        row('Forecasted Staff', 'fct', ivl, { click: true }) +
-        row('Staff Variance', 'variance', num, { signed: true, click: true }) +
-        row('Mgmt. Coverage', 'mgmt', num) +
-        row('SPLH', 'splh', money, { sub: '(Sales/Labor Hrs)' }) +
-        row('TPLH', 'tplh', money, { sub: '(Transactions/Labor Hrs)' }) +
-        row('Sch Labour %', 'labour', money) +
-        row('Forecasted Sales ($)', 'fSales', money, { sales: true }) +
-        row('Actual Sales ($)', 'aSales', v => v.toFixed(2), { sales: true }) +
-        row('Forecasted Transactions', 'fTxn', ivl, { sales: true }) +
-        row('Actual Transactions', 'aTxn', ivl, { sales: true }) +
-        row('Forecasted No. of items sold', 'fItems', ivl, { sales: true }) +
-        row('Actual No. of items sold', 'aItems', ivl, { sales: true });
+    _dfArgs = [columns, cellWidth];
+    // "Analysis" header: + to add more KPIs, then the hour labels so the rows read without scrolling up
+    const head = `<div class="stats-summary-bar df-row df-ana border-b border-slate-200">
+            <div class="sticky-footer-label flex shrink-0 z-20 bg-white">
+                <div class="stats-row-label df-ana-lbl">Analysis</div>
+                <div class="stats-row-total"><button type="button" id="dfKpiBtn" class="df-kpi-btn" title="Add or remove KPIs" onclick="event.stopPropagation(); openDayKpiPicker(this)"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+            </div>
+            <div class="stats-content-area h-full overflow-hidden">
+                <div class="flex h-full" style="width:${rowWidth}px">
+                    ${cols.map((c, i) => `<div class="flex items-center justify-center border-r shrink-0 df-ana-h df-hr-click" style="width:${cellWidth}px" onclick="event.stopPropagation(); openOverShort(event, ${i})" title="Daily statistics">${c.h % 12 || 12}${c.h >= 12 ? 'P' : 'A'}</div>`).join('')}
+                </div>
+            </div>
+        </div>`;
+    const fmts = { num, ivl, money, sales2: v => v.toFixed(2) };
+    const shown = _dayKpiShown();
+    document.getElementById('detailsRowsContainer').innerHTML = head +
+        DAY_KPIS.filter(k => shown.has(k.key)).map(k => row(k.label, k.key, fmts[k.fmt], k.opt || {})).join('');
     _renderDayFooterChart();
     lucide.createIcons();
 }
@@ -5395,6 +5538,87 @@ function _dfTip(anchor, html) {
 }
 function _dfTipHide() { const t = document.getElementById('dfTip'); if (t) t.style.display = 'none'; }
 
+// ── Forecasted Staff / Staff Variance by position, for one hour, by quarter hour ──
+// Scheduled counts come from the day's shifts. The hour's forecast is split across the
+// positions working that day in proportion to their scheduled hours (largest remainder,
+// so the split always adds back up to the hour's forecast).
+function _posBreakdown(i) {
+    const d = _dayFooter, c = d && d.cols[i];
+    if (!c) return null;
+    const offs = [0, .25, .5, .75];
+    const share = {};
+    d.shifts.forEach(s => { share[s.pos] = (share[s.pos] || 0) + Math.max(0, s.end - s.start); });
+    const positions = Object.keys(share).sort((a, b) => share[b] - share[a]);
+    const totalShare = positions.reduce((a, p) => a + share[p], 0) || 1;
+    const raw = positions.map(p => c.fct * share[p] / totalShare);
+    const fct = raw.map(Math.floor);
+    let left = c.fct - fct.reduce((a, b) => a + b, 0);
+    raw.map((v, k) => [v - Math.floor(v), k]).sort((a, b) => b[0] - a[0]).forEach(([, k]) => { if (left-- > 0) fct[k]++; });
+    const rows = positions.map((p, k) => {
+        const q = offs.map(o => d.shifts.filter(s => s.pos === p && c.h + o >= s.start && c.h + o < s.end).length);
+        return { p, fct: fct[k], q, sch: q.reduce((a, b) => a + b, 0) / 4 };
+    });
+    const qt = offs.map(o => { const m = Math.round((c.h + o) * 60) % 1440, h = Math.floor(m / 60); return `${h % 12 || 12}:${String(m % 60).padStart(2, '0')}${h < 12 ? 'a' : 'p'}`; });
+    return { c, rows, qt };
+}
+function _posPill(p) {
+    const [bg, fg] = (typeof _stdPosColor !== 'undefined' && _stdPosColor[p]) || ['#f1f5f9', '#475569'];
+    return `<span class="pp-pill" style="background:${bg};color:${fg};border-color:${fg}33" title="${p}">${p}</span>`;
+}
+function _openPosPop(e, title, html) {
+    e.stopPropagation();
+    closeOverShort();
+    let p = document.getElementById('posPop');
+    if (!p) { p = document.createElement('div'); p.id = 'posPop'; document.body.appendChild(p); }
+    p.innerHTML = `<div class="os-head"><span>${title}</span><button type="button" onclick="closePosPop()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>${html}`;
+    _ppBackdrop(closePosPop);
+
+    document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
+    e.currentTarget.classList.add('pp-src');
+    p.style.display = 'block';
+    const cell = e.currentTarget.getBoundingClientRect();
+    p.style.left = Math.min(innerWidth - p.offsetWidth - 8, Math.max(8, cell.left + cell.width / 2 - p.offsetWidth / 2)) + 'px';
+    p.style.top = Math.max(8, cell.top - p.offsetHeight - 10) + 'px';
+    document.addEventListener('keydown', _posPopKey);
+    lucide.createIcons();
+}
+// shared dim layer behind the footer pop-ups; a click on it closes the open one
+function _ppBackdrop(onClose) {
+    let bd = document.getElementById('ppBackdrop');
+    if (!bd) { bd = document.createElement('div'); bd.id = 'ppBackdrop'; document.body.appendChild(bd); }
+    bd.onclick = onClose;
+    bd.style.display = 'block';
+}
+function _posPopKey(e) { if (e.key === 'Escape') closePosPop(); }
+function closePosPop() {
+    const p = document.getElementById('posPop'); if (p) p.style.display = 'none';
+    const bd = document.getElementById('ppBackdrop'); if (bd) bd.style.display = 'none';
+    document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
+    document.removeEventListener('keydown', _posPopKey);
+}
+const _hrTitle = c => `${c.h % 12 || 12}:00${c.h >= 12 ? 'p' : 'a'} – ${(c.h + 1) % 12 || 12}:00${(c.h + 1) % 24 >= 12 ? 'p' : 'a'}`;
+function openFctStaff(e, i) {
+    const b = _posBreakdown(i); if (!b) return;
+    const tot = b.rows.reduce((a, r) => a + r.fct, 0);
+    _openPosPop(e, `Forecasted Staff Details <em class="os-sub">${_hrTitle(b.c)} · by position, 15-min intervals</em>`, b.rows.length ? `
+        <table><thead><tr><th class="l">Position</th>${b.qt.map(t => `<th>${t}</th>`).join('')}</tr></thead>
+        <tbody>${b.rows.map(r => `<tr><th class="l">${_posPill(r.p)}</th>${b.qt.map(() => `<td class="${r.fct ? '' : 'pp-zero'}">${r.fct}</td>`).join('')}</tr>`).join('')}</tbody>
+        <tfoot><tr><th class="l">Total</th>${b.qt.map(() => `<td>${tot}</td>`).join('')}</tr></tfoot></table>`
+        : '<p class="pp-empty">No positions are scheduled this day.</p>');
+}
+function openStaffVariance(e, i) {
+    const b = _posBreakdown(i); if (!b) return;
+    const v = (x) => `<td class="${x < -0.005 ? 'pp-neg' : x > 0.005 ? 'pp-pos' : 'pp-zero'}">${(x > 0.005 ? '+' : '') + x.toFixed(2)}</td>`;
+    const tf = b.rows.reduce((a, r) => a + r.fct, 0), ts = b.rows.reduce((a, r) => a + r.sch, 0);
+    _openPosPop(e, `Staff Variance Details <em class="os-sub">${_hrTitle(b.c)} · scheduled − forecasted, by position</em>`, b.rows.length ? `
+        <table><thead>
+            <tr><th class="l" rowspan="2">Position</th><th>Forecasted</th><th>Scheduled</th><th colspan="4" class="pp-grp">Variance</th></tr>
+            <tr><th class="pp-sub">Hourly</th><th class="pp-sub">Hourly</th>${b.qt.map(t => `<th class="pp-sub">${t}</th>`).join('')}</tr></thead>
+        <tbody>${b.rows.map(r => `<tr><th class="l">${_posPill(r.p)}</th><td>${r.fct}</td><td>${r.sch.toFixed(2)}</td>${r.q.map(q => v(q - r.fct)).join('')}</tr>`).join('')}</tbody>
+        <tfoot><tr><th class="l">Total</th><td>${tf}</td><td>${ts.toFixed(2)}</td>${b.qt.map((_, k) => v(b.rows.reduce((a, r) => a + r.q[k], 0) - tf)).join('')}</tr></tfoot></table>`
+        : '<p class="pp-empty">No positions are scheduled this day.</p>');
+}
+
 // "Daily Statistics" for one hour, by quarter hour
 function openOverShort(e, i) {
     e.stopPropagation();
@@ -5412,14 +5636,33 @@ function openOverShort(e, i) {
             ${r('Variance', varQ.map(v => (v > 0 ? '+' : '') + v), v => +v < 0 ? 'text-red-500 font-bold' : +v > 0 ? 'text-emerald-600 font-bold' : '')}
             ${r('Fixed Jobs', [0, 0, 0, 0])}${r('Mgmt', c.mgmtQ)}
         </tbody></table>`;
+    closePosPop();
+    _ppBackdrop(closeOverShort);
+    document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
+    e.currentTarget.classList.add('pp-src');
     p.style.display = 'block';
     const cell = e.currentTarget.getBoundingClientRect();
     p.style.left = Math.min(window.innerWidth - p.offsetWidth - 8, Math.max(8, cell.left + cell.width / 2 - p.offsetWidth / 2)) + 'px';
-    p.style.top = Math.max(8, cell.top - p.offsetHeight - 8) + 'px';
+    // above the cell when there is room (footer), otherwise below it (grid header)
+    p.style.top = (cell.top - p.offsetHeight - 10 >= 8 ? cell.top - p.offsetHeight - 10 : Math.min(innerHeight - p.offsetHeight - 8, cell.bottom + 10)) + 'px';
+    document.addEventListener('keydown', _osKey);
     lucide.createIcons();
 }
-function closeOverShort() { const p = document.getElementById('overShortPop'); if (p) p.style.display = 'none'; }
-document.addEventListener('mousedown', e => { const p = document.getElementById('overShortPop'); if (p && p.style.display === 'block' && !p.contains(e.target)) closeOverShort(); });
+function _osKey(e) { if (e.key === 'Escape') closeOverShort(); }
+// Day view: the hour headers of the grid also open Daily Statistics for that hour
+document.addEventListener('click', e => {
+    if (activeView !== 'day') return;
+    const th = e.target.closest('#mainScheduleTable thead th');
+    if (!th || th === th.parentElement.firstElementChild) return;
+    const i = [...th.parentElement.children].indexOf(th) - 1;
+    openOverShort({ stopPropagation() {}, currentTarget: th }, i);
+});
+function closeOverShort() {
+    const p = document.getElementById('overShortPop'); if (p) p.style.display = 'none';
+    const bd = document.getElementById('ppBackdrop'); if (bd && !document.querySelector('#posPop[style*="block"]')) bd.style.display = 'none';
+    document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
+    document.removeEventListener('keydown', _osKey);
+}
 
 /* MODAL CONTROL */
 function openAddEmployeeModal() { document.getElementById("addEmployeeModal").classList.remove("hidden"); document.getElementById("addEmployeeModal").classList.add("flex"); lucide.createIcons(); }
@@ -6433,7 +6676,7 @@ function closeMonthDayDetails() {
 function _monthDayData(i) {
     const d = new Date(activeDate.getFullYear(), activeDate.getMonth(), i + 1), dow = d.getDay();
     let sch = 0, schD = 0, mgmt = 0;
-    employeeData.forEach(emp => {
+    _footerEmpList().forEach(emp => {
         if (emp.unavailableDays.includes(i)) return;
         const a = shiftAssignments[`w_${emp.id}_${i}`];
         if (a === null || (!a && (emp.id * 3 + i * 7) % 4 === 0)) return;
@@ -8105,6 +8348,27 @@ let activeFilterPos  = 'all';
 function setFilterDept(input) { activeFilterDept = input.value; }
 function setFilterPos(input)  { activeFilterPos  = input.value; }
 
+// Department / position filter: applied to the employee rows and to every footer (day, week, month)
+const _mgrPositions = ['General Manager', 'Assistant Manager', 'Shift Leader'];
+function _empMatchesFilter(emp) {
+    if (activeFilterDept === 'manager' && !_mgrPositions.includes(emp.position)) return false;
+    if (activeFilterDept === 'crew' && _mgrPositions.includes(emp.position)) return false;
+    if (activeFilterPos !== 'all' && emp.position.toLowerCase().replace(/\s+/g, '_') !== activeFilterPos) return false;
+    return true;
+}
+let _footerEmps = null;   // employees the footers count (the filtered list)
+function _footerEmpList() { return _footerEmps || employeeData; }
+function applyFilters() {
+    document.getElementById('filtersPopover').classList.add('hidden');
+    const n = (activeFilterDept !== 'all') + (activeFilterPos !== 'all');
+    const btn = document.getElementById('filtersBtn');
+    if (btn) {
+        btn.innerHTML = `Filters${n ? ` <span class="flt-count">${n}</span>` : ''} <i data-lucide="sliders-horizontal" class="w-5 h-5 text-slate-400"></i>`;
+        btn.classList.toggle('flt-on', !!n);
+        lucide.createIcons();
+    }
+    applyCurrentFilters();
+}
 function resetFilters() {
     activeFilterDept = 'all';
     activeFilterPos  = 'all';
@@ -8565,6 +8829,211 @@ function sendInviteEmployee() {
     closeInviteEmployee();
     showToast(`Invite sent to ${first} by ${_invVia === 'email' ? 'email' : 'text'} (${contact}).`, 'info');
 }
+</script>
+
+<!-- DAY VIEW: 15-minute grid + drag to create a shift -->
+<style>
+/* each hour cell shows its quarter hours */
+#mainScheduleTable.day-q tbody tr > td:not(:first-child) {
+    background-image: repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), #eef2f7 calc(25% - 1px) 25%);
+}
+#mainScheduleTable.day-q tbody tr > td:not(:first-child) { border-left-color: #dbe3ee; }
+#mainScheduleTable.day-q thead th:not(:first-child) {
+    background-image: repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), #cbd5e1 calc(25% - 1px) 25%);
+    background-size: 100% 5px; background-position: bottom; background-repeat: no-repeat;
+}
+/* in day view the quarter slot under the mouse is the click target, not the "+ Add" block */
+#mainScheduleTable.day-q tr.empRow .addShift { opacity: 0 !important; }
+#mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cursor: crosshair; }
+.dq-hover, .dq-ghost { position: fixed; z-index: 40; pointer-events: none; border-radius: 8px; display: none; }
+.dq-hover { background: rgba(37, 99, 235, .08); border: 1.5px dashed #93c5fd; align-items: center; justify-content: center; color: #2563eb; font-size: 14px; font-weight: 700; }
+.dq-ghost { background: rgba(37, 99, 235, .14); border: 2px solid #2563eb; box-shadow: 0 6px 18px -6px rgba(37, 99, 235, .45); align-items: center; justify-content: center; gap: 8px; color: #1e3a8a; font-size: 11.5px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+.dq-ghost small { font-weight: 600; color: #3b82f6; }
+.dq-tip { position: fixed; z-index: 41; pointer-events: none; display: none; padding: 4px 8px; border-radius: 6px; background: #0f172a; color: #fff; font-size: 11px; font-weight: 600; white-space: nowrap; transform: translate(-50%, -100%); }
+body.dq-dragging, body.dq-dragging * { cursor: ew-resize !important; user-select: none !important; }
+body.dq-moving, body.dq-moving * { cursor: grabbing !important; }
+/* compact rows: smaller gap so the bar keeps its height */
+body.density-compact #mainScheduleTable.day-q tr.empRow .shiftBox[style*="position:absolute"] { top: 3px !important; height: calc(100% - 6px) !important; }
+/* existing day shifts: grab to move, edges to resize */
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable) { cursor: grab; }
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable)::before,
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable)::after { content: ''; position: absolute; top: 0; bottom: 0; width: 8px; cursor: ew-resize; z-index: 3; }
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable)::before { left: 0; border-radius: 8px 0 0 8px; }
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable)::after { right: 0; border-radius: 0 8px 8px 0; }
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable):hover::before,
+#mainScheduleTable.day-q tr.empRow .shiftBox[data-start]:not(.partial-unavailable):hover::after { background: rgba(37, 99, 235, .18); }
+body.select-mode #mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cursor: default; }
+</style>
+<script>
+(function () {
+    const Q = 4;                                    // quarters per hour column
+    const DAY0 = 4 * 60;                            // day grid starts at 4 AM
+    let drag = null, suppressClick = false;
+    const hover = Object.assign(document.createElement('div'), { className: 'dq-hover', innerHTML: '+' });
+    const ghost = Object.assign(document.createElement('div'), { className: 'dq-ghost' });
+    const tip = Object.assign(document.createElement('div'), { className: 'dq-tip' });
+    document.addEventListener('DOMContentLoaded', () => document.body.append(hover, ghost, tip));
+
+    // mark the table so the quarter-hour grid only shows in Day view
+    const base = renderScheduleTable;
+    renderScheduleTable = function () {
+        const r = base.apply(this, arguments);
+        document.getElementById('mainScheduleTable')?.classList.toggle('day-q', activeView === 'day');
+        hover.style.display = 'none';
+        return r;
+    };
+
+    const fmt = m => { m = ((m % 1440) + 1440) % 1440; const h = Math.floor(m / 60), mm = m % 60; return `${h % 12 || 12}:${String(mm).padStart(2, '0')}${h < 12 ? 'a' : 'p'}`; };
+    const hhmm = m => { m = ((m % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+    const dur = q => { const m = q * 15, h = Math.floor(m / 60); return `${h ? h + 'h' : ''}${m % 60 ? (h ? ' ' : '') + (m % 60) + 'm' : ''}`; };
+
+    function rowInfo(tr) {
+        const cells = [...tr.children].slice(1);
+        const a = cells[0].getBoundingClientRect(), b = cells[cells.length - 1].getBoundingClientRect(), r = tr.getBoundingClientRect();
+        return { tr, cells, left: a.left, qw: (b.right - a.left) / (cells.length * Q), n: cells.length * Q, top: r.top, h: r.height };
+    }
+    const qAt = (info, x) => Math.max(0, Math.min(info.n - 1, Math.floor((x - info.left) / info.qw)));
+    function place(el, info, q0, q1) {
+        // clip to the visible grid: right of the sticky name column, inside the scroll box
+        const box = document.getElementById('tableScrollContainer').getBoundingClientRect();
+        const nameRight = info.tr.firstElementChild.getBoundingClientRect().right;
+        let l = info.left + q0 * info.qw, r = info.left + (q1 + 1) * info.qw;
+        l = Math.max(l, nameRight, box.left); r = Math.min(r, box.right);
+        if (r <= l) { el.style.display = 'none'; return; }
+        Object.assign(el.style, { display: 'flex', left: l + 2 + 'px', width: r - l - 4 + 'px', top: info.top + 4 + 'px', height: info.h - 8 + 'px' });
+    }
+    // where a drag may start: an employee row in Day view, outside shifts / unavailability
+    function startable(e) {
+        if (activeView !== 'day' || e.button !== 0 || (typeof selectMode !== 'undefined' && selectMode)) return null;
+        const td = e.target.closest && e.target.closest('#mainScheduleTable tr.empRow > td');
+        if (!td || td === td.parentElement.firstElementChild) return null;
+        if (e.target.closest('.shiftBox, .unavailable-cell, .partial-unavailable, .shift-actions, .action-icon')) return null;
+        if (td.parentElement.querySelector('.unavailable-cell')) return null;
+        return td.parentElement;
+    }
+
+    // ── move / resize an existing shift: grab the bar and drag; grab an edge to change start or end ──
+    let mv = null;   // { info, box, emp, a, q0, q1, grabQ, mode: 'move'|'l'|'r', moved }
+    function shiftGrab(e) {
+        if (activeView !== 'day' || e.button !== 0 || (typeof selectMode !== 'undefined' && selectMode)) return null;
+        if (!e.target.closest || e.target.closest('.shift-actions, .action-icon')) return null;
+        const box = e.target.closest('#mainScheduleTable tr.empRow .shiftBox[data-start]');
+        if (!box || box.classList.contains('partial-unavailable')) return null;
+        return box;
+    }
+    function shiftOf(empId) {
+        const emp = employeeData.find(x => x.id === empId);
+        const k = `d_${empId}`;
+        const a = Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift;
+        if (!a) return null;
+        const toMin = (hm, h) => hm ? _hhmmToMin(hm) : h * 60;
+        let s = toMin(a.startHHMM, a.start), en = toMin(a.endHHMM, a.end);
+        if (en <= s) en += 1440;
+        return { emp, a, s, en };
+    }
+    const qOfMin = m => Math.round((((m - DAY0) % 1440) + 1440) % 1440 / 15);
+    document.addEventListener('mousedown', e => {
+        const box = shiftGrab(e);
+        if (!box) return;
+        const tr = box.closest('tr'), cur = shiftOf(+tr.dataset.empId);
+        if (!cur) return;
+        e.preventDefault(); e.stopPropagation();
+        const info = rowInfo(tr), r = box.getBoundingClientRect();
+        const edge = e.clientX - r.left < 8 ? 'l' : r.right - e.clientX < 8 ? 'r' : 'move';
+        const q0 = qOfMin(cur.s), len = Math.max(1, Math.round((cur.en - cur.s) / 15));
+        mv = { info, box, cur, q0, q1: q0 + len - 1, len, grabQ: qAt(info, e.clientX), mode: edge, moved: false, a: q0, b: q0 + len - 1 };
+        hover.style.display = 'none';
+        document.body.classList.add('dq-dragging', edge === 'move' ? 'dq-moving' : 'dq-resizing');
+    }, true);
+    document.addEventListener('mousemove', e => {
+        if (!mv) return;
+        const q = qAt(mv.info, e.clientX), dq = q - mv.grabQ, n = mv.info.n;
+        if (mv.mode === 'move') { mv.a = Math.max(0, Math.min(n - mv.len, mv.q0 + dq)); mv.b = mv.a + mv.len - 1; }
+        else if (mv.mode === 'l') { mv.a = Math.max(0, Math.min(mv.q1, mv.q0 + dq)); mv.b = mv.q1; }
+        else { mv.a = mv.q0; mv.b = Math.max(mv.q0, Math.min(n - 1, mv.q1 + dq)); }
+        if (dq !== 0) mv.moved = true;
+        if (!mv.moved) return;
+        mv.box.style.opacity = '.35';
+        place(ghost, mv.info, mv.a, mv.b);
+        ghost.innerHTML = `${fmt(DAY0 + mv.a * 15)} – ${fmt(DAY0 + (mv.b + 1) * 15)} <small>${dur(mv.b - mv.a + 1)}</small>`;
+        tip.style.display = 'block';
+        tip.textContent = `${mv.mode === 'move' ? 'Move to' : 'Change to'} ${fmt(DAY0 + mv.a * 15)} – ${fmt(DAY0 + (mv.b + 1) * 15)}`;
+        tip.style.left = e.clientX + 'px'; tip.style.top = mv.info.top - 4 + 'px';
+    }, { passive: true });
+    document.addEventListener('mouseup', () => {
+        if (!mv) return;
+        const m = mv; mv = null;
+        document.body.classList.remove('dq-dragging', 'dq-moving', 'dq-resizing');
+        ghost.style.display = 'none'; tip.style.display = 'none';
+        m.box.style.opacity = '';
+        if (!m.moved || (m.a === m.q0 && m.b === m.q1)) return;   // a plain click keeps the normal behaviour
+        suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
+        const { emp, a: old } = m.cur;
+        const s = hhmm(DAY0 + m.a * 15), en = hhmm(DAY0 + (m.b + 1) * 15);
+        const pos = old.position || emp.position;
+        const next = Object.assign({}, old, { start: Math.floor((DAY0 + m.a * 15) / 60) % 24, end: Math.floor((DAY0 + (m.b + 1) * 15) / 60) % 24 || 24,
+            startHHMM: s, endHHMM: en, time: `${s} - ${en}`, position: pos });
+        // breaks move with the shift; a resize keeps them only if they still fit
+        if (old.breaks && old.breaks.length) {
+            const shift = (DAY0 + m.a * 15) - m.cur.s;
+            next.breaks = m.mode === 'move' ? old.breaks.map(b => ({ ...b, start: hhmm(_hhmmToMin(b.start) + shift), end: hhmm(_hhmmToMin(b.end) + shift) }))
+                : old.breaks.filter(b => { let bs = _hhmmToMin(b.start); if (bs < DAY0) bs += 1440; return bs >= DAY0 + m.a * 15 && bs + 15 <= DAY0 + (m.b + 1) * 15; });
+        }
+        shiftAssignments[`d_${emp.id}`] = next;
+        shiftAssignments[`w_${emp.id}_${activeDate.getDay()}`] = next;
+        renderScheduleTable();
+        showToast(`${emp.name}'s shift ${m.mode === 'move' ? 'moved' : 'changed'} to ${fmt(DAY0 + m.a * 15)} – ${fmt(DAY0 + (m.b + 1) * 15)}.`, 'info');
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (drag) {
+            drag.q1 = qAt(drag.info, e.clientX);
+            const a = Math.min(drag.q0, drag.q1), b = Math.max(drag.q0, drag.q1);
+            if (a !== b || drag.moved) drag.moved = true;
+            place(ghost, drag.info, a, b);
+            ghost.innerHTML = `${fmt(DAY0 + a * 15)} – ${fmt(DAY0 + (b + 1) * 15)} <small>${dur(b - a + 1)}</small>`;
+            tip.style.display = 'block';
+            tip.textContent = `${fmt(DAY0 + a * 15)} – ${fmt(DAY0 + (b + 1) * 15)}`;
+            tip.style.left = e.clientX + 'px'; tip.style.top = drag.info.top - 4 + 'px';
+            return;
+        }
+        const tr = startable(e);
+        if (!tr) { hover.style.display = 'none'; return; }
+        const info = rowInfo(tr), q = qAt(info, e.clientX);
+        place(hover, info, q, q);
+        hover.title = fmt(DAY0 + q * 15);
+    }, { passive: true });
+
+    document.addEventListener('mousedown', e => {
+        const tr = startable(e);
+        if (!tr) return;
+        e.preventDefault();
+        const info = rowInfo(tr), q = qAt(info, e.clientX);
+        drag = { info, q0: q, q1: q, moved: false };
+        hover.style.display = 'none';
+        document.body.classList.add('dq-dragging');
+        place(ghost, info, q, q);
+        ghost.innerHTML = `${fmt(DAY0 + q * 15)} – ${fmt(DAY0 + (q + 1) * 15)}`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!drag) return;
+        const d = drag; drag = null;
+        document.body.classList.remove('dq-dragging');
+        ghost.style.display = 'none'; tip.style.display = 'none';
+        suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
+        let a = Math.min(d.q0, d.q1), b = Math.max(d.q0, d.q1);
+        if (!d.moved) b = Math.min(d.info.n - 1, a + 3);            // a plain click books one hour
+        const td = d.info.cells[Math.floor(a / Q)];
+        // open the Add Shift drawer, then fill in the dragged times; position and break are chosen there
+        openAssignModal(td.querySelector('.addShift') || td);
+        pickTime('start', hhmm(DAY0 + a * 15));
+        pickTime('end', hhmm(DAY0 + (b + 1) * 15));
+    });
+    // the click that ends a drag must not also trigger the cell's own "+ Add"
+    document.addEventListener('click', e => { if (suppressClick && e.target.closest('#mainScheduleTable')) { e.stopPropagation(); e.preventDefault(); } }, true);
+    document.addEventListener('scroll', () => { hover.style.display = 'none'; }, true);
+})();
 </script>
 
 <!-- TOAST / INLINE NOTIFICATION STACK --><div id="toastContainer" style="position:fixed; top:88px; right:28px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:380px;"></div>
