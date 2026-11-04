@@ -635,14 +635,14 @@ const WELL=[
    Rules and warning text follow the Zip Schedule pad (HW Release:
    BNEShiftWarningService + messages.json). */
 const PROBS=[
- {id:"law",tier:"t-red",tag:"Legal risk",short:"6 labor-law risks and 26 overtime issues",impact:"32",impactL:"compliance issues",days:["Thu","Fri","Sat","Sun"],
-  title:"32 compliance issues: 6 labor-law risks and 26 overtime issues from the same long weekend shifts",
+ {id:"law",tier:"t-red",tag:"Legal risk",short:"32 shifts put labor-law compliance at risk",impact:"32",impactL:"compliance risks",days:["Thu","Fri","Sat","Sun"],
+  title:"32 labor-law risks, mostly from the same long weekend shifts",
   lead:"The schedule pad flagged every legal risk before the week was published. The long weekend shifts that miss meal breaks also create most of the daily overtime, and 2 employees pass 40 hrs.",
-  head:[["6","Labor-law risks","Fix before the shifts are worked"],["26","Overtime issues","24 shifts over 8 hrs · 2 employees over 40 hrs"],["$972","Projected overtime","$971.99 · daily $853.30 · weekly $118.69"]],
+  head:[["32","Labor-law risks","6 rule breaches · 26 overtime (24 daily, 2 weekly)"],["$972","Projected overtime","$971.99 · daily $853.30 · weekly $118.69"]],
   parts:[["Minor rules","2","Mia Lee, Noah Davis"],["Meal breaks","2","Shifts over 10 hrs"],["Rest violation","1","Under 8 hrs off between shifts"],["Seventh-day violation","1","Mei Tanaka"],["Daily overtime","24","Shifts over 8 hrs"],["Weekly overtime","2","Employees over 40 hrs"],["Offers adding OT","2","Waiting for approval"]],
   chain:["The schedule went out with compliance warnings still open, and the weekend template builds most shifts 9 to 10 hrs long.","2 minors are past their limits, 2 long shifts miss the 2nd meal break, 1 closer opens the next morning, 1 employee works all 7 days, and 24 shifts run past 8 hrs.","6 legal risks on Fri – Sun and $971.99 of overtime, plus $155.06 more if both accepted offers are approved."],
   people:[["Mia Lee","Age 16 · Fri 5.08 hrs on a school day (limit 4)"],["Noah Davis","Age 17 · Sun until 12:25 AM (limit 10:00 PM)"],["Daniel Reyes","GM · Sat over 10 hrs, no 2nd meal break · $99.96 daily OT"],["Omar Haddad","AM · Sun over 10 hrs, no 2nd meal break · $69.35 daily OT"],["Olivia Martinez","Closes Fri 11:00 PM, opens Sat 6:30 AM"],["Mei Tanaka","Scheduled Mon – Sun, 7 days in a row · $54.41 daily OT on Sun"],["Priya Nair","GM · Sun 7:15 AM – 4:55 PM · $70.98 daily OT"],["Chris Walker","Shift Leader · 42.75 hrs · $80.44 weekly OT"],["Jasmine Ortiz","Line Cook · 41.50 hrs · $38.25 weekly OT"],["Kimberli Lopez","Accepted Tyler Brooks’s Thu offer · 42.25 hrs"],["Alex Garcia","Accepted Eliza Funes’s Sun offer · 43.50 hrs"]],
-  note:"Every compliance issue in one list, labor-law risks first, then overtime by cost. Daily overtime shows the 8 most expensive of 24 shifts over 8 hrs (managers hold 49% of that cost); the other 16 add $282.16.",
+  note:"All 32 labor-law risks in one list, rule breaches first, then overtime by cost. Daily overtime shows the 8 most expensive of 24 shifts over 8 hrs (managers hold 49% of that cost); the other 16 add $282.16.",
   tables:[{t:"All compliance issues · 18 shown of 32",h:["Employee","Day","Shift","Compliance rule","Type","Over","Cost","Fix"],r:[
    ["Mia Lee (16)","Fri","11:15 AM – 4:20 PM","Minor: max 4 hrs on a school day (5.08 hrs)",'<span class="ct ct-law">Labor law</span>',"1.08 hrs","—","End at 3:15 PM"],
    ["Noah Davis (17)","Sun","5:30 PM – 12:25 AM","Minor cannot be scheduled after 10:00 PM",'<span class="ct ct-law">Labor law</span>',"2.42 hrs","—","End at 10:00 PM"],
@@ -662,7 +662,7 @@ const PROBS=[
    ["Jasmine Ortiz","Week","41.50 hrs · Line Cook","Weekly overtime: over 40 hrs",'<span class="ct ct-ot">Weekly OT</span>',"1.50 hrs",'<span class="neg">$38.25</span>',"Move Sun 10:00 AM – 3:30 PM to Andre Wilson (21.75 hrs)"],
    ["Kimberli Lopez","Thu","2:00 – 8:00 PM · Tyler Brooks’s offer","Accepted offer would take her to 42.25 hrs",'<span class="ct ct-offer">OT if approved</span>',"2.25 hrs",'<span class="neg">$65.81</span>',"Approve for Jordan Price instead (24.50 hrs)"],
    ["Alex Garcia","Sun","3:00 – 9:00 PM · Eliza Funes’s offer","Accepted offer would take him to 43.50 hrs",'<span class="ct ct-offer">OT if approved</span>',"3.50 hrs",'<span class="neg">$89.25</span>',"Approve for Nicole Ramos instead (25.25 hrs)"],
-   ["<b>Total</b>","","","<b>6 labor-law risks · 26 overtime issues</b>","","",'<b class="neg">$971.99</b> <small>+ $155.06 if offers approved</small>',""]],n:[5,6]}]},
+   ["<b>Total</b>","","","<b>32 labor-law risks</b> <small>6 rule breaches · 26 overtime</small>","","",'<b class="neg">$971.99</b> <small>+ $155.06 if offers approved</small>',""]],n:[5,6]}]},
  {id:"avail",tier:"t-red",tag:"Conflict",short:"3 shifts clash with time off or availability",impact:"3",impactL:"conflicts",days:["Thu","Sat"],
   title:"3 employees are scheduled when they’re off or unavailable",
   lead:"Time off was approved or requested after the shifts were built, and one closer runs past her availability. Each shift needs a replacement or a shorter end time.",
@@ -742,7 +742,7 @@ const FIXES=[
    heading, and a short issue + shift per affected person (same order as
    p.people, whose long text stays as the row's expanded detail). */
 const UI={
- law:{short:"6 labor-law risks and 26 overtime issues",sum:"Six shifts break labor rules, 24 shifts run past 8 hrs and 2 employees pass 40 hrs, mostly from the same long weekend shifts.",cat:"Compliance",impact:"$972",impactL:"projected overtime",fixH:"Clear risks, then cut overtime",
+ law:{short:"32 shifts put labor-law compliance at risk",sum:"Six shifts break labor rules, 24 shifts run past 8 hrs and 2 employees pass 40 hrs, mostly from the same long weekend shifts.",cat:"Compliance",impact:"$972",impactL:"projected overtime",fixH:"Clear risks, then cut overtime",
   who:[["Minor rule","Fri 11:15 AM – 4:20 PM"],["Minor rule","Sun 5:30 PM – 12:25 AM"],["Meal break + daily OT","Sat 7:00 AM – 5:25 PM"],["Meal break + daily OT","Sun 2:45 PM – 12:45 AM"],["Rest period","Sat 6:30 AM – 12:30 PM"],["7th day + daily OT","Sun 6:45 AM – 4:35 PM"],["Daily OT · $70.98","Sun 7:15 AM – 4:55 PM"],["Weekly OT · $80.44","42.75 hrs this week"],["Weekly OT · $38.25","41.50 hrs this week"],["Offer would add OT","Thu 2:00 – 8:00 PM"],["Offer would add OT","Sun 3:00 – 9:00 PM"]]},
  avail:{short:"3 shifts conflict with availability",sum:"Three employees are scheduled when they’re off or unavailable.",cat:"Schedule conflict",impact:"3",impactL:"conflicts",fixH:"Resolve 3 conflicts",
   who:[["Approved time off","Sat 4:00 – 11:30 PM"],["Pending time off","Sat 4:00 – 10:50 PM"],["Outside availability","Thu 4:00 – 10:55 PM"],["Can cover","Free Saturday night"],["Can cover","Free Saturday night"]]},
@@ -802,12 +802,12 @@ function counts(){
 function liveShort(p){
   const u=UI[p.id];if(p.id!=="law")return u.short;
   const r=counts().risks;
-  return r?`${plural(r,"labor-law risk")} and 26 overtime issues`:"Labor-law risks cleared, 26 overtime issues remain";
+  const n=r+26;return `${n} ${n===1?"shift puts":"shifts put"} labor-law compliance at risk`;
 }
 function liveHead(p){
   if(!p.head)return null;if(p.id!=="law")return p.head;
   const c=counts();
-  return [[String(c.risks),"Labor-law risks",c.risks===c.risksTotal?"Fix before the shifts are worked":`${c.risksTotal-c.risks} of ${c.risksTotal} cleared`],p.head[1],p.head[2]];
+  return [[String(c.risks+26),"Labor-law risks",`${c.risks} rule breaches · 26 overtime (24 daily, 2 weekly)${c.risks===c.risksTotal?"":` · ${c.risksTotal-c.risks} cleared`}`],p.head[1]];
 }
 function task(f,ctx){
   const key=ctx+"-"+f.id, isOpen=openTask.has(key), isDone=done.has(f.id);
