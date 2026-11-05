@@ -663,6 +663,14 @@ table td:hover .addShift {
 #clearScheduleMenu .cs-item:hover { background:#fef6f6; }
 .clr-n { margin-left:auto; min-width:26px; height:22px; padding:0 7px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#f1f5f9; color:#334155; font-size:11.5px; font-weight:700; }
 .cs-item.clr-off { opacity:.45; cursor:not-allowed; }
+#clearScheduleMenu { width:420px; }
+.clr-parent { align-items:center; }
+.clr-parent .clr-caret { margin-left:auto; color:#94a3b8; transition:transform .15s; flex-shrink:0; }
+.clr-parent.open { background:#fef2f2; border-color:#fecaca; }
+.clr-parent.open .clr-caret { transform:rotate(180deg); color:#b91c1c; }
+.clr-sub { margin:4px 0 2px 22px; padding-left:8px; border-left:2px solid #fecaca; }
+.clr-sub .cs-item { padding:7px 10px; }
+.clr-sub .cs-ic { width:28px; height:28px; }
 .clr-scope { display:flex; align-items:center; gap:6px; margin:6px 4px 2px; padding:8px 10px; border-radius:9px; background:#f8fafc; color:#64748b; font-size:11.5px; font-weight:600; }
 .cs-auto { margin: 0 2px 2px; border: 1px solid #e0e7ff; background: #f8f9ff; border-radius: 12px; }
 .cs-auto .cs-toggle:hover { background: transparent; }
@@ -1257,6 +1265,10 @@ body.density-compact .mgr-corner { border-top-width: 10px; border-right-width: 1
 body.density-compact #mainScheduleTable .shiftBox:not(.ua-mini) { flex-direction: row; align-items: center; gap: 8px; padding: 2px 28px 2px 8px; min-height: 0; }
 body.density-compact #mainScheduleTable .shiftBox > .font-semibold { font-size: 12px !important; margin-bottom: 0; white-space: nowrap; }
 body.density-compact #mainScheduleTable .shiftBox > .uppercase { font-size: 10px !important; }
+/* Day view compact: time and position on one line */
+body.density-compact #mainScheduleTable .shiftBox > .flex.flex-col { flex-direction: row !important; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; overflow: hidden; }
+body.density-compact #mainScheduleTable .shiftBox > .flex.flex-col > div { line-height: 1.2; }
+body.density-compact #mainScheduleTable .shiftBox > .flex.flex-col > div + div { overflow: hidden; text-overflow: ellipsis; }
 body.density-compact #mainScheduleTable .break-indicator { top: 50%; bottom: auto; transform: translateY(-50%) scale(.8); }
 body.density-compact #mainScheduleTable .action-icon { width: 20px; height: 20px; }
 body.density-compact .unavailable-cell, body.density-compact .addShift { font-size: 10.5px; }
@@ -1656,6 +1668,9 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .day-strip button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 9px; border-right: 1px solid #e9edf2; transition: background .15s ease; }
 .day-strip button:last-child { border-right: 0; }
 .day-strip button:hover { background: #eff6ff; }
+#mainScheduleTable thead th.wk-day-th { cursor: pointer; transition: background-color .12s; }
+#mainScheduleTable thead th.wk-day-th:hover { background: #eef2ff !important; }
+#mainScheduleTable thead th.wk-day-th:hover > div > div:first-child { color: #1d4ed8; }
 .day-strip .ds-day { font-size: 13px; font-weight: 700; color: #1e293b; }
 .day-strip .ds-day span { font-weight: 500; color: #64748b; margin-left: 3px; }
 .day-strip .ds-hrs { font-size: 12px; font-weight: 600; color: #15803d; }
@@ -1858,6 +1873,11 @@ html.dark #mainScheduleTable { background: #1e293b; }
 html.dark #mainScheduleTable thead th { background: #162032 !important; color: #94a3b8 !important; border-color: #2d3f55 !important; }
 html.dark .empRow > td { background: #1e293b !important; border-color: #2d3f55 !important; }
 html.dark .empRow:hover > td { background: #243447 !important; }
+/* collapsed footer row (Day / Week / Month): own shade so it reads as a summary bar, not a grid row */
+.stats-footer > .stats-summary-bar:first-child { background: #e9eef7 !important; border-top: 2px solid #c3cddc !important; }
+.stats-footer > .stats-summary-bar:first-child #summaryStatsRow > div, .stats-footer > .stats-summary-bar:first-child #summaryStatsRow > div > div { background: transparent !important; border-color: #d3dbe7 !important; }
+.stats-footer > .stats-summary-bar:first-child .stats-label-col { background: #dde4f0 !important; border-right-color: #c3cddc !important; }
+.stats-footer > .stats-summary-bar:first-child:hover { background: #e2e9f5 !important; }
 html.dark .stats-summary-bar { background: #162032 !important; }
 html.dark .stats-label-col { background: #1a2744 !important; border-color: #334155 !important; }
 html.dark #summaryStatsRow > div { background: #162032 !important; border-color: #2d3f55 !important; color: #cbd5e1 !important; }
@@ -3669,7 +3689,7 @@ UNSCHEDULED_EMPS.forEach(([id, name, position]) => {
     const emp = employeeData.find(e => e.id === id);
     if (!emp) return;
     Object.assign(emp, { name, initials: name.split(' ').map(w => w[0]).join(''), position, totalHours: '0.00', alerts: [] });
-    shiftAssignments[`d_${id}`] = null;
+    shiftAssignments[_dk(id)] = null;
     for (let c = 0; c < 31; c++) shiftAssignments[`w_${id}_${c}`] = null;
 });
 
@@ -3951,29 +3971,37 @@ function _clrUa(maxHrs) {
 }
 function _clrEmpCount() {
     if (activeView === 'day') return employeeData.filter(emp => {
-        const k = `d_${emp.id}`; return (Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift) != null;
+        const k = _dk(emp.id); return (Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift) != null;
     }).length;
     return _aiCurrent().length;
 }
 const _CLR = [
-    { k: 'ua',    grp: 'Unassigned shifts', icon: 'trash-2', tint: '#dc2626', t: 'Delete all unassigned shifts', n: () => _clrUa(null) },
-    { k: 'ua1',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 1 hr', n: () => _clrUa(1) },
-    { k: 'ua2',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 2 hrs', n: () => _clrUa(2) },
-    { k: 'ua3',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 3 hrs', n: () => _clrUa(3) },
-    { k: 'sched', grp: 'Schedule', icon: 'calendar-x', tint: '#2563eb', t: 'Clear schedule', d: 'Employee shifts only; unassigned stay', n: () => _clrEmpCount() },
-    { k: 'all',   grp: 'Schedule', icon: 'calendar-x-2', tint: '#dc2626', t: 'Clear schedule including unassigned shifts', n: () => _clrEmpCount() + _clrUa(null) },
+    { k: 'ua',    grp: 'ua', icon: 'trash-2', tint: '#dc2626', t: 'Clear all unassigned shifts', n: () => _clrUa(null) },
+    { k: 'ua1',   grp: 'ua', icon: 'timer', tint: '#d97706', t: 'Clear unassigned shifts less than 1 hr', n: () => _clrUa(1) },
+    { k: 'ua2',   grp: 'ua', icon: 'timer', tint: '#d97706', t: 'Clear unassigned shifts less than 2 hrs', n: () => _clrUa(2) },
+    { k: 'ua3',   grp: 'ua', icon: 'timer', tint: '#d97706', t: 'Clear unassigned shifts less than 3 hrs', n: () => _clrUa(3) },
+    { k: 'sched', grp: 'sched', icon: 'calendar-x', tint: '#2563eb', t: 'Clear schedule', d: 'Employee shifts only; unassigned stay', n: () => _clrEmpCount() },
+    // not in the menu: used by Create Schedule > Start from Scratch
+    { k: 'all',   grp: 'hidden', icon: 'calendar-x-2', tint: '#dc2626', t: 'Clear schedule including unassigned shifts', n: () => _clrEmpCount() + _clrUa(null) },
 ];
+let _clrUaOpen = false;
+function toggleClrUa(e) { if (e) e.stopPropagation(); _clrUaOpen = !_clrUaOpen; renderClearMenu(); }
 function renderClearMenu() {
     const m = document.getElementById('clearScheduleMenu');
-    let grp = '';
-    m.innerHTML = _CLR.map(o => {
-        const n = o.n(), head = o.grp !== grp ? `${grp ? '<div class="cs-sep"></div>' : ''}<div class="cs-head">${o.grp}</div>` : '';
-        grp = o.grp;
-        return `${head}<button class="cs-item${n ? '' : ' clr-off'}" ${n ? `onclick="askClear('${o.k}')"` : 'disabled'}>
+    const row = o => { const n = o.n(); return `<button class="cs-item${n ? '' : ' clr-off'}" ${n ? `onclick="askClear('${o.k}')"` : 'disabled'}>
             <span class="cs-ic" style="background:${o.tint}14;color:${o.tint}"><i data-lucide="${o.icon}" class="w-4 h-4"></i></span>
             <span class="cs-txt"><b>${o.t}</b><small>${o.d ? o.d + ' · ' : ''}${n ? `${n} shift${n === 1 ? '' : 's'}` : 'Nothing to clear'}</small></span>
-            <span class="clr-n">${n}</span></button>`;
-    }).join('') + `<div class="clr-scope"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>Applies to ${_clrScope()}</div>`;
+            <span class="clr-n">${n}</span></button>`; };
+    const uaN = _clrUa(null), sched = _CLR.find(o => o.k === 'sched');
+    m.innerHTML = `
+        <button class="cs-item clr-parent${_clrUaOpen ? ' open' : ''}" onclick="toggleClrUa(event)">
+            <span class="cs-ic" style="background:#dc262614;color:#dc2626"><i data-lucide="user-x" class="w-4 h-4"></i></span>
+            <span class="cs-txt"><b>Clear Unassigned Shifts</b><small>${uaN ? `${uaN} unassigned shift${uaN === 1 ? '' : 's'} · choose what to clear` : 'Nothing to clear'}</small></span>
+            <i data-lucide="chevron-down" class="w-4 h-4 clr-caret"></i></button>
+        <div class="clr-sub${_clrUaOpen ? '' : ' hidden'}">${_CLR.filter(o => o.grp === 'ua').map(row).join('')}</div>
+        <div class="cs-sep"></div>
+        ${row(sched).replace('<b>Clear schedule</b>', '<b>Clear Schedule</b>')}
+        <div class="clr-scope"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>Applies to ${_clrScope()}</div>`;
     lucide.createIcons();
 }
 let _clrPending = null;
@@ -3998,7 +4026,7 @@ function doClear() {
     if (k === 'sched' || k === 'all') {
         employeeData.forEach(emp => {
             days.forEach(c => { shiftAssignments[`w_${emp.id}_${c}`] = null; });
-            shiftAssignments[`d_${emp.id}`] = null;   // the day shown is always inside the cleared range
+            shiftAssignments[_dk(emp.id)] = null;   // the day shown is always inside the cleared range
         });
         if (k === 'all') dropUa(null);
     }
@@ -4532,6 +4560,12 @@ function _aiCountUp() {
 }
 
 // current week, in the same shape as the draft
+// Day view reads and writes the same per-day key as the Week view, so each day shows its own shifts
+function _dk(empId) { return `w_${empId}_${activeDate.getDay()}`; }
+// make the week's deterministic "no shift" days explicit so the Day view sees them too
+function _seedWeekDefaults() {
+    employeeData.forEach(emp => { for (let c = 0; c < 7; c++) { const k = `w_${emp.id}_${c}`; if (!(k in shiftAssignments) && (emp.id * 3 + c * 7) % 4 === 0) shiftAssignments[k] = null; } });
+}
 function _aiCurrent() {
     const out = [];
     employeeData.forEach(emp => {
@@ -4987,16 +5021,16 @@ function renderScheduleTable(list=employeeData){
 </th>`;
 
     if(activeView === 'week') {
-        columns.forEach(c => {
+        columns.forEach((c, ci) => {
             headHtml += `
-            <th class="px-3 py-2 bg-slate-50" style="width:${cellWidth}px">
+            <th class="px-3 py-2 bg-slate-50 wk-day-th" style="width:${cellWidth}px" onclick="openWeekDay(${ci})" title="Open ${c.fullLabel} in Day view">
                 <div class="flex items-center justify-between gap-1">
                     <div class="font-bold text-[17px] text-slate-600">
                         ${c.label} <span class="font-semibold text-[16px] text-slate-500">${c.date}</span>
                     </div>
                     <div class="flex gap-1">
                         <div class="header-icon-btn" onclick="openDayNotes('${c.fullLabel}', event)"><i data-lucide="file-text"></i></div>
-                        <div class="header-icon-btn chart-icon-btn" onclick="openChartView('${c.fullLabel}')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="13" width="5" height="9" rx="1"/><rect x="9.5" y="8" width="5" height="14" rx="1"/><rect x="17" y="3" width="5" height="19" rx="1"/></svg></div>
+                        <div class="header-icon-btn chart-icon-btn" onclick="event.stopPropagation(); openChartView('${c.fullLabel}')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="13" width="5" height="9" rx="1"/><rect x="9.5" y="8" width="5" height="14" rx="1"/><rect x="17" y="3" width="5" height="19" rx="1"/></svg></div>
                     </div>
                 </div>
             </th>`;
@@ -5091,7 +5125,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
             const hourAtCol = activeView === 'day' ? (4 + colIdx) % 24 : null;
             
             const isFullUnavail = emp.unavailableDays.includes(currentDayIdx);
-            const partial = emp.partialUnavailableDays;
+            const partial = (activeView === 'day' && activeDate.getDay() !== 4) ? null : emp.partialUnavailableDays;   // partial availability is Thursday only (as in Week view)
             const other = emp.otherStoreShifts;
 
             let cellContent = `<div class="addShift" onclick="openAssignModal(this)">+ Add</div>`;
@@ -5114,7 +5148,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                     cellContent = ``;
                 } else {
                     // Use assigned shift if saved, null = deleted, undefined = use default
-                    const _dKey = `d_${emp.id}`;
+                    const _dKey = _dk(emp.id);
                     const dayShift = Object.prototype.hasOwnProperty.call(shiftAssignments, _dKey) ? shiftAssignments[_dKey] : emp.shift;
                     const dayPos   = (dayShift && dayShift.position) ? dayShift.position : emp.position;
                     const dClsMap  = {"General Manager":"shift-gm","Shift Leader":"shift-leader","Line Cook":"shift-kitchen","Cashier":"shift-cashier"};
@@ -5140,7 +5174,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                             </div>`;
                     } else if (dayShift && hourAtCol > dayShift.start && hourAtCol < dayShift.end) {
                         cellContent = ``;
-                    } else if (emp.additionalShifts) {
+                    } else if (emp.additionalShifts && activeDate.getDay() === 1) {   // the extra shift is Monday's multi shift
                         const addS = emp.additionalShifts.find(s => hourAtCol === s.start);
                         if (addS) {
                             const addDuration = addS.end - addS.start;
@@ -5289,6 +5323,12 @@ function renderDayStrip() {
         </button>`;
     }
     strip.innerHTML = html;
+}
+// Week view: clicking a day name opens that day in Day view
+function openWeekDay(i) {
+    activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay() + i);
+    calendarViewDate = new Date(activeDate);
+    switchView('day');
 }
 function selectStripDay(i) {
     activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay() + i);
@@ -5477,7 +5517,7 @@ function _dayFooterData(n) {
     const shifts = [];
     _footerEmpList().forEach(emp => {
         if (emp.unavailableDays && emp.unavailableDays.includes(mockIdx)) return;
-        const k = `d_${emp.id}`;
+        const k = _dk(emp.id);
         const sh = Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift;
         const push = (s, pos) => {
             if (!s) return;
@@ -5485,7 +5525,7 @@ function _dayFooterData(n) {
             shifts.push({ start: st, end: en, pos: pos || emp.position, mgmt: ['General Manager', 'Assistant Manager', 'Shift Leader'].includes(pos || emp.position) });
         };
         push(sh, sh && sh.position);
-        (emp.additionalShifts || []).forEach(a => push(a, a.position));
+        (activeDate.getDay() === 1 ? emp.additionalShifts || [] : []).forEach(a => push(a, a.position));
     });
     const at = (t, pred = () => true) => shifts.filter(s => pred(s) && t >= s.start && t < s.end).length;
     const curveSum = _coverageSalesCurve.reduce((a, b) => a + b, 0);
@@ -5901,7 +5941,7 @@ function openAssignModal(el){
     let curPosition = '';
 
     if (activeView === 'day') {
-        const dayKey = `d_${empId}`;
+        const dayKey = _dk(empId);
         if (shiftAssignments[dayKey]) {
             const a = shiftAssignments[dayKey];
             curStart    = a.startHHMM || toHHMM(a.start);
@@ -5961,7 +6001,7 @@ function openAssignModal(el){
     const _bc = document.getElementById('assignBreakContainer');
     if (_bc) _bc.innerHTML = '<p class="text-[12px] text-slate-400 italic">No break added. Click + to add.</p>';
     // Restore breaks + notes saved on this shift (edit)
-    const _saved = activeView === 'day' ? shiftAssignments[`d_${empId}`] : shiftAssignments[`w_${empId}_${colIdx}`];
+    const _saved = activeView === 'day' ? shiftAssignments[_dk(empId)] : shiftAssignments[`w_${empId}_${colIdx}`];
     (_saved && _saved.breaks || []).forEach(b => {
         addAssignBreak();
         setBreakRow(_bc.querySelector('.break-row:last-child'), b.start, b.end, b.type);
@@ -6050,7 +6090,7 @@ function openEmpShiftPick(mode) {
     const emp = employeeData.find(e => e.id === empId);
     const td = box.closest('td');
     const dayIdx = activeView === 'day' ? activeDate.getDay() : [...tr.children].indexOf(td) - 1;
-    const key = activeView === 'day' ? `d_${empId}` : `w_${empId}_${dayIdx}`;
+    const key = activeView === 'day' ? _dk(empId) : `w_${empId}_${dayIdx}`;
     const a = shiftAssignments[key];
     const src = a || { position: emp.position, time: emp.shift.time, start: emp.shift.start, end: emp.shift.end };
     const [s, e] = a && a.startHHMM ? [a.startHHMM, a.endHHMM] : String(src.time).split(' - ').map(x => x.trim());
@@ -6356,11 +6396,11 @@ function confirmUaPick() {
         const startHHMM = _minToHhmm(Math.round(s.start * 60) % 1440), endHHMM = _minToHhmm(Math.round(s.end * 60) % 1440);
         const assignment = { start: Math.floor(s.start), end: Math.floor(s.end), startHHMM, endHHMM, time: `${startHHMM} - ${endHHMM}`, position: s.position, notes: s.notes || '', breaks: s.breaks || [] };
         shiftAssignments[`w_${emp.id}_${dayIdx}`] = assignment;
-        if (activeView === 'day' && activeDate.getDay() === dayIdx) shiftAssignments[`d_${emp.id}`] = assignment;
+        if (activeView === 'day' && activeDate.getDay() === dayIdx) shiftAssignments[_dk(emp.id)] = assignment;
         if (id === 'emp') {
             // an employee's shift moves to the new person
             shiftAssignments[s.key] = null;
-            if (s.key.startsWith('w_') && activeView === 'day') shiftAssignments[`d_${s.empId}`] = null;
+            if (s.key.startsWith('w_') && activeView === 'day') shiftAssignments[_dk(s.empId)] = null;
             if (s.key.startsWith('d_')) shiftAssignments[`w_${s.empId}_${dayIdx}`] = null;
             showToast(`${s.position} shift (${uaFmtTime(s.start)} - ${uaFmtTime(s.end % 24)}) moved from ${s.from} to ${emp.name}.`, 'info');
             _empPickShift = null;
@@ -6735,8 +6775,7 @@ function saveShift(andPublish = false){
         const isBase = base && d.getTime() === base.getTime();
         if (activeView === 'day' && isBase) {
             // Update both the assignments map and emp.shift so footer stats reflect the change
-            shiftAssignments[`d_${empId}`] = assignment;
-            emp.shift = Object.assign({}, emp.shift, assignment);
+            shiftAssignments[_dk(empId)] = assignment;
         } else if (activeView === 'month') {
             if (d.getMonth() !== activeDate.getMonth()) return; // month keys are day-of-month
             shiftAssignments[`w_${empId}_${d.getDate() - 1}`] = Object.assign({}, assignment);
@@ -6765,7 +6804,7 @@ function deleteShift(e){
     const empId  = parseInt(tr.getAttribute("data-emp-id"));
     const colIdx = Array.from(tr.children).indexOf(td) - 1;
     if (activeView === 'day') {
-        shiftAssignments[`d_${empId}`] = null; // null = explicitly no shift
+        shiftAssignments[_dk(empId)] = null; // null = explicitly no shift
     } else {
         shiftAssignments[`w_${empId}_${colIdx}`] = null; // null = explicitly no shift
     }
@@ -6913,8 +6952,10 @@ window.addEventListener('mousedown', function(e) {
 });
 window.onload = () => {
     _seedUaOffers();
+    _seedWeekDefaults();
     snapshotBaseSchedule();
     schedStoreLoad();
+    _seedWeekDefaults();
     renderCalendar();
     updateDateRangeLabel(); 
     switchView('week');   
@@ -8026,7 +8067,7 @@ function shiftKeyFromCell(td) {
     if (!tr) return null;
     const empId = parseInt(tr.getAttribute('data-emp-id'));
     if (Number.isNaN(empId)) return null;
-    if (activeView === 'day') return `d_${empId}`;
+    if (activeView === 'day') return _dk(empId);
     const colIdx = Array.from(tr.children).indexOf(td) - 1;
     return `w_${empId}_${colIdx}`;
 }
@@ -8646,7 +8687,7 @@ function applyCurrentFilters() {
             if (activeView === 'day') {
                 if (emp.unavailableDays.includes(activeDayIdxLocal)) { hasShift = false; }
                 else {
-                    const dKey = `d_${emp.id}`;
+                    const dKey = _dk(emp.id);
                     const ds = Object.prototype.hasOwnProperty.call(shiftAssignments, dKey) ? shiftAssignments[dKey] : emp.shift;
                     hasShift = ds !== null;
                 }
@@ -9149,7 +9190,7 @@ body.select-mode #mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cur
     }
     function shiftOf(empId) {
         const emp = employeeData.find(x => x.id === empId);
-        const k = `d_${empId}`;
+        const k = _dk(empId);
         const a = Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift;
         if (!a) return null;
         const toMin = (hm, h) => hm ? _hhmmToMin(hm) : h * 60;
@@ -9205,7 +9246,7 @@ body.select-mode #mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cur
             next.breaks = m.mode === 'move' ? old.breaks.map(b => ({ ...b, start: hhmm(_hhmmToMin(b.start) + shift), end: hhmm(_hhmmToMin(b.end) + shift) }))
                 : old.breaks.filter(b => { let bs = _hhmmToMin(b.start); if (bs < DAY0) bs += 1440; return bs >= DAY0 + m.a * 15 && bs + 15 <= DAY0 + (m.b + 1) * 15; });
         }
-        shiftAssignments[`d_${emp.id}`] = next;
+        shiftAssignments[_dk(emp.id)] = next;
         shiftAssignments[`w_${emp.id}_${activeDate.getDay()}`] = next;
         renderScheduleTable();
         showToast(`${emp.name}'s shift ${m.mode === 'move' ? 'moved' : 'changed'} to ${fmt(DAY0 + m.a * 15)} – ${fmt(DAY0 + (m.b + 1) * 15)}.`, 'info');
