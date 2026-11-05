@@ -59,7 +59,30 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
     .zip-rail .zr-item.active { opacity: 1; }
     .zip-rail .zr-item.active svg { background: #1a73e8; border-radius: 8px; padding: 5px; width: 32px; height: 32px; margin-left: -5px; }
     .zip-rail:hover .zr-item.active { background: rgba(26, 115, 232, .18); }
-    .zip-rail .fab { margin: 0 auto 12px 17px; }
+    .zip-rail .fab { display: none !important; }
+
+    /* ===== Top bar + left panel: same as the Schedule Dashboard / Schedule Pad ===== */
+    html:not(.si-embed-dd) .app { padding-top: 56px; }
+    .zip-rail { top: 56px !important; height: calc(100vh - 56px) !important; }
+    .topbar { position: fixed !important; top: 0; left: 0; right: 0; z-index: 80; height: 56px !important; flex: none !important; background: #0b1f3f !important; border-bottom: 0 !important; padding: 0 20px !important; gap: 16px !important; font-family: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 13.5px; font-weight: 500; color: #fff; }
+    .topbar svg { stroke-width: 2; }
+    .topbar .zt-apps { padding: 6px 12px; margin-left: -4px; border-radius: 8px; }
+    .topbar .zt-apps:hover { background: rgba(255,255,255,.1); }
+    .topbar .zt-left { display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+    .topbar .zt-app { width: 36px; height: 36px; border-radius: 8px; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+    .topbar .zt-app svg { width: 20px; height: 20px; color: #fff; }
+    .topbar .zt-it { display: flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; cursor: pointer; }
+    .topbar .zt-it > svg { width: 22px; height: 22px; }
+    .topbar .zt-it > svg.zt-chev, .topbar .zt-sm { width: 16px !important; height: 16px !important; }
+    .topbar .zt-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px; white-space: nowrap; padding: 0 16px; }
+    .topbar .zt-center .zt-it > svg { width: 20px; height: 20px; }
+    .topbar .zt-div { width: 1px; height: 16px; background: rgba(255,255,255,.3); }
+    .topbar .right { display: flex; align-items: center; gap: 20px; margin-left: 0 !important; }
+    .topbar .store-pill { background: #fff !important; color: #1f2937 !important; border: 1px solid #d6dde8; border-radius: 999px; padding: 4px 16px !important; font-weight: 500 !important; font-size: 13.5px !important; gap: 8px; }
+    .topbar .zt-help { width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.1); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; }
+    .topbar .zt-help:hover { background: rgba(255,255,255,.2); }
+    .topbar .zt-help svg { width: 16px; height: 16px; }
+    .topbar .avatar-top { width: 32px !important; height: 32px !important; background: #e2e8f0 !important; color: #64748b !important; }
   </style>
   <script>document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });</script>
 
@@ -67,35 +90,26 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
 
     <!-- ================= TOP BAR (matches Schedule_UI.html) ================= -->
     <header class="topbar">
-      <div class="tb">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        My Apps <i class="caret"></i>
-      </div>
-      <div class="tb">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-        Schedule
-      </div>
-      <div class="tb">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
-        007 - Encinitas <i class="caret"></i>
+      <div class="zt-left">
+        <span class="zt-app"><i data-lucide="layout-grid"></i></span>
+        <span class="zt-it zt-apps"><i data-lucide="grip" class="zt-sm"></i>My Apps <i data-lucide="chevron-down" class="zt-chev"></i></span>
+        <a class="zt-it" href="../index.html"><i data-lucide="home"></i>Dashboard</a>
+        <a class="zt-it" href="../Schedule Pad.html"><i data-lucide="calendar-days"></i>Schedule</a>
+        <span class="zt-it"><i data-lucide="map-pin"></i>085 - Del Mar <i data-lucide="chevron-down" class="zt-chev"></i></span>
       </div>
 
-      <div class="center">
-        <div class="tb" style="gap:6px">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#cfe3f5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.2 4.2 0 0 1-.4-8.4A5.7 5.7 0 0 1 17.6 10 4 4 0 0 1 17.2 18z"/></svg>
-          96 &deg;F
-        </div>
-        <span class="divider">|</span>
-        <div class="clock">
-          <span>09:09</span><span class="sup">A</span><span class="tz">AMERICA/LOS ANGELES</span>
-        </div>
+      <div class="zt-center">
+        <span class="zt-it"><i data-lucide="cloud-sun"></i>75°F</span>
+        <span class="zt-div"></span>
+        <span>04:33 AMERICA/LOS ANGELES</span>
       </div>
 
       <div class="right">
         <div class="store-pill">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16v11H4zM3 9l2-4h14l2 4"/><path d="M9 20v-6h6v6"/></svg>
-          Original Fish Taco, LLC <i class="caret"></i>
+          <i data-lucide="building-2" class="zt-sm"></i>
+          Original Fish Taco, LLC <i data-lucide="chevron-down" class="zt-sm"></i>
         </div>
+        <button class="zt-help" title="Help &amp; Support"><i data-lucide="headset"></i></button>
         <div class="pm-wrap" id="pmWrap">
           <button class="avatar-top pm-trigger" title="Profile & settings" onclick="event.stopPropagation(); siToggleProfileMenu()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>
