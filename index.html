@@ -563,15 +563,15 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <a href="index.html" class="flex items-center gap-2 cursor-pointer" style="color:inherit;text-decoration:none">
             <i data-lucide="home"></i>
             <span>Dashboard</span>
-        </div>
+        </a>
 
-        <div class="flex items-center gap-2">
+        <a href="Schedule Pad.html" class="flex items-center gap-2 cursor-pointer" style="color:inherit;text-decoration:none">
             <i data-lucide="calendar-days"></i>
             <span>Schedule</span>
-        </div>
+        </a>
 
         <div class="flex items-center gap-2">
             <i data-lucide="map-pin"></i>
@@ -884,8 +884,10 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         <button class="ai-insight-more" onclick="openScheduleInsight()" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
-        <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
-        <div class="ai-insight-item">SPLH dipped at <strong>2&ndash;4 PM</strong> &mdash; overstaffed.</div>
+        <!-- same problem statements as Needs Attention in Schedule AI Insight -->
+        <div class="ai-insight-item"><strong>32</strong> shifts put labor-law compliance at risk</div>
+        <div class="ai-insight-item"><strong>3</strong> shifts conflict with availability</div>
+        <div class="ai-insight-item"><strong>3</strong> Friday shifts are unassigned</div>
     </div>
 </div>
 
@@ -1667,8 +1669,10 @@ html.dark #myAppsMenu .border-slate-100 { border-color: #2d3f55 !important; }
         <button class="ai-insight-more" onclick="openScheduleInsight()" aria-label="Open Schedule AI Insight">View More</button>
     </div>
     <div class="ai-insight-list">
-        <div class="ai-insight-item">Labor % up <strong>0.8%</strong> above target today.</div>
-        <div class="ai-insight-item">SPLH dipped at <strong>2&ndash;4 PM</strong> &mdash; overstaffed.</div>
+        <!-- same problem statements as Needs Attention in Schedule AI Insight -->
+        <div class="ai-insight-item"><strong>32</strong> shifts put labor-law compliance at risk</div>
+        <div class="ai-insight-item"><strong>3</strong> shifts conflict with availability</div>
+        <div class="ai-insight-item"><strong>3</strong> Friday shifts are unassigned</div>
     </div>
 </div>
 
@@ -3157,7 +3161,12 @@ function openKpiModal(type){
     const body=document.getElementById("kpiTableBody");
     let cols=[];
     let rows="";
-    if(type==="upcoming"){
+    const _S = window.schedSyncRows ? schedSyncRows(type) : null;   // live data from Schedule Pad
+    if(_S){
+        document.getElementById("kpiModalTitle").innerText=_S.title;
+        cols=_S.cols;
+        _S.rows.forEach(r=>{ rows+=buildRow(...r); });
+    } else if(type==="upcoming"){
         document.getElementById("kpiModalTitle").innerText="Upcoming Shifts";
         cols=["Employee","Shift Time","Breaks","Position"];
         rows+=buildRow("Christopher Brown","Fri, Feb 6 • 6:00a–2:00p","10:00–10:30a (Meal)<br>12:15–12:30p (Rest)","Shakerboard");
@@ -3394,7 +3403,7 @@ function openAssignModal(shiftId, filterDept, filterPos){
             </div>
             <div class="flex flex-wrap gap-2">${sorted.map(o => `
                 <span class="am-oc" title="${o.name} · ${o.status}">
-                    <img src="https://i.pravatar.cc/80?img=${o.img}" alt=""><span class="truncate">${o.name}</span>
+                    <img src="${o.avatar || 'https://i.pravatar.cc/80?img=' + o.img}" alt=""><span class="truncate">${o.name}</span>
                     <span class="du-chip du-${_duTone[o.status]}" style="height:18px;font-size:10px">${o.status}</span>
                     <button type="button" onclick="amWithdrawOffer('${o.name.replace(/'/g, "\\'")}')" title="Withdraw the offer from ${o.name}"><i data-lucide="x" class="w-3 h-3"></i></button>
                 </span>`).join('')}
@@ -3405,7 +3414,7 @@ function openAssignModal(shiftId, filterDept, filterPos){
     const others = ['Margaret Davis', 'Joseph Smith', 'Charles Wilson', 'Christopher Moore', 'Susan Anderson', 'Emily Clark', 'William Brown', 'Linda Jones']
         .filter(n => !offers.some(o => o.name === n)).slice(0, Math.max(4, 8 - offers.length));
     const cardPos = (meta && meta.role) || 'Crew';
-    const empCards = sorted.map(o => ({ name: o.name, pos: o.pos, img: o.img, status: o.status }))
+    const empCards = sorted.map(o => ({ name: o.name, pos: o.pos, img: o.img, avatar: o.avatar, status: o.status }))
         .concat(others.map(n => ({ name: n, pos: cardPos })));
 
     document.getElementById("assignModalBody").innerHTML = `
@@ -3469,7 +3478,7 @@ function openAssignModal(shiftId, filterDept, filterPos){
                     <div class="border ${c.status ? 'border-violet-200 bg-violet-50/40' : 'border-slate-200 bg-white'} rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group">
                         <div class="flex items-start justify-between gap-2">
                             <div class="flex items-center gap-3 min-w-0">
-                                <img src="https://i.pravatar.cc/80?${c.img ? `img=${c.img}` : `u=${encodeURIComponent(c.name)}`}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200" alt="">
+                                <img src="${c.avatar || `https://i.pravatar.cc/80?${c.img ? `img=${c.img}` : `u=${encodeURIComponent(c.name)}`}`}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200" alt="">
                                 <div class="min-w-0">
                                     <h4 class="text-[13px] font-bold text-slate-800 truncate">${c.name}</h4>
                                     <p class="text-[11px] font-bold text-slate-400 uppercase truncate">${c.pos}</p>
@@ -4938,7 +4947,7 @@ function openDashUaOffers(key, anchor) {
         ['Accepted', 'Pending', 'Declined'].filter(k => counts[k]).map(k => `<span class="du-chip du-${_duTone[k]}">${counts[k]} ${k.toLowerCase()}</span>`).join('');
     document.getElementById('duList').innerHTML = list.map((o, i) => `
         <div class="du-row" data-i="${i}">
-            <img src="https://i.pravatar.cc/80?img=${o.img}" alt="">
+            <img src="${o.avatar || 'https://i.pravatar.cc/80?img=' + o.img}" alt="">
             <div class="du-who"><div class="du-name">${o.name}</div><div class="du-sub">${o.pos}</div></div>
             <span class="du-chip du-${_duTone[o.status]}">${o.status}</span>
             <button type="button" class="du-withdraw" onclick="withdrawDashUaOffer(${i})" title="Withdraw the offer from ${o.name}"><i data-lucide="undo-2"></i>Withdraw</button>
@@ -5061,7 +5070,7 @@ function renderDashAssign() {
     document.getElementById('daList').innerHTML = list.length ? list.map(({ e, el }) => `
         <label class="da-emp${_da.sel === e.id ? ' selected' : ''}">
             <input type="radio" name="daEmp" ${_da.sel === e.id ? 'checked' : ''} onchange="_da.sel=${e.id}; renderDashAssign()">
-            <img src="https://i.pravatar.cc/80?img=${e.img}" alt="">
+            <img src="${e.avatar || 'https://i.pravatar.cc/80?img=' + e.img}" alt="">
             <div class="flex-1 min-w-0"><div class="da-name">${e.name}</div><div class="da-sub">${e.pos} · Week ${e.wk} hrs</div></div>
             <span class="da-tag da-tag-${el.tone}">${el.note}</span>
         </label>`).join('') : '<div class="py-10 text-center text-[13px] text-slate-500">No employees in this list.</div>';
@@ -5194,5 +5203,6 @@ function applyDarkTheme(isDark) {
 <script src="schedule-kpi-data.js"></script>
 <script src="ai-insight.js"></script>
 <script src="analytics-ranges.js"></script>
+<script src="schedule-sync.js"></script>
 </body>
 </html>

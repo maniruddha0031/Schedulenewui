@@ -654,9 +654,27 @@ table td:hover .addShift {
 .cs-switch::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s; }
 .cs-toggle input:checked + .cs-switch { background:#4f46e5; }
 .cs-toggle input:checked + .cs-switch::after { transform:translateX(14px); }
+.clr-btn { background:#fff; border-color:#fecaca; color:#b91c1c; }
+.clr-btn:hover { background:#fef2f2; border-color:#fca5a5; }
+#clearScheduleWrap:has(.cs-menu:not(.hidden)) .clr-btn { background:#fee2e2; border-color:#f87171; }
+#clearScheduleWrap:has(.cs-menu:not(.hidden)) .cs-chev { transform:rotate(180deg); }
+#clearScheduleMenu .cs-item { align-items:center; }
+#clearScheduleMenu .cs-item:hover b { color:#b91c1c; }
+#clearScheduleMenu .cs-item:hover { background:#fef6f6; }
+.clr-n { margin-left:auto; min-width:26px; height:22px; padding:0 7px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#f1f5f9; color:#334155; font-size:11.5px; font-weight:700; }
+.cs-item.clr-off { opacity:.45; cursor:not-allowed; }
+.clr-scope { display:flex; align-items:center; gap:6px; margin:6px 4px 2px; padding:8px 10px; border-radius:9px; background:#f8fafc; color:#64748b; font-size:11.5px; font-weight:600; }
 .cs-auto { margin: 0 2px 2px; border: 1px solid #e0e7ff; background: #f8f9ff; border-radius: 12px; }
 .cs-auto .cs-toggle:hover { background: transparent; }
-.cs-auto .cs-txt small b { color: #4338ca; font-weight: 600; }
+.cs-auto .cs-txt small b { display: inline; font-size: inherit; color: #4338ca; font-weight: 600; }
+.cs-tpl-list { margin-top: 10px; }
+.cs-tpl { display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; cursor: pointer; transition: border-color .12s, background .12s; }
+.cs-tpl:hover { border-color: #a5b4fc; }
+.cs-tpl.active { border-color: #6366f1; background: #eef2ff; box-shadow: inset 0 0 0 1px #6366f1; }
+.cs-tpl input { accent-color: #4f46e5; width: 14px; height: 14px; flex: none; }
+.cs-tpl-name { font-size: 12px; font-weight: 600; color: #1e293b; }
+.cs-tpl.active .cs-tpl-name { color: #4338ca; }
+.cs-tpl-meta { margin-left: auto; font-size: 11px; color: #64748b; white-space: nowrap; }
 .cs-auto-pick { padding: 0 10px 10px 54px; transition: opacity .15s; }
 .cs-auto-pick.off { opacity: .45; }
 .cs-auto-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
@@ -698,6 +716,37 @@ table td:hover .addShift {
     background: #f8fafc;
     color: #2563eb;
 }
+
+/* ===== Dropdown menus (three-dot, Create Schedule, Clear): stand out from the page ===== */
+.cs-menu, .action-dropdown {
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 0 0 4px rgba(15,23,42,.05), 0 24px 48px -12px rgba(15,23,42,.38), 0 6px 14px -6px rgba(15,23,42,.18) !important;
+}
+.cs-head { color: #64748b; }
+.cs-sep { background: #e2e8f0; }
+.cs-item, .cs-toggle { border: 1px solid transparent; }
+.cs-item:hover, .cs-toggle:hover { background: #eef2ff; border-color: #c7d2fe; }
+#clearScheduleMenu .cs-item:hover { background: #fef2f2; border-color: #fecaca; }
+.action-dropdown { width: 264px !important; padding: 6px !important; z-index: 300 !important; animation: csIn .14s ease-out; }
+.action-dropdown > .px-4 { background: none !important; padding: 8px 10px 4px !important; font-size: 10.5px !important; font-weight: 700 !important; letter-spacing: .06em; text-transform: uppercase; color: #64748b !important; }
+.action-dropdown > .border-t { border-color: #e2e8f0 !important; margin: 6px 4px !important; }
+.action-dropdown-item { padding: 7px 10px; border-radius: 10px; border: 1px solid transparent; font-size: 13px; color: #1e293b; gap: 12px; line-height: 1.3; }
+.action-dropdown-item > svg { width: 28px !important; height: 28px !important; padding: 7px; border-radius: 8px; background: #f1f5f9; flex-shrink: 0; }
+.action-dropdown-item:hover { background: #eef2ff; border-color: #c7d2fe; color: #1d4ed8; }
+.action-dropdown-item:hover > svg { background: #fff; }
+/* the button whose menu is open stays highlighted */
+.relative:has(> .action-dropdown:not(.hidden)) > button { background: #eef2ff; border-color: #a5b4fc; color: #4338ca; }
+/* Auto-create shifts from preferences: highlighted panel inside the Create Schedule menu */
+.cs-auto { margin: 6px 2px 2px; border: 1px solid #a5b4fc; border-left: 4px solid #4f46e5; background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%); border-radius: 12px; box-shadow: 0 4px 12px -6px rgba(79,70,229,.35); }
+.cs-auto:has(#csAutoCreate:checked) { background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%); border-color: #818cf8; border-left-color: #4f46e5; }
+.cs-auto .cs-toggle, .cs-auto .cs-toggle:hover { background: transparent !important; border-color: transparent !important; }
+.cs-auto .cs-toggle .cs-ic { background: linear-gradient(135deg,#6366f1,#8b5cf6) !important; color: #fff !important; box-shadow: 0 4px 10px -3px rgba(99,102,241,.5); }
+.cs-auto .cs-txt > b { color: #1e1b4b; }
+.cs-auto .cs-txt small { color: #475569; }
+.cs-auto .cs-auto-lbl { color: #6366f1; }
+.cs-auto .cs-auto-opts button:not(.active) { border-color: #c7d2fe; }
 
 /* HEADER ICON STYLING */
 .header-icon-btn {
@@ -1346,6 +1395,10 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .df-row.df-ana { height: 34px; background: #fff; }
 .df-ana-lbl { font-size: 13px; font-weight: 700; color: #0f172a; font-style: normal !important; }
 .df-ana-h { font-size: 11.5px; font-weight: 700; color: #475569; background: #fff; }
+.ua-day-sum { position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; gap: 110px; padding-left: 140px; font-size: 12.5px; font-weight: 700; color: #1e293b; white-space: nowrap; pointer-events: none; z-index: 2; }
+/* day view unassigned row: no separators between hour cells */
+#mainScheduleTable td.ua-dcell { border-right-color: transparent !important; }
+#mainScheduleTable td.ua-dcell + td.ua-dcell { border-left-color: transparent !important; }
 .flt-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #2563eb; color: #fff; font-size: 11px; font-weight: 700; margin-left: 2px; }
 .popover-btn { white-space: nowrap; }
 #filtersBtn.flt-on { border-color: #93c5fd !important; background: #eff6ff !important; color: #1d4ed8 !important; }
@@ -1402,7 +1455,17 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #overShortPop tbody th { text-align: left; font-weight: 500; color: #475569; }
 #overShortPop td { color: #0f172a; font-weight: 600; }
 #overShortPop td.text-red-500 { color: #dc2626; }
-/* Forecasted Staff / Staff Variance by position */
+/* footer KPI pop-ups (Daily Statistics, Forecasted Staff, Staff Variance): larger for readability */
+#overShortPop { min-width: 560px; }
+#posPop { min-width: 640px; }
+#overShortPop .os-head, #posPop .os-head { padding: 15px 16px 15px 22px; font-size: 17px; }
+#overShortPop .os-head .os-sub, #posPop .os-head .os-sub { font-size: 13px; margin-top: 3px; }
+#overShortPop table, #posPop table { font-size: 15.5px; }
+#overShortPop th, #overShortPop td { padding: 13px 22px !important; }
+#posPop th, #posPop td { padding: 12px 20px !important; }
+#overShortPop thead th, #posPop thead th { font-size: 13.5px; }
+#overShortPop tbody th { font-size: 14px; }
+#posPop .pp-pill { font-size: 13px; min-width: 150px; max-width: 180px; padding: 4px 12px; }/* Forecasted Staff / Staff Variance by position */
 #posPop { position: fixed; z-index: 10000; display: none; min-width: 520px; background: #fff; border: 1px solid #c7d2fe; border-radius: 14px; box-shadow: 0 0 0 4px rgba(99,102,241,.12), 0 24px 56px -12px rgba(15,23,42,.45); overflow: hidden; animation: ppIn .14s ease-out; }
 @keyframes ppIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 /* dim the grid behind the footer pop-ups so they stand out from the white table */
@@ -1427,7 +1490,25 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #posPop td.pp-neg { color: #dc2626; } #posPop td.pp-pos { color: #059669; } #posPop td.pp-zero { color: #94a3b8; font-weight: 500; }
 #posPop .pp-pill { display: inline-block; min-width: 128px; max-width: 150px; padding: 3px 10px; border-radius: 7px; border: 1px solid; font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #posPop .pp-empty { padding: 18px; color: #64748b; font-size: 13px; }
-#overShortPop td.text-emerald-600 { color: #059669; }
+/* footer KPI pop-ups: card style (icon header, gridded table, bold labels) */
+#overShortPop, #posPop { border: 1px solid #dbe4f3; border-radius: 18px; box-shadow: 0 0 0 1px rgba(255,255,255,.6) inset, 0 28px 60px -16px rgba(15,23,42,.45); }
+#overShortPop .os-head, #posPop .os-head { justify-content: flex-start; gap: 14px; padding: 16px 16px 16px 18px; background: linear-gradient(180deg, #f5f8ff, #ffffff); border-left: 0 !important; border-bottom: 1px solid #e4eaf4; color: #0f172a; }
+.os-ic { width: 44px; height: 44px; border-radius: 12px; flex: none; display: grid; place-items: center; background: #e8efff; color: #2563eb; }
+.os-tt { flex: 1; min-width: 0; font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+#overShortPop .os-head .os-sub, #posPop .os-head .os-sub { font-size: 14px; font-weight: 500; color: #475569; }
+#overShortPop .os-head button, #posPop .os-head button { width: 34px; height: 34px; border-radius: 9px; border: 1px solid #e2e8f0; background: #fff; color: #334155; align-self: flex-start; }
+#overShortPop .os-head button:hover, #posPop .os-head button:hover { background: #f1f5f9; }
+#overShortPop table, #posPop table { border-collapse: collapse; }
+#overShortPop th, #overShortPop td, #posPop th, #posPop td { border: 0 !important; border-bottom: 1px solid #edf1f6 !important; border-left: 1px solid #edf1f6 !important; background: #fff; }
+#overShortPop tr > :first-child, #posPop tr > :first-child { border-left: 0 !important; }
+#overShortPop thead th, #posPop thead th { background: #eef2f8 !important; color: #1e293b; font-weight: 700; font-size: 14px; border-bottom: 1px solid #dfe6f0 !important; }
+#overShortPop thead th.os-first, #posPop thead th.os-first { text-align: left; }
+#overShortPop tbody th { text-align: left; font-size: 14.5px; font-weight: 700; color: #1e293b; background: #f8fafc !important; }
+#overShortPop td, #posPop td { font-size: 16px; font-weight: 700; color: #0f172a; }
+#overShortPop tbody tr:nth-child(even) th, #overShortPop tbody tr:nth-child(even) td, #posPop tbody tr:nth-child(even) th, #posPop tbody tr:nth-child(even) td { background: #fff; }
+#overShortPop tbody tr:nth-child(even) th { background: #f8fafc !important; }
+#overShortPop tbody tr:hover td, #posPop tbody tr:hover td { background: #f5f8ff !important; }
+#overShortPop tbody tr:last-child > *, #posPop tbody tr:last-child > * { border-bottom: 0 !important; }#overShortPop td.text-emerald-600 { color: #059669; }
 
 /* ===== SIDEBAR + TOP BAR — same look as the dashboard (dashboard-redesign.css, new UI) ===== */
 .h-14.bg-\[\#0b2545\],
@@ -1933,14 +2014,17 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 
             </div>
         </div>
-        <div class="flex items-center gap-2 cursor-pointer font-medium"><i data-lucide="home"></i><span>Dashboard</span></div>
-        <div class="flex items-center gap-2 cursor-pointer font-medium"><i data-lucide="calendar-days"></i><span>Schedule</span></div>
+        <a href="index.html" class="flex items-center gap-2 cursor-pointer font-medium" style="color:inherit;text-decoration:none"><i data-lucide="home"></i><span>Dashboard</span></a>
+        <a href="Schedule Pad.html" class="flex items-center gap-2 cursor-pointer font-medium" style="color:inherit;text-decoration:none"><i data-lucide="calendar-days"></i><span>Schedule</span></a>
         <div class="flex items-center gap-2 cursor-pointer font-medium"><i data-lucide="map-pin"></i><span>085 - Del Mar</span><i data-lucide="chevron-down" class="w-4"></i></div>
     </div>
-    <div class="flex items-center gap-5 top-text">
-        <div class="flex items-center gap-2"><i data-lucide="cloud"></i><span>75°F</span></div>
-        <div class="border-l border-blue-700 h-5"></div>
+    <!-- CENTER: WEATHER & TIME (same as dashboard) -->
+    <div class="flex-1 flex items-center justify-center gap-3 top-text whitespace-nowrap px-4">
+        <div class="flex items-center gap-2"><i data-lucide="cloud-sun" class="w-5 h-5"></i><span>75°F</span></div>
+        <div class="border-l border-white/30 h-4"></div>
         <div>04:33 AMERICA/LOS ANGELES</div>
+    </div>
+    <div class="flex items-center gap-5 top-text">
         <div class="relative">
             <button id="storeBtn" onclick="toggleStore()" class="bg-white text-slate-700 px-4 py-1 rounded-full flex items-center gap-2">
                 <i data-lucide="building-2" class="w-4"></i>Original Fish Taco, LLC<i data-lucide="chevron-down" class="w-4"></i>
@@ -2115,6 +2199,14 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         <i data-lucide="check-square" class="w-5 h-5 text-slate-400"></i> Select
                     </button>
 
+                    <!-- Clear: delete unassigned shifts by length, or clear the schedule -->
+                    <div class="relative" id="clearScheduleWrap">
+                        <button id="clearScheduleBtn" onclick="customTogglePopover('clearScheduleMenu'); renderClearMenu()" class="cs-btn clr-btn">
+                            <i data-lucide="eraser" class="w-4 h-4"></i> Clear <i data-lucide="chevron-down" class="w-3.5 h-3.5 cs-chev"></i>
+                        </button>
+                        <div id="clearScheduleMenu" class="hidden cs-menu"></div>
+                    </div>
+
                     <!-- Create Schedule: the schedule preference options as an inline menu -->
                     <div class="relative" id="createScheduleWrap">
                         <button id="createScheduleBtn" onclick="customTogglePopover('createScheduleMenu')" class="cs-btn">
@@ -2161,6 +2253,8 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                                         <button type="button" data-v="aiStd" onclick="setCsAutoMethod('aiStd')"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>AI · Standard Shift</button>
                                         <button type="button" data-v="ai" onclick="setCsAutoMethod('ai')"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i>AI Scheduling</button>
                                     </div>
+                                    <!-- Load Template: which template new weeks are built from -->
+                                    <div id="csTplList" class="cs-tpl-list hidden"></div>
                                 </div>
                             </div>
                         </div>
@@ -2389,8 +2483,8 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 </div>
 
 <!-- DAILY NOTES MODAL -->
-<div id="dayNotesModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[800] backdrop-blur-sm">
-    <div class="bg-white w-[450px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in duration-200">
+<div id="dayNotesModal" class="hidden" style="position:fixed;z-index:10000;">
+    <div class="bg-white w-[450px] rounded-2xl shadow-2xl flex flex-col overflow-hidden" style="animation: ppIn .14s ease-out;">
         <div class="h-14 flex items-center justify-between px-6 bg-[#0b2545] border-b border-[#1d3b6a]">
             <h2 id="notesModalTitle" class="text-[15px] font-bold text-white">Daily Notes</h2>
             <button onclick="closeDayNotes()" class="text-white/60 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -3545,8 +3639,8 @@ let employeeData = Array.from({length:50},(_,i)=>({
     initials: ["AV","BL","DG","DV","DA","EG","JR","JS"][i%8] || "EE",
     avatar: `https://i.pravatar.cc/150?u=${i+10}`,
     position:i%3===0?"General Manager":i%2===0?"Shift Leader":"Line Cook",
-    payrate:(18+Math.random()*10).toFixed(2),
-    totalHours: (20 + Math.random() * 20).toFixed(2),
+    payrate:(18 + ((i * 37) % 100) / 10).toFixed(2),
+    totalHours: (20 + ((i * 7919) % 2000) / 100).toFixed(2),
     isShared: (i === 0), isMinor: (i === 1),
     unavailableDays: (i === 2) ? [0, 1, 2, 3, 4, 5, 6] : [],
     partialUnavailableDays: (i === 4) ? {start: 8, end: 12, label: "08:00 - 12:00"} : null,
@@ -3756,7 +3850,7 @@ const offerEmployees = Array.from({length:15},(_,i)=>({
 function customTogglePopover(id) {
     const popover = document.getElementById(id);
     const isHidden = popover.classList.contains('hidden');
-    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup', 'createScheduleMenu'];
+    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup', 'createScheduleMenu', 'clearScheduleMenu'];
     popovers.forEach(pId => {
         if(pId !== id) {
             const p = document.getElementById(pId);
@@ -3772,15 +3866,39 @@ function closeInitiateModal() { document.getElementById("initiateModal").classLi
 function openCopyModal() { closeInitiateModal(); document.getElementById("copyModal").classList.remove("hidden"); document.getElementById("copyModal").classList.add("flex"); lucide.createIcons(); }
 // Auto-create preference: on/off + which option builds new weeks (saved in this browser)
 const _csAutoNames = { copy: 'Copy Schedule', template: 'Load Template', aiStd: 'AI Scheduling Using Standard Shift', ai: 'AI Scheduling' };
-let _csAuto = { on: true, method: 'copy' };
+let _csAuto = { on: true, method: 'copy', tpl: 0 };
 try { Object.assign(_csAuto, JSON.parse(localStorage.getItem('zipAutoCreate') || '{}')); } catch (e) {}
 function _csAutoSave() { try { localStorage.setItem('zipAutoCreate', JSON.stringify(_csAuto)); } catch (e) {} }
+// "Load Template (Balanced Week)": the chosen template rides along with the method name
+function _csAutoLabel(m = _csAuto.method) {
+    if (m !== 'template') return _csAutoNames[m];
+    const tpl = (typeof scheduleTemplates !== 'undefined' && scheduleTemplates[_csAuto.tpl]) || null;
+    return tpl ? `Load Template (${tpl.name})` : 'Load Template';
+}
+function setCsAutoTemplate(i) {
+    if (_csAuto.tpl === i) return;
+    _csAuto.tpl = i;
+    _csAutoSave();
+    renderCsAuto();
+    showToast(`Auto-create will now use ${_csAutoLabel()}.`, 'info');
+}
 function renderCsAuto() {
     const { on, method } = _csAuto;
+    if (typeof scheduleTemplates !== 'undefined' && !scheduleTemplates[_csAuto.tpl]) _csAuto.tpl = 0;
     document.getElementById('csAutoCreate').checked = on;
     document.getElementById('csAutoDesc').innerHTML = on
-        ? `New weeks are created with <b>${_csAutoNames[method]}</b>`
+        ? `New weeks are created with <b>${_csAutoLabel()}</b>`
         : 'Off — new weeks start empty';
+    const list = document.getElementById('csTplList');
+    list.classList.toggle('hidden', !(on && method === 'template'));
+    if (on && method === 'template' && typeof scheduleTemplates !== 'undefined') {
+        list.innerHTML = `<div class="cs-auto-lbl">Template</div>` + scheduleTemplates.map((tpl, i) => `
+            <label class="cs-tpl${i === _csAuto.tpl ? ' active' : ''}">
+                <input type="radio" name="csTpl" ${i === _csAuto.tpl ? 'checked' : ''} onchange="setCsAutoTemplate(${i})">
+                <span class="cs-tpl-name">${tpl.name}</span>
+                <span class="cs-tpl-meta">${tpl.shifts} shifts · ${tpl.hours} hrs</span>
+            </label>`).join('');
+    }
     document.getElementById('csAutoPick').classList.toggle('off', !on);
     document.querySelectorAll('#csAutoPick button').forEach(b => {
         b.classList.toggle('active', b.dataset.v === method);
@@ -3789,20 +3907,20 @@ function renderCsAuto() {
     document.querySelectorAll('.cs-auto-tag').forEach(t => t.classList.toggle('show', on && t.dataset.auto === method));
     const btn = document.getElementById('createScheduleBtn');
     btn.classList.toggle('cs-has-auto', on);
-    btn.title = on ? `Auto-create: ${_csAutoNames[method]}` : 'Auto-create is off';
+    btn.title = on ? `Auto-create: ${_csAutoLabel()}` : 'Auto-create is off';
 }
 function setCsAuto(on) {
     _csAuto.on = on;
     _csAutoSave();
     renderCsAuto();
-    showToast(on ? `Auto-create on — new weeks will use ${_csAutoNames[_csAuto.method]}.` : 'Auto-create turned off.', 'info');
+    showToast(on ? `Auto-create on — new weeks will use ${_csAutoLabel()}.` : 'Auto-create turned off.', 'info');
 }
 function setCsAutoMethod(m) {
     if (!_csAuto.on || _csAuto.method === m) return;
     _csAuto.method = m;
     _csAutoSave();
     renderCsAuto();
-    showToast(`Auto-create will now use ${_csAutoNames[m]}.`, 'info');
+    showToast(`Auto-create will now use ${_csAutoLabel(m)}.`, 'info');
 }
 document.addEventListener('DOMContentLoaded', renderCsAuto);
 
@@ -3813,23 +3931,115 @@ function csPick(kind) {
     else if (kind === 'template') openTemplateModal();
     else if (kind === 'aiStd') openAIAgent(true);
     else if (kind === 'ai') openAIAgent(false);
-    else showToast('Starting from a blank week roster.', 'info');
+    else { askClear('all'); document.getElementById('clrTitle').innerText = 'Start from scratch?'; }
 }
 document.addEventListener('click', function (e) {
     const m = document.getElementById('createScheduleMenu');
     if (m && !m.classList.contains('hidden') && !e.target.closest('#createScheduleWrap') && !e.target.closest('#actionDropdown')) m.classList.add('hidden');
 });
+// ── Clear menu: delete unassigned shifts (all / under 1–3 hrs) or clear the schedule ──
+// Day view acts on the day shown; Week and Month act on the week of the selected date.
+const _clrDays = () => activeView === 'day' ? [activeDate.getDay()] : [0, 1, 2, 3, 4, 5, 6];
+const _clrScope = () => {
+    if (activeView === 'day') return activeDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const s = new Date(activeDate); s.setDate(s.getDate() - s.getDay()); const e = new Date(s); e.setDate(s.getDate() + 6);
+    const f = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `week of ${f(s)} – ${f(e)}`;
+};
+function _clrUa(maxHrs) {
+    return _clrDays().reduce((n, c) => n + uaShiftsForDay(c).filter(s => maxHrs == null || s.end - s.start < maxHrs).length, 0);
+}
+function _clrEmpCount() {
+    if (activeView === 'day') return employeeData.filter(emp => {
+        const k = `d_${emp.id}`; return (Object.prototype.hasOwnProperty.call(shiftAssignments, k) ? shiftAssignments[k] : emp.shift) != null;
+    }).length;
+    return _aiCurrent().length;
+}
+const _CLR = [
+    { k: 'ua',    grp: 'Unassigned shifts', icon: 'trash-2', tint: '#dc2626', t: 'Delete all unassigned shifts', n: () => _clrUa(null) },
+    { k: 'ua1',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 1 hr', n: () => _clrUa(1) },
+    { k: 'ua2',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 2 hrs', n: () => _clrUa(2) },
+    { k: 'ua3',   grp: 'Unassigned shifts', icon: 'timer', tint: '#d97706', t: 'Delete unassigned shifts under 3 hrs', n: () => _clrUa(3) },
+    { k: 'sched', grp: 'Schedule', icon: 'calendar-x', tint: '#2563eb', t: 'Clear schedule', d: 'Employee shifts only; unassigned stay', n: () => _clrEmpCount() },
+    { k: 'all',   grp: 'Schedule', icon: 'calendar-x-2', tint: '#dc2626', t: 'Clear schedule including unassigned shifts', n: () => _clrEmpCount() + _clrUa(null) },
+];
+function renderClearMenu() {
+    const m = document.getElementById('clearScheduleMenu');
+    let grp = '';
+    m.innerHTML = _CLR.map(o => {
+        const n = o.n(), head = o.grp !== grp ? `${grp ? '<div class="cs-sep"></div>' : ''}<div class="cs-head">${o.grp}</div>` : '';
+        grp = o.grp;
+        return `${head}<button class="cs-item${n ? '' : ' clr-off'}" ${n ? `onclick="askClear('${o.k}')"` : 'disabled'}>
+            <span class="cs-ic" style="background:${o.tint}14;color:${o.tint}"><i data-lucide="${o.icon}" class="w-4 h-4"></i></span>
+            <span class="cs-txt"><b>${o.t}</b><small>${o.d ? o.d + ' · ' : ''}${n ? `${n} shift${n === 1 ? '' : 's'}` : 'Nothing to clear'}</small></span>
+            <span class="clr-n">${n}</span></button>`;
+    }).join('') + `<div class="clr-scope"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>Applies to ${_clrScope()}</div>`;
+    lucide.createIcons();
+}
+let _clrPending = null;
+function askClear(k) {
+    const o = _CLR.find(x => x.k === k), n = o.n();
+    document.getElementById('clearScheduleMenu').classList.add('hidden');
+    _clrPending = k;
+    document.getElementById('clrTitle').innerText = o.t + '?';
+    document.getElementById('clrText').innerHTML = `This removes <b>${n} shift${n === 1 ? '' : 's'}</b> from the ${_clrScope()}. This can't be undone.`;
+    document.getElementById('clrGo').innerHTML = `<i data-lucide="trash-2" class="w-4 h-4"></i>${k.startsWith('ua') ? 'Delete' : 'Clear'} ${n}`;
+    const md = document.getElementById('clearConfirm'); md.classList.remove('hidden'); md.classList.add('flex');
+    lucide.createIcons();
+}
+function closeClear() { const md = document.getElementById('clearConfirm'); md.classList.add('hidden'); md.classList.remove('flex'); _clrPending = null; }
+function doClear() {
+    const k = _clrPending, o = _CLR.find(x => x.k === k), n = o.n();
+    if (!k) return;
+    const days = _clrDays();
+    const dropUa = max => days.forEach(c => { unassignedShifts[c] = uaShiftsForDay(c).filter(s => max != null && s.end - s.start >= max); });
+    if (k === 'ua') dropUa(null);
+    else if (/^ua\d$/.test(k)) dropUa(+k[2]);
+    if (k === 'sched' || k === 'all') {
+        employeeData.forEach(emp => {
+            days.forEach(c => { shiftAssignments[`w_${emp.id}_${c}`] = null; });
+            shiftAssignments[`d_${emp.id}`] = null;   // the day shown is always inside the cleared range
+        });
+        if (k === 'all') dropUa(null);
+    }
+    closeClear();
+    renderScheduleTable();
+    showToast(`${o.t.replace(/^Delete /, 'Deleted ').replace(/^Clear /, 'Cleared ')} · ${n} shift${n === 1 ? '' : 's'} removed (${_clrScope()}).`, 'info');
+}
+document.addEventListener('click', function (e) {
+    const m = document.getElementById('clearScheduleMenu');
+    if (m && !m.classList.contains('hidden') && !e.target.closest('#clearScheduleWrap')) m.classList.add('hidden');
+});
 function closeCopyModal() { document.getElementById("copyModal").classList.add("hidden"); document.getElementById("copyModal").classList.remove("flex"); }
 
 /* NOTES FUNCTIONS */
-function openDayNotes(dayStr) {
+function openDayNotes(dayStr, ev) {
+    if (ev) ev.stopPropagation();
     document.getElementById("notesModalTitle").innerText = "Daily Notes - " + dayStr;
-    document.getElementById("dayNotesModal").classList.remove("hidden");
-    document.getElementById("dayNotesModal").classList.add("flex");
+    const m = document.getElementById("dayNotesModal");
+    m.classList.remove("hidden");
+    _ppBackdrop(closeDayNotes);                       // same dim backdrop as the footer KPI pop-ups
+    document.querySelectorAll(".pp-src").forEach(x => x.classList.remove("pp-src"));
+    const src = ev && ev.currentTarget;
+    if (src && src.getBoundingClientRect) {
+        src.classList.add("pp-src");
+        const r = src.getBoundingClientRect();
+        // open right under the clicked icon, kept inside the window
+        m.style.left = Math.min(innerWidth - m.offsetWidth - 8, Math.max(8, r.left + r.width / 2 - m.offsetWidth / 2)) + "px";
+        m.style.top = (r.bottom + 8 + m.offsetHeight <= innerHeight - 8 ? r.bottom + 8 : Math.max(8, r.top - m.offsetHeight - 8)) + "px";
+    } else {
+        m.style.left = (innerWidth - m.offsetWidth) / 2 + "px"; m.style.top = (innerHeight - m.offsetHeight) / 2 + "px";
+    }
+    document.addEventListener("keydown", _notesKey);
     lucide.createIcons();
+    setTimeout(() => document.getElementById("dayNotesInput").focus(), 0);
 }
+function _notesKey(e) { if (e.key === "Escape") closeDayNotes(); }
 function closeDayNotes() {
     document.getElementById("dayNotesModal").classList.add("hidden");
+    const bd = document.getElementById("ppBackdrop"); if (bd) bd.style.display = "none";
+    document.querySelectorAll(".pp-src").forEach(x => x.classList.remove("pp-src"));
+    document.removeEventListener("keydown", _notesKey);
 }
 function saveDayNotes() {
     closeDayNotes();
@@ -4212,6 +4422,7 @@ function _aiTick() {
         _ai.timers.push(setTimeout(_aiTick, 260));
     } else {
         _ai.step++; _ai.shown = 0;
+        if (_ai.step >= AI_STEPS.length) return _aiFinish();   // last step done: show the result
         _aiRender();
         _ai.timers.push(setTimeout(_aiTick, 220));
     }
@@ -4254,7 +4465,7 @@ function _aiRender() {
     document.getElementById('aiProgress').style.width = `${done / AI_STEPS.length * 100}%`;
     document.getElementById('aiElapsed').innerText = _ai.finished ? aiMs(p.ms) : '…';
     document.getElementById('aiDoneCount').innerText = `${done} of ${AI_STEPS.length} done`;
-    document.getElementById('aiNow').innerHTML = _ai.finished
+    document.getElementById('aiNow').innerHTML = _ai.finished || !AI_STEPS[s]
         ? 'All steps finished'
         : `Schedule Agent is ${AI_STEPS[s].title.charAt(0).toLowerCase() + AI_STEPS[s].title.slice(1)} <span class="ai-dots"><i></i><i></i><i></i></span>`;
 
@@ -4444,19 +4655,11 @@ function _aiSummaryTab() {
 }
 
 function aiApply() {
-    const p = _ai.plan;
-    // replace the week for every employee with the draft (managers keep their current shifts)
-    p.pool.forEach(emp => { for (let c = 0; c < 7; c++) shiftAssignments[`w_${emp.id}_${c}`] = null; });
-    p.assigned.forEach(s => {
-        const sh = _minToHhmm(Math.round(s.start * 60)), eh = _minToHhmm(Math.round(s.end * 60));
-        shiftAssignments[`w_${s.empId}_${s.day}`] = { start: Math.floor(s.start), end: Math.floor(s.end), startHHMM: sh, endHHMM: eh, time: `${sh} - ${eh}`, position: s.position, notes: '',
-            breaks: s.brk ? [{ start: _minToHhmm(Math.round(s.brk[0] * 60)), end: _minToHhmm(Math.round(s.brk[1] * 60)), type: 'Meal' }] : [] };
-    });
-    unassignedShifts = Array.from({ length: 7 }, (_, c) => p.open.filter(s => s.day === c)
-        .map(s => ({ id: _uaNextId++, start: s.start, end: s.end, position: s.position, dept: _uaDeptFor(s.position) })));
+    restoreBaseSchedule(true);
     closeAIAgent();
     if (activeView !== 'week') switchView('week'); else renderScheduleTable();
-    showToast(`AI schedule applied: ${p.assigned.length} shifts for ${p.people} people${p.open.length ? `, ${p.open.length} left in Unassigned` : ''}.`, 'info');
+    const c = _baseCounts();
+    showToast(`AI schedule created: ${c.shifts} shifts${c.ua ? `, ${c.ua} in Unassigned` : ''}.`, 'info');
 }
 // Mock week patterns available to copy from in the Advanced Copy Schedule modal.
 // Each pattern is a deterministic seed + density so the copied result looks
@@ -4468,31 +4671,30 @@ const copySourceWeekPatterns = {
 function performCopy() {
     const sel = document.getElementById('copySourceWeek');
     const label = sel ? sel.value : Object.keys(copySourceWeekPatterns)[0];
-    const pattern = copySourceWeekPatterns[label] || copySourceWeekPatterns[Object.keys(copySourceWeekPatterns)[0]];
-    const applyAvailability = document.getElementById('copyApplyAvailability')?.checked !== false;
     const copyUnassigned = document.getElementById('copyUnassignedShifts')?.checked !== false;
-
-    employeeData.forEach(emp => {
-        for (let c = 0; c < 7; c++) shiftAssignments[`w_${emp.id}_${c}`] = null;
-    });
-    employeeData.forEach(emp => {
-        for (let c = 0; c < 7; c++) {
-            if (applyAvailability && emp.unavailableDays && emp.unavailableDays.includes(c)) continue;
-            const hash = (emp.id * 7 + c * 5 + pattern.seedOffset * 11) % 10;
-            if (hash / 10 < pattern.density) {
-                const p = _shiftPatterns[(emp.id + c + pattern.seedOffset) % _shiftPatterns.length];
-                shiftAssignments[`w_${emp.id}_${c}`] = { start: p.start, end: p.end, time: p.time, position: emp.position };
-            }
-        }
-    });
-    // Unassigned shifts come across only when the flag is checked
-    unassignedShifts = copyUnassigned ? buildUnassignedWeek(pattern.seedOffset + 1) : Array.from({ length: 7 }, () => []);
+    restoreBaseSchedule(copyUnassigned);
     closeCopyModal();
     if (activeView !== 'week') switchView('week'); else renderScheduleTable();
-    showToast(`Copied the schedule pattern from ${label} onto the current week` +
-        (copyUnassigned ? `, including ${unassignedShifts.flat().length} unassigned shifts.` : ` (unassigned shifts not copied).`), 'info');
+    const c = _baseCounts();
+    showToast(`Copied the schedule from ${label}: ${c.shifts} shifts` +
+        (copyUnassigned ? `, including ${c.ua} unassigned shifts.` : ` (unassigned shifts not copied).`), 'info');
 }
 function saveInitiatePreferences() { closeInitiateModal(); renderScheduleTable(); }
+
+// ── Rebuild: every Create Schedule option (Copy, Template, AI, AI with standard shifts)
+// brings back the original schedule for the week, including its unassigned shifts.
+// Clear / Start from scratch / deleting unassigned shifts still remove them as before.
+let _baseSched = null;
+function snapshotBaseSchedule() {
+    _baseSched = { sa: structuredClone(shiftAssignments), ua: structuredClone(unassignedShifts) };
+}
+function restoreBaseSchedule(withUnassigned = true) {
+    if (!_baseSched) return;
+    Object.keys(shiftAssignments).forEach(k => delete shiftAssignments[k]);
+    Object.assign(shiftAssignments, structuredClone(_baseSched.sa));
+    unassignedShifts = withUnassigned ? structuredClone(_baseSched.ua) : Array.from({ length: 7 }, () => []);
+}
+const _baseCounts = () => ({ shifts: _aiCurrent().length, ua: unassignedShifts.reduce((n, d) => n + d.length, 0) });
 
 /* CORE DASHBOARD FUNCTIONS */
 function renderCalendar() {
@@ -4793,7 +4995,7 @@ function renderScheduleTable(list=employeeData){
                         ${c.label} <span class="font-semibold text-[16px] text-slate-500">${c.date}</span>
                     </div>
                     <div class="flex gap-1">
-                        <div class="header-icon-btn" onclick="openDayNotes('${c.fullLabel}')"><i data-lucide="file-text"></i></div>
+                        <div class="header-icon-btn" onclick="openDayNotes('${c.fullLabel}', event)"><i data-lucide="file-text"></i></div>
                         <div class="header-icon-btn chart-icon-btn" onclick="openChartView('${c.fullLabel}')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="13" width="5" height="9" rx="1"/><rect x="9.5" y="8" width="5" height="14" rx="1"/><rect x="17" y="3" width="5" height="19" rx="1"/></svg></div>
                     </div>
                 </div>
@@ -4848,8 +5050,11 @@ function renderScheduleTable(list=employeeData){
             const h = Math.max(1, _uaDayList.length) * laneH;
             const boxes = isUnassignedVisible ? list.map(s => uaDayBox(s, dayIdx,
                 `position:absolute;top:${_uaDayList.indexOf(s) * laneH + 3}px;left:${(s.start - Math.floor(s.start)) * cellWidth}px;width:${(s.end - s.start) * cellWidth}px;height:${laneH - 6}px;z-index:5;`)).join('') : '';
-            const label = !isUnassignedVisible && list.length ? `<span class="text-[11px] font-bold text-blue-600">${list.length}</span>` : '';
-            html += `<td class="ua-cell ${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px;height:${isUnassignedVisible ? h : 40}px;position:relative;">${boxes}${label}${uaAddBtn(dayIdx, hour)}</td>`;
+            // hidden: one summary for the whole day (count + hours) instead of a count in every hour
+            const _uaHrs = _uaDayList.reduce((a, s) => a + (s.end - s.start), 0);
+            const label = !isUnassignedVisible && idx === 0
+                ? `<div class="ua-day-sum" style="width:${columns.length * cellWidth}px"><span>No Of Unassigned Shift (${_uaDayList.length})</span><span>Unassigned Shift Hours ( ${_uaHrs.toFixed(2)} )</span></div>` : '';
+            html += `<td class="ua-cell ua-dcell ${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px;height:${isUnassignedVisible ? h : 40}px;position:relative;">${boxes}${label}${uaAddBtn(dayIdx, hour)}</td>`;
         } else if (!list.length) {
             html += `<td class="ua-cell ${isUnassignedVisible ? 'dropZone ' : ''}text-center bg-white" style="width:${cellWidth}px"><span class="text-[11px] font-medium text-slate-300">${activeView === 'month' ? '–' : 'No shifts'}</span>${uaAddBtn(dayIdx)}</td>`;
         } else if (isUnassignedVisible && activeView === 'week') {
@@ -5570,7 +5775,7 @@ function _openPosPop(e, title, html) {
     closeOverShort();
     let p = document.getElementById('posPop');
     if (!p) { p = document.createElement('div'); p.id = 'posPop'; document.body.appendChild(p); }
-    p.innerHTML = `<div class="os-head"><span>${title}</span><button type="button" onclick="closePosPop()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>${html}`;
+    p.innerHTML = `<div class="os-head"><span class="os-ic"><i data-lucide="${/^Staff Variance/.test(title) ? 'arrow-up-down' : 'users'}" class="w-5 h-5"></i></span><span class="os-tt">${title}</span><button type="button" onclick="closePosPop()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>${html}`;
     _ppBackdrop(closePosPop);
 
     document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
@@ -5601,7 +5806,7 @@ function openFctStaff(e, i) {
     const b = _posBreakdown(i); if (!b) return;
     const tot = b.rows.reduce((a, r) => a + r.fct, 0);
     _openPosPop(e, `Forecasted Staff Details <em class="os-sub">${_hrTitle(b.c)} · by position, 15-min intervals</em>`, b.rows.length ? `
-        <table><thead><tr><th class="l">Position</th>${b.qt.map(t => `<th>${t}</th>`).join('')}</tr></thead>
+        <table><thead><tr><th class="l os-first">Position</th>${b.qt.map(t => `<th>${t}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr><th class="l">${_posPill(r.p)}</th>${b.qt.map(() => `<td class="${r.fct ? '' : 'pp-zero'}">${r.fct}</td>`).join('')}</tr>`).join('')}</tbody>
         <tfoot><tr><th class="l">Total</th>${b.qt.map(() => `<td>${tot}</td>`).join('')}</tr></tfoot></table>`
         : '<p class="pp-empty">No positions are scheduled this day.</p>');
@@ -5612,7 +5817,7 @@ function openStaffVariance(e, i) {
     const tf = b.rows.reduce((a, r) => a + r.fct, 0), ts = b.rows.reduce((a, r) => a + r.sch, 0);
     _openPosPop(e, `Staff Variance Details <em class="os-sub">${_hrTitle(b.c)} · scheduled − forecasted, by position</em>`, b.rows.length ? `
         <table><thead>
-            <tr><th class="l" rowspan="2">Position</th><th>Forecasted</th><th>Scheduled</th><th colspan="4" class="pp-grp">Variance</th></tr>
+            <tr><th class="l os-first" rowspan="2">Position</th><th>Forecasted</th><th>Scheduled</th><th colspan="4" class="pp-grp">Variance</th></tr>
             <tr><th class="pp-sub">Hourly</th><th class="pp-sub">Hourly</th>${b.qt.map(t => `<th class="pp-sub">${t}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr><th class="l">${_posPill(r.p)}</th><td>${r.fct}</td><td>${r.sch.toFixed(2)}</td>${r.q.map(q => v(q - r.fct)).join('')}</tr>`).join('')}</tbody>
         <tfoot><tr><th class="l">Total</th><td>${tf}</td><td>${ts.toFixed(2)}</td>${b.qt.map((_, k) => v(b.rows.reduce((a, r) => a + r.q[k], 0) - tf)).join('')}</tr></tfoot></table>`
@@ -5630,8 +5835,8 @@ function openOverShort(e, i) {
     const r = (lbl, vals, cls = () => '') => `<tr><th>${lbl}</th>${vals.map(v => `<td class="${cls(v)}">${v}</td>`).join('')}</tr>`;
     const varQ = c.q.map(v => v - c.fct);
     p.innerHTML = `
-        <div class="os-head"><span>Daily Statistics <em class="os-sub">${c.h % 12 || 12}:00${c.h >= 12 ? 'p' : 'a'} – ${(c.h + 1) % 12 || 12}:00${(c.h + 1) % 24 >= 12 ? 'p' : 'a'} · 15-min intervals</em></span><button type="button" onclick="closeOverShort()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <table><thead><tr><th></th>${qt.map(t => `<th>${t}</th>`).join('')}</tr></thead><tbody>
+        <div class="os-head"><span class="os-ic"><i data-lucide="bar-chart-3" class="w-5 h-5"></i></span><span class="os-tt">Daily Statistics <em class="os-sub">${c.h % 12 || 12}:00${c.h >= 12 ? 'p' : 'a'} – ${(c.h + 1) % 12 || 12}:00${(c.h + 1) % 24 >= 12 ? 'p' : 'a'} · 15-min intervals</em></span><button type="button" onclick="closeOverShort()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <table><thead><tr><th class="os-first">Interval</th>${qt.map(t => `<th>${t}</th>`).join('')}</tr></thead><tbody>
             ${r('Scheduled', c.q)}${r('Forecasted', c.q.map(() => c.fct))}
             ${r('Variance', varQ.map(v => (v > 0 ? '+' : '') + v), v => +v < 0 ? 'text-red-500 font-bold' : +v > 0 ? 'text-emerald-600 font-bold' : '')}
             ${r('Fixed Jobs', [0, 0, 0, 0])}${r('Mgmt', c.mgmtQ)}
@@ -6708,6 +6913,8 @@ window.addEventListener('mousedown', function(e) {
 });
 window.onload = () => {
     _seedUaOffers();
+    snapshotBaseSchedule();
+    schedStoreLoad();
     renderCalendar();
     updateDateRangeLabel(); 
     switchView('week');   
@@ -6754,10 +6961,11 @@ function applyTemplate() {
         return;
     }
     const tpl = scheduleTemplates[selectedTemplateIdx];
-    generateTemplateSchedule(tpl);
+    restoreBaseSchedule(true);
     closeTemplateModal();
     if (activeView !== 'week') switchView('week'); else renderScheduleTable();
-    showToast(`Applied "${tpl.name}" — generated ~${tpl.shifts} shifts (${tpl.hours} hrs) across the week.`, 'info');
+    const c = _baseCounts();
+    showToast(`Applied "${tpl.name}": ${c.shifts} shifts, including ${c.ua} unassigned shifts.`, 'info');
 }
 
 // Generates a plausible set of week-view shifts roughly matching the
@@ -8832,12 +9040,30 @@ function sendInviteEmployee() {
 </script>
 
 <!-- DAY VIEW: 15-minute grid + drag to create a shift -->
+<script>
+/* Profile setting "15minindex on day pad" (default ON): dots vs full quarter-hour lines. Remembered per browser. */
+try { if (localStorage.getItem('zipQuarterDots') !== '0') document.documentElement.classList.add('q-dots'); } catch (e) { document.documentElement.classList.add('q-dots'); }
+function setQuarterDots(on) {
+    document.documentElement.classList.toggle('q-dots', !!on);
+    try { localStorage.setItem('zipQuarterDots', on ? '1' : '0'); } catch (e) {}
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const cb = document.getElementById('qDotsToggle');
+    if (cb) cb.checked = document.documentElement.classList.contains('q-dots');
+});
+</script>
 <style>
 /* each hour cell shows its quarter hours */
 #mainScheduleTable.day-q tbody tr > td:not(:first-child) {
     background-image: repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), #eef2f7 calc(25% - 1px) 25%);
 }
 #mainScheduleTable.day-q tbody tr > td:not(:first-child) { border-left-color: #dbe3ee; }
+/* flag "15minindex on day pad" (default on): quarter-hour dots on each row's baseline instead of full lines */
+html.q-dots #mainScheduleTable.day-q tbody tr > td:not(:first-child) {
+    background-image: radial-gradient(circle at 2px 50%, #b6c2d3 1.4px, transparent 1.9px);
+    background-size: 25% 6px; background-repeat: repeat-x; background-position: 0 calc(100% - 3px);
+}
+html.q-dots #mainScheduleTable.day-q tbody tr > td:not(:first-child) { border-left-color: #e8edf4; }
 #mainScheduleTable.day-q thead th:not(:first-child) {
     background-image: repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), #cbd5e1 calc(25% - 1px) 25%);
     background-size: 100% 5px; background-position: bottom; background-repeat: no-repeat;
@@ -9036,6 +9262,23 @@ body.select-mode #mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cur
 })();
 </script>
 
+<!-- CLEAR: confirm -->
+<div id="clearConfirm" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] items-start justify-center pt-24 z-[9990]" onclick="if(event.target===this) closeClear()">
+    <div class="bg-white rounded-2xl shadow-2xl w-[440px] max-w-[94vw] overflow-hidden border border-slate-100">
+        <div class="p-5 flex gap-4">
+            <span class="w-11 h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0"><i data-lucide="alert-triangle" class="w-5 h-5"></i></span>
+            <div class="min-w-0">
+                <div id="clrTitle" class="text-[15.5px] font-bold text-slate-900"></div>
+                <p id="clrText" class="text-[13.5px] text-slate-600 mt-1"></p>
+            </div>
+        </div>
+        <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+            <button onclick="closeClear()" class="px-4 h-9 rounded-lg border border-slate-200 bg-white text-slate-700 text-[13px] font-semibold hover:bg-slate-50">Cancel</button>
+            <button id="clrGo" onclick="doClear()" class="px-4 h-9 rounded-lg bg-red-600 text-white text-[13px] font-semibold hover:bg-red-700 flex items-center gap-1.5"></button>
+        </div>
+    </div>
+</div>
+
 <!-- TOAST / INLINE NOTIFICATION STACK --><div id="toastContainer" style="position:fixed; top:88px; right:28px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:380px;"></div>
 
 <!-- BULK ACTION BAR (shown when 1+ shifts are selected in Select mode) -->
@@ -9094,6 +9337,21 @@ body.select-mode #mainScheduleTable.day-q tr.empRow > td:not(:first-child) { cur
           <div class="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
         </label>
       </div>
+      <div class="flex items-center gap-3 px-5 py-2.5 border-t border-slate-50 cursor-pointer hover:bg-slate-50 transition group" onclick="resetDemoSchedule()">
+        <i data-lucide="rotate-ccw" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 shrink-0 transition"></i>
+        <span class="text-[13px] text-slate-700 group-hover:text-blue-600 transition">Reset demo schedule</span>
+      </div>
+      <!-- 15-min index style on the day pad: dots on the row baseline (on) or full lines (off) -->
+      <div class="flex items-center justify-between px-5 py-2.5 border-t border-slate-50">
+        <div class="flex items-center gap-3">
+          <i data-lucide="grip-horizontal" class="w-4 h-4 text-slate-400 shrink-0"></i>
+          <span class="text-[13px] text-slate-700">15minindex on day pad</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="qDotsToggle" onchange="setQuarterDots(this.checked)" class="sr-only peer">
+          <div class="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+        </label>
+      </div>
       <!-- Logout -->
       <div class="flex items-center gap-3 px-5 py-2.5 border-t border-slate-100 cursor-pointer hover:bg-red-50 transition group">
         <i data-lucide="log-out" class="w-4 h-4 text-slate-400 group-hover:text-red-500 shrink-0 transition"></i>
@@ -9149,5 +9407,86 @@ function applyDarkTheme(isDark) {
 })();
 </script>
 
+<script>
+/* ── Shared schedule store ────────────────────────────────────────────────────
+   Schedule Pad keeps its shifts, unassigned shifts and offers in localStorage
+   ('zipSchedStore') together with a summary (hours, cost, OT, today's shifts,
+   employees). The dashboard reads the same store, so both stay in sync and
+   changes survive a reload. Edits in another tab arrive through 'storage'. */
+const SCHED_KEY = 'zipSchedStore';
+const _sHrs = (s, e) => e > s ? e - s : e + 24 - s;
+function schedSummary() {
+    const shifts = _aiCurrent();
+    const rate = id => +((employeeData.find(e => e.id === id) || {}).payrate) || _coverageAvgWage;
+    const fctF = [1.05, 0.97, 1.08, 1.03, 0.96, 1.07, 1.04];
+    const days = Array.from({ length: 7 }, () => ({ hrs: 0, cost: 0, ot: 0, otCost: 0 }));
+    const empWk = {}, empOt = {};
+    employeeData.forEach(emp => {
+        let reg = 0, wk = 0; empOt[emp.id] = [];
+        for (let c = 0; c < 7; c++) {
+            const h = shifts.filter(s => s.empId === emp.id && s.day === c).reduce((a, s) => a + _sHrs(s.start, s.end), 0);
+            wk += h;
+            const daily = Math.max(0, h - 8), regT = h - daily, weekly = Math.max(0, reg + regT - 40);
+            reg = Math.min(40, reg + regT);
+            const d = days[c], ot = daily + weekly;
+            d.hrs += h; d.cost += h * rate(emp.id); d.ot += ot; d.otCost += ot * rate(emp.id) * 1.5;
+            empOt[emp.id][c] = ot;
+        }
+        empWk[emp.id] = wk;
+    });
+    days.forEach((d, c) => { d.fct = Math.round(d.hrs * fctF[c] * 2) / 2; });
+    const T = 1, NOW = 10;   // the dashboard's "today" is Monday; "now" is 10:00 AM
+    const pick = s => { const e = employeeData.find(x => x.id === s.empId); const a = shiftAssignments[`w_${s.empId}_${s.day}`];
+        return { empId: s.empId, name: e.name, avatar: e.avatar, position: s.position || e.position, day: s.day, start: s.start, end: s.end,
+                 breaks: (a && a.breaks) || [], ot: empOt[s.empId][s.day] || 0 }; };
+    const today = shifts.filter(s => s.day === T).map(pick).sort((a, b) => a.start - b.start);
+    const hourly = Array(24).fill(0);
+    today.forEach(s => { const end = s.end > s.start ? s.end : s.end + 24, r = rate(s.empId);
+        for (let h = 0; h < 24; h++) hourly[h] += Math.max(0, Math.min(end, h + 1) - Math.max(s.start, h)) * r; });
+    const upcoming = today.filter(s => s.start > NOW).concat(shifts.filter(s => s.day === T + 1).map(pick).sort((a, b) => a.start - b.start));
+    return {
+        today: T, days: days.map(d => ({ hrs: +d.hrs.toFixed(2), cost: Math.round(d.cost), ot: +d.ot.toFixed(2), otCost: Math.round(d.otCost), fct: d.fct })),
+        todayShifts: today, current: today.filter(s => s.start <= NOW && NOW < (s.end > s.start ? s.end : s.end + 24)), upcoming,
+        hourly: hourly.map(v => Math.round(v)),
+        employees: employeeData.map(e => ({ id: e.id, name: e.name, position: e.position, avatar: e.avatar, wk: +empWk[e.id].toFixed(2) })),
+    };
+}
+function schedStoreSave() {
+    try {
+        const s = JSON.stringify({ v: 1, sa: shiftAssignments, ua: unassignedShifts, nextId: _uaNextId, sum: schedSummary() });
+        if (s !== localStorage.getItem(SCHED_KEY)) localStorage.setItem(SCHED_KEY, s);
+    } catch (e) {}
+}
+function schedStoreLoad() {
+    let st = null;
+    try { st = JSON.parse(localStorage.getItem(SCHED_KEY) || 'null'); } catch (e) {}
+    if (!st || st.v !== 1 || !st.sa || !st.ua) return false;
+    Object.keys(shiftAssignments).forEach(k => delete shiftAssignments[k]);
+    Object.assign(shiftAssignments, st.sa);
+    unassignedShifts = st.ua;
+    _uaNextId = Math.max(_uaNextId, st.nextId || 0);
+    return true;
+}
+// week hours on each row follow the actual shifts; save after every redraw
+(function () {
+    const base = renderScheduleTable;
+    renderScheduleTable = function () {
+        const wk = {};
+        _aiCurrent().forEach(s => { wk[s.empId] = (wk[s.empId] || 0) + _sHrs(s.start, s.end); });
+        employeeData.forEach(e => { e.totalHours = (wk[e.id] || 0).toFixed(2); });
+        const r = base.apply(this, arguments);
+        schedStoreSave();
+        return r;
+    };
+})();
+window.addEventListener('storage', e => { if (e.key === SCHED_KEY && e.newValue && schedStoreLoad()) renderScheduleTable(); });
+// profile menu: back to the original demo schedule
+function resetDemoSchedule() {
+    restoreBaseSchedule(true);
+    renderScheduleTable();
+    document.getElementById('profilePopup')?.classList.add('hidden');
+    showToast('Demo schedule reset to the original shifts and unassigned shifts.', 'info');
+}
+</script>
 </body>
 </html>
