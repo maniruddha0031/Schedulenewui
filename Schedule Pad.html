@@ -1393,6 +1393,12 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .wf-head, .wf-head .sticky-footer-label, .wf-head .stats-content-area { background: #64748b !important; }
 .wf-head .wf-lbl, .wf-head .wf-tot, .wf-head .wf-val { color: #fff; font-weight: 700; font-size: 12px; }
 .wf-row.wf-head { height: 36px; }
+/* Budget section: same type as the Analysis KPI rows */
+.wf-row:not(.wf-head) .sticky-footer-label { background: #f8fafc; }
+.wf-row:not(.wf-head) .wf-lbl { font-size: 12.5px; font-style: italic; font-weight: 500; color: #334155; }
+.wf-row:not(.wf-head) .wf-tot { font-size: 12.5px; font-style: italic; font-weight: 600; color: #334155; }
+.wf-row .wf-val { font-size: 12.5px; color: #334155; }
+.wf-head .wf-tot, .wf-head .wf-val { font-size: 12.5px; }
 .wf-head .wf-lbl { font-size: 11.5px; }
 .wf-head .border-r { border-color: rgba(255,255,255,.18) !important; }
 .wf-head .wf-pipe { color: rgba(255,255,255,.7); }
@@ -1426,7 +1432,7 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #dayKpiPop .dkp-h span { font-size: 12px; color: #64748b; }
 #dayKpiPop .dkp-h button { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
 #dayKpiPop .dkp-h button:hover { background: #f1f5f9; color: #334155; }
-#dayKpiPop .dkp-list { padding: 6px; max-height: 300px; overflow-y: auto; }
+#dayKpiPop .dkp-list { padding: 6px; max-height: min(400px, 60vh); overflow-y: auto; }
 #dayKpiPop .dkp-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 13px; color: #1e293b; cursor: pointer; }
 #dayKpiPop .dkp-item:hover { background: #f8fafc; }
 #dayKpiPop .dkp-item input { width: 16px; height: 16px; accent-color: #2563eb; }
@@ -1467,7 +1473,7 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #overShortPop tbody th { text-align: left; font-weight: 500; color: #475569; }
 #overShortPop td { color: #0f172a; font-weight: 600; }
 #overShortPop td.text-red-500 { color: #dc2626; }
-/* footer KPI pop-ups (Daily Statistics, Forecasted Staff, Staff Variance): larger for readability */
+/* footer KPI pop-ups (Daily Statistics, Forecasted Hrs, Hrs Variance): larger for readability */
 #overShortPop { min-width: 560px; }
 #posPop { min-width: 640px; }
 #overShortPop .os-head, #posPop .os-head { padding: 15px 16px 15px 22px; font-size: 17px; }
@@ -1477,7 +1483,7 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 #posPop th, #posPop td { padding: 12px 20px !important; }
 #overShortPop thead th, #posPop thead th { font-size: 13.5px; }
 #overShortPop tbody th { font-size: 14px; }
-#posPop .pp-pill { font-size: 13px; min-width: 150px; max-width: 180px; padding: 4px 12px; }/* Forecasted Staff / Staff Variance by position */
+#posPop .pp-pill { font-size: 13px; min-width: 150px; max-width: 180px; padding: 4px 12px; }/* Forecasted Hrs / Hrs Variance by position */
 #posPop { position: fixed; z-index: 10000; display: none; min-width: 520px; background: #fff; border: 1px solid #c7d2fe; border-radius: 14px; box-shadow: 0 0 0 4px rgba(99,102,241,.12), 0 24px 56px -12px rgba(15,23,42,.45); overflow: hidden; animation: ppIn .14s ease-out; }
 @keyframes ppIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 /* dim the grid behind the footer pop-ups so they stand out from the white table */
@@ -5325,6 +5331,7 @@ function renderDayStrip() {
     strip.innerHTML = html;
 }
 // Week view: clicking a day name opens that day in Day view
+function _wkHeadOpen(e, i) { openWeekDay(i); }
 function openWeekDay(i) {
     activeDate = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay() + i);
     calendarViewDate = new Date(activeDate);
@@ -5408,6 +5415,7 @@ function renderStatsFooter(columns, cellWidth) {
 // Scheduled hours and Sch $ come from the week's shifts (and each employee's pay rate);
 // sales, transactions, forecast factor and budget % are mock per weekday.
 let _weekFooter = null;   // last week-footer numbers (for the chart panel)
+let _wfArgs = null;      // [n, cellWidth] of the last week footer (to re-render after the KPI picker)
 function _weekFooterData(n) {
     const wFctSales = [16800, 17900, 19400, 18300, 19800, 22600, 20100];
     const wFctFact  = [1.05, 0.97, 1.08, 1.03, 0.96, 1.07, 1.04];   // forecast hrs vs scheduled
@@ -5430,19 +5438,34 @@ function _weekFooterData(n) {
             otD[c] += (daily + weekly) * rate[emp.id] * 1.5;
         }
     });
+    const len = s => (s.end > s.start ? s.end - s.start : s.end + 24 - s.start);
+    const MGMT = ['General Manager', 'Assistant Manager', 'Shift Leader'];
+    const ws = new Date(activeDate.getFullYear(), activeDate.getMonth(), activeDate.getDate() - activeDate.getDay());
+    const today = new Date(); today.setHours(0, 0, 0, 0);
     const cols = Array.from({ length: n }, (_, c) => {
         const day = shifts.filter(s => s.day === c);
-        const sch = day.reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
-        const schD = day.reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start) * rate[s.empId], 0);
+        const sch = day.reduce((a, s) => a + len(s), 0);
+        const schD = day.reduce((a, s) => a + len(s) * rate[s.empId], 0);
+        const mgmt = day.filter(s => MGMT.includes(s.position)).reduce((a, s) => a + len(s), 0);
         const dow = c % 7, fSales = wFctSales[dow], fTxn = Math.round(fSales / _coverageAvgTicket);
         const fct = Math.round(sch * wFctFact[dow] * 2) / 2;
         const labour = fSales ? schD / fSales * 100 : 0;
         const budgetPct = wBudget[dow], budgetHrs = fSales * budgetPct / 100 / avgRate;
-        return { sch, schD, fSales, fTxn, fItems: Math.round(fTxn * 2.3), fct, variance: sch - fct, labour, budgetPct, budgetHrs,
+        // actuals only for days already past (same deterministic ±10% as the Day view)
+        const date = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + c);
+        const f = 0.9 + ((dow * 7 + date.getDate()) % 9) / 40;
+        const isPast = date < today;
+        const aSales = isPast ? fSales * f : 0, aTxn = isPast ? Math.round(fTxn * f) : 0;
+        return { date, sch, schD, fixed: 0, variable: sch, mgmt, fSales, aSales, fTxn, aTxn, fItems: Math.round(fTxn * 2.3), aItems: Math.round(aTxn * 2.3),
+            splh: sch ? fSales / sch : 0, tplh: sch ? fTxn / sch : 0,
+            fct, variance: sch - fct, labour, budgetPct, budgetHrs,
             bVarHrs: sch - budgetHrs, bVarPct: labour - budgetPct, otHrs: otHrs[c], otD: otD[c] };
     });
     const sum = k => cols.reduce((a, c) => a + c[k], 0);
-    const tot = { sch: sum('sch'), schD: sum('schD'), otHrs: sum('otHrs'), otD: sum('otD'), fSales: sum('fSales'), fTxn: sum('fTxn'), fItems: sum('fItems'), fct: sum('fct'), budgetHrs: sum('budgetHrs') };
+    const tot = { sch: sum('sch'), schD: sum('schD'), otHrs: sum('otHrs'), otD: sum('otD'), fSales: sum('fSales'), fTxn: sum('fTxn'), fItems: sum('fItems'), fct: sum('fct'), budgetHrs: sum('budgetHrs'),
+        fixed: 0, variable: sum('variable'), mgmt: sum('mgmt'), aSales: sum('aSales'), aTxn: sum('aTxn'), aItems: sum('aItems') };
+    tot.splh = tot.sch ? tot.fSales / tot.sch : 0;
+    tot.tplh = tot.sch ? tot.fTxn / tot.sch : 0;
     tot.variance = tot.sch - tot.fct;
     tot.labour = tot.fSales ? tot.schD / tot.fSales * 100 : 0;
     tot.budgetPct = tot.fSales ? cols.reduce((a, c) => a + c.fSales * c.budgetPct, 0) / tot.fSales : 0;
@@ -5460,15 +5483,11 @@ function renderWeekFooter(n, cellWidth) {
     const neg = (v, txt) => `<span class="${v < -0.005 ? 'text-red-500' : ''}">${txt}</span>`;
     const hp = (h, p) => `${f2(h)} <span class="wf-pipe">|</span> ${neg(p, f2(p))}`;
 
-    // collapsed bar: "Hrs 408.50 | 38.91%"; hover shows the budget numbers
+    // collapsed bar: "Hrs 408.50 | 38.91%"
     const label = document.getElementById('footerTotalLabel');
     label.innerHTML = `Hrs ${f2(tot.sch)} <span class="wf-pipe">|</span> <span class="text-red-500">${f2(tot.labour)}%</span>
         <button type="button" class="df-chart-btn" title="Forecasted vs scheduled hours chart" onclick="event.stopPropagation(); toggleDayFooterChart()"><i data-lucide="bar-chart-3" class="w-4 h-4"></i></button>`;
-    label.onmouseenter = e => _dfTip(e.currentTarget, `
-        <div class="df-tip-row"><span>Budget Hours</span><b>${f2(tot.budgetHrs)} Hrs | ${f2(tot.budgetPct)}%</b></div>
-        <div class="df-tip-row"><span>Scheduled Hours</span><b>${f2(tot.sch)} | ${f2(tot.labour)}%</b></div>
-        <div class="df-tip-row"><span>Budget variance</span><b>${f2(tot.bVarHrs)} | ${f2(tot.bVarPct)}%</b></div>`);
-    label.onmouseleave = _dfTipHide;
+    label.onmouseenter = label.onmouseleave = null;   // no budget hover pop-up on the week total
 
     document.getElementById('summaryStatsRow').innerHTML = cols.map(c => `
         <div class="flex items-center justify-center border-r shrink-0 wf-sum" style="width:${cellWidth}px">
@@ -5488,19 +5507,17 @@ function renderWeekFooter(n, cellWidth) {
             </div>
         </div>`;
 
-    document.getElementById('detailsRowsContainer').innerHTML =
-        row('Forecasted Sales', cols.map(c => money(c.fSales)), money(tot.fSales)) +
-        row('Forecasted Transactions', cols.map(c => c.fTxn), tot.fTxn) +
-        row('No Of Items Sold', cols.map(c => c.fItems), tot.fItems) +
-        row('Forecast Hrs', cols.map(c => f2(c.fct)), f2(tot.fct)) +
-        row('Variance Hrs', cols.map(c => neg(c.variance, f2(c.variance))), neg(tot.variance, f2(tot.variance))) +
-        row('Sch OT Hrs', cols.map(c => f2(c.otHrs)), f2(tot.otHrs)) +
-        row('Sch OT $', cols.map(c => money(c.otD)), money(tot.otD)) +
-        row('Sch $', cols.map(c => money(c.schD)), money(tot.schD)) +
+    // Analysis: same KPI library, rows and "+" picker as the Day view (values per day instead of per hour)
+    _wfArgs = [n, cellWidth];
+    const analysis = _analysisHtml({ cols, tot, rowWidth, cellWidth, clickable: false, headClick: '_wkHeadOpen', headTitle: 'Open this day in Day view',
+        heads: cols.map(c => `${c.date.toLocaleDateString('en-US', { weekday: 'short' })} ${c.date.getDate()}`) });
+    // Budget stays a separate, always-visible Week-only section
+    document.getElementById('detailsRowsContainer').innerHTML = analysis +
         row('Budget (By Configured Forecast Percentage)', cols.map(() => 'Hrs. | %'), 'Hrs. | %', 'wf-head') +
         row('Budget', cols.map(c => hp(c.budgetHrs, c.budgetPct)), hp(tot.budgetHrs, tot.budgetPct)) +
         row('Variance', cols.map(c => `${neg(c.bVarHrs, f2(c.bVarHrs))} <span class="wf-pipe">|</span> ${neg(c.bVarPct, f2(c.bVarPct))}`),
             `${neg(tot.bVarHrs, f2(tot.bVarHrs))} <span class="wf-pipe">|</span> ${neg(tot.bVarPct, f2(tot.bVarPct))}`);
+    lucide.createIcons();
     syncFooterToTable();
 }
 
@@ -5522,12 +5539,37 @@ function _dayFooterData(n) {
         const push = (s, pos) => {
             if (!s) return;
             const st = s.startHHMM ? _hhmmToMin(s.startHHMM) / 60 : s.start, en = s.endHHMM ? _hhmmToMin(s.endHHMM) / 60 : s.end;
-            shifts.push({ start: st, end: en, pos: pos || emp.position, mgmt: ['General Manager', 'Assistant Manager', 'Shift Leader'].includes(pos || emp.position) });
+            shifts.push({ empId: emp.id, start: st, end: en, pos: pos || emp.position, mgmt: ['General Manager', 'Assistant Manager', 'Shift Leader'].includes(pos || emp.position) });
         };
         push(sh, sh && sh.position);
         (activeDate.getDay() === 1 ? emp.additionalShifts || [] : []).forEach(a => push(a, a.position));
     });
     const at = (t, pred = () => true) => shifts.filter(s => pred(s) && t >= s.start && t < s.end).length;
+    // Overtime by hour, same rule as the Week view: hours past 8 in the day, plus regular hours once
+    // the week (Sun → today) passes 40. Paid at 1.5x the employee's rate.
+    const otQ = Array(24).fill(0), otDQ = Array(24).fill(0);
+    {
+        const wk = _aiCurrent();
+        const byEmp = {};
+        shifts.forEach(s => (byEmp[s.empId] = byEmp[s.empId] || []).push(s));
+        Object.entries(byEmp).forEach(([id, list]) => {
+            const emp = employeeData.find(e => e.id === +id);
+            const rate = (emp && +emp.payrate) || _coverageAvgWage;
+            let reg = 0;
+            for (let c = 0; c < dow; c++) {
+                const h = wk.filter(s => s.empId === +id && s.day === c).reduce((a, s) => a + (s.end > s.start ? s.end - s.start : s.end + 24 - s.start), 0);
+                reg = Math.min(40, reg + Math.min(8, h));
+            }
+            let worked = 0;
+            list.slice().sort((a, b) => a.start - b.start).forEach(s => {
+                for (let t = s.start; t < s.end - 1e-9; t += 0.25) {
+                    worked += 0.25;
+                    const ot = worked > 8 || reg + Math.min(worked, 8) > 40;
+                    if (ot) { const h = Math.floor(t) % 24; otQ[h] += 0.25; otDQ[h] += 0.25 * rate * 1.5; }
+                }
+            });
+        });
+    }
     const curveSum = _coverageSalesCurve.reduce((a, b) => a + b, 0);
     const daySales = [4200, 8800, 8200, 8600, 9800, 11200, 9400][dow];
     // mock forecast: ~8% more staff-hours than scheduled for the day, shaped by the sales curve
@@ -5547,11 +5589,15 @@ function _dayFooterData(n) {
         const aSales = isPast ? fSales * f : 0, aTxn = isPast ? Math.round(fTxn * f) : 0;
         return { h, q, mgmtQ: [0, .25, .5, .75].map(o => at(h + o, s => s.mgmt)), sch, fixed: 0, variable: sch, fct, variance: sch - fct, mgmt,
             splh: sch ? fSales / sch : 0, tplh: sch ? fTxn / sch : 0, labour: fSales ? sch * _coverageAvgWage / fSales * 100 : 0,
+            // Sch $: each employee's own rate (same as the Week view)
+            schD: [0, .25, .5, .75].reduce((a, o) => a + shifts.filter(s => h + o >= s.start && h + o < s.end)
+                .reduce((b, s) => b + (+(employeeData.find(e => e.id === s.empId) || {}).payrate || _coverageAvgWage), 0), 0) / 4,
+            otHrs: otQ[h], otD: otDQ[h],
             fSales, aSales, fTxn, aTxn, fItems: Math.round(fTxn * 2.3), aItems: Math.round(aTxn * 2.3) };
     });
     const sum = k => cols.reduce((a, c) => a + c[k], 0);
     const tot = { sch: sum('sch'), fixed: 0, variable: sum('variable'), fct: sum('fct'), mgmt: sum('mgmt'), fSales: sum('fSales'), aSales: sum('aSales'),
-        fTxn: sum('fTxn'), aTxn: sum('aTxn'), fItems: sum('fItems'), aItems: sum('aItems') };
+        fTxn: sum('fTxn'), aTxn: sum('aTxn'), fItems: sum('fItems'), aItems: sum('aItems'), schD: sum('schD'), otHrs: sum('otHrs'), otD: sum('otD') };
     tot.variance = tot.sch - tot.fct;
     tot.splh = tot.sch ? tot.fSales / tot.sch : 0;
     tot.tplh = tot.sch ? tot.fTxn / tot.sch : 0;
@@ -5562,11 +5608,11 @@ function _dayFooterData(n) {
 
 // Day footer KPIs: a fixed default set, plus extras the user adds from the "+" on the Analysis row
 const DAY_KPIS = [
-    { key: 'sch',      label: 'Total Sch. Staff', fmt: 'num', def: true },
-    { key: 'fixed',    label: 'Fixed Staff', fmt: 'num' },
-    { key: 'variable', label: 'Variable Staff', fmt: 'num' },
-    { key: 'fct',      label: 'Forecasted Staff', fmt: 'ivl', opt: { click: true, pop: 'openFctStaff' }, def: true },
-    { key: 'variance', label: 'Staff Variance', fmt: 'num', opt: { signed: true, click: true, pop: 'openStaffVariance' }, def: true },
+    { key: 'sch',      label: 'Total Sch. Hrs', fmt: 'num', def: true },
+    { key: 'fixed',    label: 'Fixed Hrs', fmt: 'num' },
+    { key: 'variable', label: 'Variable Hrs', fmt: 'num' },
+    { key: 'fct',      label: 'Forecasted Hrs', fmt: 'ivl', opt: { click: true, pop: 'openFctStaff' }, def: true },
+    { key: 'variance', label: 'Hrs Variance', fmt: 'num', opt: { signed: true, click: true, pop: 'openStaffVariance' }, def: true },
     { key: 'mgmt',     label: 'Management', fmt: 'num', def: true },
     { key: 'splh',     label: 'SPLH', fmt: 'money', opt: { sub: '(Sales/Labor Hrs)' }, def: true },
     { key: 'tplh',     label: 'TPLH', fmt: 'money', opt: { sub: '(Transactions/Labor Hrs)' } },
@@ -5577,25 +5623,71 @@ const DAY_KPIS = [
     { key: 'aTxn',     label: 'Actual Transactions', fmt: 'ivl', opt: { sales: true } },
     { key: 'fItems',   label: 'Forecasted No. of Items Sold', fmt: 'ivl', opt: { sales: true } },
     { key: 'aItems',   label: 'Actual No. of Items Sold', fmt: 'ivl', opt: { sales: true } },
+    { key: 'schD',     label: 'Sch $', fmt: 'money' },
+    { key: 'otHrs',    label: 'Sch OT Hrs', fmt: 'num' },
+    { key: 'otD',      label: 'Sch OT $', fmt: 'money' },
 ];
+// one KPI library for Day and Week; budget stays a separate Week-only section
+const _kpiForView = k => !k.views || k.views.includes(activeView);
 let _dfArgs = null;
 function _dayKpiExtra() { try { return JSON.parse(localStorage.getItem('zipDayFooterKpis') || '[]'); } catch (e) { return []; } }
 function _dayKpiShown() { return new Set([...DAY_KPIS.filter(k => k.def).map(k => k.key), ..._dayKpiExtra()]); }
 function _dayKpiRerender() {
-    if (!_dfArgs) return;
-    renderDayFooter(..._dfArgs);
+    if (activeView === 'week') { if (_wfArgs) renderWeekFooter(..._wfArgs); }
+    else if (_dfArgs) renderDayFooter(..._dfArgs);
+    else return;
     requestAnimationFrame(syncFooterToTable);
+}
+// Shared Analysis block for Day (by hour) and Week (by day): same header, rows and styling
+function _analysisHtml({ cols, tot, rowWidth, cellWidth, heads, headClick, headTitle = 'Daily statistics', clickable }) {
+    const num = v => Math.abs(v) < 0.005 ? '0' : (Number.isInteger(+v.toFixed(2)) ? String(+v.toFixed(2)) : v.toFixed(2));
+    const money = v => Math.abs(v) < 0.005 ? '0' : v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const ivl = v => String(Math.round(v));
+    const fmts = { num, ivl, money, sales2: v => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) };
+    const row = (lbl, key, fmt, opt = {}) => {
+        const tv = opt.total !== undefined ? opt.total : tot[key];
+        const click = clickable && opt.click;
+        return `<div class="stats-summary-bar df-row${opt.sales ? ' df-sales' : ''} border-b border-slate-100">
+            <div class="sticky-footer-label flex shrink-0 z-20 ${opt.sales ? 'bg-[#fdf3dc]' : 'bg-[#f8fafc]'}">
+                <div class="stats-row-label df-lbl">${lbl}${opt.sub ? ` <small>${opt.sub}</small>` : ''}</div>
+                <div class="stats-row-total df-tot ${opt.signed && tv < -0.005 ? 'text-red-500' : ''}">(${fmt(tv)})</div>
+            </div>
+            <div class="stats-content-area h-full overflow-hidden">
+                <div class="flex h-full" style="width:${rowWidth}px">
+                    ${cols.map((c, i) => {
+                        const v = c[key];
+                        const cls = opt.signed && v < -0.005 ? 'text-red-500 font-bold' : Math.abs(v) < 0.005 ? 'text-slate-400' : 'text-slate-700';
+                        return `<div class="flex items-center justify-center border-r shrink-0 text-center${click ? ' cursor-pointer hover:bg-blue-50/60' : ''}" style="width:${cellWidth}px"${click ? ` onclick="${opt.pop || 'openOverShort'}(event, ${i})"` : ''}><span class="text-[12.5px] ${cls}">${fmt(v)}</span></div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>`;
+    };
+    // "Analysis" header: + to add more KPIs, then the column labels so the rows read without scrolling up
+    const head = `<div class="stats-summary-bar df-row df-ana border-b border-slate-200">
+            <div class="sticky-footer-label flex shrink-0 z-20 bg-white">
+                <div class="stats-row-label df-ana-lbl">Analysis</div>
+                <div class="stats-row-total"><button type="button" id="dfKpiBtn" class="df-kpi-btn" title="Add or remove KPIs" onclick="event.stopPropagation(); openDayKpiPicker(this)"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+            </div>
+            <div class="stats-content-area h-full overflow-hidden">
+                <div class="flex h-full" style="width:${rowWidth}px">
+                    ${heads.map((h, i) => `<div class="flex items-center justify-center border-r shrink-0 df-ana-h${headClick ? ' df-hr-click' : ''}" style="width:${cellWidth}px"${headClick ? ` onclick="event.stopPropagation(); ${headClick}(event, ${i})" title="${headTitle}"` : ''}>${h}</div>`).join('')}
+                </div>
+            </div>
+        </div>`;
+    const shown = _dayKpiShown();
+    return head + DAY_KPIS.filter(k => _kpiForView(k) && shown.has(k.key)).map(k => row(k.label, k.key, fmts[k.fmt], k.opt || {})).join('');
 }
 function openDayKpiPicker(btn) {
     let p = document.getElementById('dayKpiPop');
     if (p && p.style.display === 'block') { closeDayKpiPicker(); return; }
     if (!p) { p = document.createElement('div'); p.id = 'dayKpiPop'; document.body.appendChild(p); }
     const extra = new Set(_dayKpiExtra());
-    const opts = DAY_KPIS.filter(k => !k.def);
+    const opts = DAY_KPIS.filter(k => !k.def && _kpiForView(k));
     p.innerHTML = `
         <div class="dkp-h"><div><b>Add KPIs</b><span>Choose extra KPIs to show in the footer</span></div><button type="button" onclick="closeDayKpiPicker()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
         <div class="dkp-list">${opts.map(k => `<label class="dkp-item"><input type="checkbox" value="${k.key}" ${extra.has(k.key) ? 'checked' : ''} onchange="toggleDayKpi('${k.key}', this.checked)"><span>${k.label}</span>${k.opt && k.opt.sales ? '<em>Sales</em>' : ''}</label>`).join('')}</div>
-        <div class="dkp-f"><button type="button" class="dkp-link" onclick="setDayKpis(${JSON.stringify(opts.map(k => k.key)).replace(/"/g, "'")})">Select all</button><button type="button" class="dkp-link" onclick="setDayKpis([])">Reset to default</button><button type="button" class="dkp-done" onclick="closeDayKpiPicker()">Done</button></div>`;
+        <div class="dkp-f"><button type="button" class="dkp-link" onclick="selectAllKpis()">Select all</button><button type="button" class="dkp-link" onclick="setDayKpis([])">Reset to default</button><button type="button" class="dkp-done" onclick="closeDayKpiPicker()">Done</button></div>`;
     p.style.display = 'block';
     const r = btn.getBoundingClientRect();
     p.style.left = Math.max(8, Math.min(r.left, innerWidth - p.offsetWidth - 8)) + 'px';
@@ -5606,6 +5698,10 @@ function openDayKpiPicker(btn) {
 function closeDayKpiPicker() {
     const p = document.getElementById('dayKpiPop'); if (p) p.style.display = 'none';
     document.getElementById('dfKpiBtn')?.classList.remove('on');
+}
+// Select all = every optional KPI of this view (keeps choices made for the other view)
+function selectAllKpis() {
+    setDayKpis([...new Set([..._dayKpiExtra(), ...DAY_KPIS.filter(k => !k.def && _kpiForView(k)).map(k => k.key)])], true);
 }
 function toggleDayKpi(key, on) {
     const s = new Set(_dayKpiExtra());
@@ -5645,42 +5741,10 @@ function renderDayFooter(columns, cellWidth) {
             <span class="text-[11.5px] font-semibold ${c.variance < -0.005 ? 'text-red-500' : 'text-emerald-600'}">${c.variance > 0.005 ? '+' : ''}${num(c.variance)}</span>
         </div>`).join('');
 
-    const row = (lbl, key, fmt, opt = {}) => {
-        const tv = opt.total !== undefined ? opt.total : tot[key];
-        return `<div class="stats-summary-bar df-row${opt.sales ? ' df-sales' : ''} border-b border-slate-100">
-            <div class="sticky-footer-label flex shrink-0 z-20 ${opt.sales ? 'bg-[#fdf3dc]' : 'bg-[#f8fafc]'}">
-                <div class="stats-row-label df-lbl">${lbl}${opt.sub ? ` <small>${opt.sub}</small>` : ''}</div>
-                <div class="stats-row-total df-tot ${opt.signed && tv < -0.005 ? 'text-red-500' : ''}">(${fmt(tv)})</div>
-            </div>
-            <div class="stats-content-area h-full overflow-hidden">
-                <div class="flex h-full" style="width:${rowWidth}px">
-                    ${cols.map((c, i) => {
-                        const v = c[key];
-                        const cls = opt.signed && v < -0.005 ? 'text-red-500 font-bold' : Math.abs(v) < 0.005 ? 'text-slate-400' : 'text-slate-700';
-                        return `<div class="flex items-center justify-center border-r shrink-0 text-center${opt.click ? ' cursor-pointer hover:bg-blue-50/60' : ''}" style="width:${cellWidth}px"${opt.click ? ` onclick="${opt.pop || 'openOverShort'}(event, ${i})"` : ''}><span class="text-[12.5px] ${cls}">${fmt(v)}</span></div>`;
-                    }).join('')}
-                </div>
-            </div>
-        </div>`;
-    };
-    const ivl = v => String(Math.round(v));
     _dfArgs = [columns, cellWidth];
-    // "Analysis" header: + to add more KPIs, then the hour labels so the rows read without scrolling up
-    const head = `<div class="stats-summary-bar df-row df-ana border-b border-slate-200">
-            <div class="sticky-footer-label flex shrink-0 z-20 bg-white">
-                <div class="stats-row-label df-ana-lbl">Analysis</div>
-                <div class="stats-row-total"><button type="button" id="dfKpiBtn" class="df-kpi-btn" title="Add or remove KPIs" onclick="event.stopPropagation(); openDayKpiPicker(this)"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
-            </div>
-            <div class="stats-content-area h-full overflow-hidden">
-                <div class="flex h-full" style="width:${rowWidth}px">
-                    ${cols.map((c, i) => `<div class="flex items-center justify-center border-r shrink-0 df-ana-h df-hr-click" style="width:${cellWidth}px" onclick="event.stopPropagation(); openOverShort(event, ${i})" title="Daily statistics">${c.h % 12 || 12}${c.h >= 12 ? 'P' : 'A'}</div>`).join('')}
-                </div>
-            </div>
-        </div>`;
-    const fmts = { num, ivl, money, sales2: v => v.toFixed(2) };
-    const shown = _dayKpiShown();
-    document.getElementById('detailsRowsContainer').innerHTML = head +
-        DAY_KPIS.filter(k => shown.has(k.key)).map(k => row(k.label, k.key, fmts[k.fmt], k.opt || {})).join('');
+    document.getElementById('detailsRowsContainer').innerHTML = _analysisHtml({
+        cols, tot, rowWidth, cellWidth, clickable: true, headClick: 'openOverShort',
+        heads: cols.map(c => `${c.h % 12 || 12}${c.h >= 12 ? 'P' : 'A'}`) });
     _renderDayFooterChart();
     lucide.createIcons();
 }
@@ -5783,7 +5847,7 @@ function _dfTip(anchor, html) {
 }
 function _dfTipHide() { const t = document.getElementById('dfTip'); if (t) t.style.display = 'none'; }
 
-// ── Forecasted Staff / Staff Variance by position, for one hour, by quarter hour ──
+// ── Forecasted Hrs / Hrs Variance by position, for one hour, by quarter hour ──
 // Scheduled counts come from the day's shifts. The hour's forecast is split across the
 // positions working that day in proportion to their scheduled hours (largest remainder,
 // so the split always adds back up to the hour's forecast).
@@ -5815,7 +5879,7 @@ function _openPosPop(e, title, html) {
     closeOverShort();
     let p = document.getElementById('posPop');
     if (!p) { p = document.createElement('div'); p.id = 'posPop'; document.body.appendChild(p); }
-    p.innerHTML = `<div class="os-head"><span class="os-ic"><i data-lucide="${/^Staff Variance/.test(title) ? 'arrow-up-down' : 'users'}" class="w-5 h-5"></i></span><span class="os-tt">${title}</span><button type="button" onclick="closePosPop()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>${html}`;
+    p.innerHTML = `<div class="os-head"><span class="os-ic"><i data-lucide="${/^Hrs Variance/.test(title) ? 'arrow-up-down' : 'users'}" class="w-5 h-5"></i></span><span class="os-tt">${title}</span><button type="button" onclick="closePosPop()" title="Close"><i data-lucide="x" class="w-4 h-4"></i></button></div>${html}`;
     _ppBackdrop(closePosPop);
 
     document.querySelectorAll('.pp-src').forEach(x => x.classList.remove('pp-src'));
@@ -5845,7 +5909,7 @@ const _hrTitle = c => `${c.h % 12 || 12}:00${c.h >= 12 ? 'p' : 'a'} – ${(c.h +
 function openFctStaff(e, i) {
     const b = _posBreakdown(i); if (!b) return;
     const tot = b.rows.reduce((a, r) => a + r.fct, 0);
-    _openPosPop(e, `Forecasted Staff Details <em class="os-sub">${_hrTitle(b.c)} · by position, 15-min intervals</em>`, b.rows.length ? `
+    _openPosPop(e, `Forecasted Hrs Details <em class="os-sub">${_hrTitle(b.c)} · by position, 15-min intervals</em>`, b.rows.length ? `
         <table><thead><tr><th class="l os-first">Position</th>${b.qt.map(t => `<th>${t}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr><th class="l">${_posPill(r.p)}</th>${b.qt.map(() => `<td class="${r.fct ? '' : 'pp-zero'}">${r.fct}</td>`).join('')}</tr>`).join('')}</tbody>
         <tfoot><tr><th class="l">Total</th>${b.qt.map(() => `<td>${tot}</td>`).join('')}</tr></tfoot></table>`
@@ -5855,7 +5919,7 @@ function openStaffVariance(e, i) {
     const b = _posBreakdown(i); if (!b) return;
     const v = (x) => `<td class="${x < -0.005 ? 'pp-neg' : x > 0.005 ? 'pp-pos' : 'pp-zero'}">${(x > 0.005 ? '+' : '') + x.toFixed(2)}</td>`;
     const tf = b.rows.reduce((a, r) => a + r.fct, 0), ts = b.rows.reduce((a, r) => a + r.sch, 0);
-    _openPosPop(e, `Staff Variance Details <em class="os-sub">${_hrTitle(b.c)} · scheduled − forecasted, by position</em>`, b.rows.length ? `
+    _openPosPop(e, `Hrs Variance Details <em class="os-sub">${_hrTitle(b.c)} · scheduled − forecasted, by position</em>`, b.rows.length ? `
         <table><thead>
             <tr><th class="l os-first" rowspan="2">Position</th><th>Forecasted</th><th>Scheduled</th><th colspan="4" class="pp-grp">Variance</th></tr>
             <tr><th class="pp-sub">Hourly</th><th class="pp-sub">Hourly</th>${b.qt.map(t => `<th class="pp-sub">${t}</th>`).join('')}</tr></thead>
@@ -6889,11 +6953,11 @@ function openMonthDayDetails(e, dayIdx) {
         row('Budget Hours', pair(m.budgetHrs, m.budgetPct)) +
         row('Scheduled Hours', pair(m.sch, m.labour)) +
         row('Budget Variance', pair(m.sch - m.budgetHrs, m.labour - m.budgetPct)) +
-        row('Total Scheduled Staff', f2(m.sch)) +
-        row('Fixed Staff', '0.00') +
-        row('Variable Staff', f2(m.sch)) +
-        row('Forecast Staff', f2(m.fct)) +
-        row('Staff Variance', f2(m.sch - m.fct), m.sch - m.fct) +
+        row('Total Scheduled Hrs', f2(m.sch)) +
+        row('Fixed Hrs', '0.00') +
+        row('Variable Hrs', f2(m.sch)) +
+        row('Forecast Hrs', f2(m.fct)) +
+        row('Hrs Variance', f2(m.sch - m.fct), m.sch - m.fct) +
         row('Management Coverage', f2(m.mgmt)) +
         row('Sales ($)', money(m.aSales || m.fSales)) +
         row('Transactions', m.aTxn || m.fTxn);
@@ -7471,11 +7535,11 @@ function renderCoverageStats() {
     const group = t => `<div class="dcv-sgroup"><span>${t}</span></div>`;
     document.getElementById('coverageStatsBody').innerHTML =
         group('Staffing') +
-        row('Total Scheduled Staff', 'sched', n2) +
-        row('Fixed Staff', 'fixed', n2) +
-        row('Variable Staff', 'variable', n2) +
-        row('Forecasted Staff', 'forecast', n2) +
-        row('Staff Variance', 'variance', v => (v > 0.005 ? '+' : '') + n2(v), { signed: true }) +
+        row('Total Scheduled Hrs', 'sched', n2) +
+        row('Fixed Hrs', 'fixed', n2) +
+        row('Variable Hrs', 'variable', n2) +
+        row('Forecasted Hrs', 'forecast', n2) +
+        row('Hrs Variance', 'variance', v => (v > 0.005 ? '+' : '') + n2(v), { signed: true }) +
         row('Management Coverage', 'mgmt', n2) +
         group('Productivity') +
         row('SPLH (Sales/Labor Hrs)', null, n2, { calc: x => ratio(x.fSales, x.sched), total: () => ratio(total.fSales, total.sched) }) +
@@ -7519,9 +7583,9 @@ function renderCoverageChart() {
         data: {
             labels,
             datasets: [
-                { type: 'line', label: 'Forecasted Staff', data: hours.map(x => x.forecast), borderColor: '#64748b', borderWidth: 2,
+                { type: 'line', label: 'Forecasted Hrs', data: hours.map(x => x.forecast), borderColor: '#64748b', borderWidth: 2,
                   borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, stepped: 'middle', fill: false, order: 0 },
-                { type: 'bar', label: 'Scheduled Staff', data: hours.map(x => +x.sched.toFixed(2)),
+                { type: 'bar', label: 'Scheduled Hrs', data: hours.map(x => +x.sched.toFixed(2)),
                   backgroundColor: hours.map(_coverageBarColor), borderRadius: 5, barPercentage: 0.72, order: 1 },
             ]
         },
@@ -7738,11 +7802,11 @@ function exportCoverageCSV(){
         `${r.name},${r.position},${_coverageFmtTime(r.start)},${_coverageFmtTime(r.end)},${r.brk ? _coverageFmtTime(r.brk[0]) + ' - ' + _coverageFmtTime(r.brk[1]) : ''},${_coverageRowHours(r).toFixed(2)},${r.week.toFixed(2)}`
     ).join("\n");
     csv += "\n\n" + line('Daily Stats', 'Total', hours.map((_, h) => _coverageHourLabel(h))) + "\n" + [
-        stat('Total Scheduled Staff', x => x.sched),
-        stat('Fixed Staff', x => x.fixed),
-        stat('Variable Staff', x => x.variable),
-        stat('Forecasted Staff', x => x.forecast),
-        stat('Staff Variance', x => x.variance),
+        stat('Total Scheduled Hrs', x => x.sched),
+        stat('Fixed Hrs', x => x.fixed),
+        stat('Variable Hrs', x => x.variable),
+        stat('Forecasted Hrs', x => x.forecast),
+        stat('Hrs Variance', x => x.variance),
         stat('Management Coverage', x => x.mgmt),
         stat('SPLH (Sales/Labor Hrs)', x => ratio(x.fSales, x.sched)),
         stat('TPLH (Transactions/Labor Hrs)', x => ratio(x.fTxn, x.sched)),
