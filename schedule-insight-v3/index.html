@@ -146,6 +146,10 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
                 <span class="pm-toggle-tx">Enable New Insight design_V2</span>
                 <button type="button" class="pm-switch" id="si-newdesign-v2-switch" role="switch" aria-checked="true" onclick="siSetNewDesignV2(!document.body.classList.contains('si-newdesign-v2'))"><i></i></button>
               </label>
+              <label class="pm-toggle" title="Needs Attention shows where labor cost goes and how much each fix saves (Schedule Insights V4). Off shows the previous version.">
+                <span class="pm-toggle-tx">Enable Schedule_Insight_V4</span>
+                <button type="button" class="pm-switch" id="si-v4-switch" role="switch" aria-checked="true" onclick="siSetInsightV4(!document.body.classList.contains('si-v4'))"><i></i></button>
+              </label>
             </div>
             <div class="pm-sec">
               <button class="pm-item danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
@@ -213,6 +217,25 @@ html.si-embed-dd, html.si-embed-dd body { background: transparent !important; }
 <script src="assets/ai-hub-render.js?v=20261013g"></script>
 <script src="assets/app.js?v=20261103b"></script>
 <script>
+/* Profile menu flag "Enable Schedule_Insight_V4" (default on): the Insights frame loads
+   Schedule Insights V4.html, where Needs Attention is built around labor cost.
+   Off loads the previous Schedule Insights.html, unchanged. Runs before
+   DOMContentLoaded so the frame's first load already uses the right page.
+   Remembered per browser. */
+const SI_V4_KEY = 'si-insight-v4';
+function siSetInsightV4(on){
+  document.body.classList.toggle('si-v4', !!on);
+  const sw = document.getElementById('si-v4-switch');
+  if (sw) sw.setAttribute('aria-checked', on ? 'true' : 'false');
+  try { localStorage.setItem(SI_V4_KEY, on ? '1' : '0'); } catch (e) {}
+  const f = document.getElementById('si-v3-frame');
+  if (!f) return;
+  const src = on ? 'Schedule%20Insights%20V4.html' : 'Schedule%20Insights.html';
+  f.dataset.src = src;
+  if (f.getAttribute('src') && f.getAttribute('src') !== src) f.setAttribute('src', src);
+}
+(function(){ let on = true; try { on = localStorage.getItem(SI_V4_KEY) !== '0'; } catch (e) {} siSetInsightV4(on); })();
+
 /* Profile menu flag "Hide how to fix" (default on): the Insights screen hides only the How to fix it
    tile; the fix steps stay in Needs Attention. Remembered per browser. */
 function siSetHideFix(on){
