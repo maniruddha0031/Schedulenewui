@@ -19,6 +19,9 @@
 <!-- Tasksy design system tokens + Tasksy skin overlay -->
 <link rel="stylesheet" href="design-system/colors_and_type.css">
 <link rel="stylesheet" href="tasksy-skin.css">
+<link rel="stylesheet" href="availability-modal.css">
+<link rel="stylesheet" href="team-center.css">
+<link rel="stylesheet" href="employee-availability.css">
 
 <!-- Apply persisted dark mode before paint to avoid FOUC -->
 <script>
@@ -3128,7 +3131,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
 
         <!-- Availability + Time Off — full-width pills -->
         <div class="grid grid-cols-2 gap-2">
-            <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-100 bg-emerald-50/60 hover:border-emerald-300 cursor-pointer transition-all">
+            <div onclick="openAvailabilityFromAction()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openAvailabilityFromAction()" class="avm-open-tile flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-100 bg-emerald-50/60 hover:border-emerald-300 cursor-pointer transition-all">
                 <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0"><i data-lucide="clock" class="w-4 h-4"></i></div>
                 <span class="text-[12.5px] font-bold text-slate-700">Availability</span>
             </div>
@@ -9702,5 +9705,8 @@ function resetDemoSchedule() {
     showToast('Demo schedule reset to the original shifts and unassigned shifts.', 'info');
 }
 </script>
+<script src="availability-modal.js"></script>
+<script src="employee-availability.js"></script>
+<script src="team-center.js"></script>
 </body>
 </html>
