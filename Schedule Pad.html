@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="availability-modal.css">
 <link rel="stylesheet" href="team-center.css">
 <link rel="stylesheet" href="employee-availability.css">
+<link rel="stylesheet" href="offer-modal.css">
 
 <!-- Apply persisted dark mode before paint to avoid FOUC -->
 <script>
@@ -1417,6 +1418,17 @@ body.density-compact .shiftBox.ua-mini > div:first-child { width: auto; flex: 1 
 .df-ana-lbl { font-size: 13px; font-weight: 700; color: #0f172a; font-style: normal !important; }
 .df-ana-h { font-size: 11.5px; font-weight: 700; color: #475569; background: #fff; }
 .ua-day-sum { position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; gap: 110px; padding-left: 140px; font-size: 12.5px; font-weight: 700; color: #1e293b; white-space: nowrap; pointer-events: none; z-index: 2; }
+/* Employee notes: icon next to the name + hover tooltip on the employee profile */
+.emp-note-slot { display: inline-flex; }
+.emp-note-ic { display: inline-flex; width: 16px; height: 16px; align-items: center; justify-content: center; border-radius: 4px; background: #fef3c7; color: #b45309; margin-left: 2px; }
+.emp-note-ic svg { width: 11px; height: 11px; }
+#empNoteTip { position: fixed; z-index: 10050; display: none; pointer-events: none; width: max-content; max-width: 260px; background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 8px 11px; box-shadow: 0 12px 28px -8px rgba(15,23,42,.5); font-size: 12px; line-height: 1.45; }
+#empNoteTip .en-h { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #fbbf24; margin-bottom: 3px; }
+#empNoteTip .en-h svg { width: 12px; height: 12px; flex: none; }
+#empNoteTip .en-b { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+#empNoteTip::before { content: ''; position: absolute; left: -6px; top: 50%; transform: translateY(-50%); border: 6px solid transparent; border-left: 0; border-right-color: #0f172a; }
+html.dark .emp-note-ic { background: rgba(251,191,36,.18); color: #fbbf24; }
+
 /* Day view: availability as a green line along the top of the employee's hour cells */
 #mainScheduleTable tbody tr.empRow > td:not(:first-child) { position: relative; }
 .avail-line { position: absolute; top: 2px; height: 4px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 0 1px rgba(255,255,255,.9); z-index: 6; cursor: help; }
@@ -5152,7 +5164,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between w-full gap-2 pr-3">
                             <div class="font-bold text-[13px] text-blue-600 hover:underline truncate flex items-center gap-1">
-                                ${emp.name}${statusHtml}
+                                ${emp.name}${statusHtml}<span class="emp-note-slot">${_empNoteIconHtml(emp.id)}</span>
                             </div>
                             ${emp.alerts && emp.alerts.length ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;" onclick="openAlertPopup(event,${emp.id})"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>` : ``}
                         </div>
@@ -6852,7 +6864,7 @@ function openActionModal(e, id) {
     document.getElementById("actionModalPay").innerText = `$${(+emp.payrate || 0).toFixed(2)}`;
     document.getElementById("actionModalMin").innerText = emp.isMinor ? 'Max 28:00' : '20:00';
     document.getElementById("actionModalWeek").innerText = fmtHrs(emp.totalHours); // same figure as the row's "Hrs"
-    document.getElementById("actionModalNotes").value = _empNotes[emp.id] || '';
+    document.getElementById("actionModalNotes").value = _empNotesObj()[emp.id] || '';
     // primary position first, then the other positions the employee is trained for
     const positions = [emp.position, ...(_skillsByPosition[emp.position] || [])].filter((p, i, a) => p && a.indexOf(p) === i);
     document.getElementById("actionModalPosCount").innerText = `${positions.length} position${positions.length === 1 ? '' : 's'}`;
@@ -6874,9 +6886,65 @@ function openActionModal(e, id) {
 }
 const _empPosDot = { 'General Manager': '#7c3aed', 'Assistant Manager': '#7c3aed', 'Shift Leader': '#d97706', 'Line Cook': '#16a34a',
     'Prep Cook': '#16a34a', 'Dishwasher': '#0d9488', 'Cashier': '#2563eb', 'Crew': '#e11d48' };
-const _empNotes = {};
+// Employee notes (manager's notes per employee). A hoisted function so the schedule table can read them on first render.
+function _empNotesObj() {
+    return window.__empNotes || (window.__empNotes = {
+        0:  'Key holder — can open and close the store. Prefers opening shifts.',
+        1:  'Minor — no shifts past 10 PM on school nights.',
+        2:  'On leave this week. Back on the regular schedule next Monday.',
+        3:  'Training new hires this month — pair with a Line Cook.',
+        4:  'College class Thursday mornings (8–12). Only afternoons that day.',
+        6:  'Covers inventory count every Monday morning.',
+        7:  'Cross-trained on Cashier — good for weekend cover.',
+        12: 'Prefers 6 AM starts. Not available after 3 PM on Fridays.',
+        11: 'Asked for max 30 hrs/week this month.',
+        15: 'Food safety certificate expires end of month — remind to renew.',
+        19: 'Prefers closing shifts.',
+        24: 'Avoid heavy stock duty (back injury).',
+        30: 'Happy to pick up extra shifts on short notice.',
+        38: 'Shared with Store B on Mondays.',
+        45: 'Check with them before scheduling Sundays.'
+    });
+}
 let _empActionId = null;
-function _empNoteSave() { const i = document.getElementById("actionModalNotes"); if (i && _empActionId !== null) _empNotes[_empActionId] = i.value.trim(); }
+function _empNoteSave() {
+    const i = document.getElementById("actionModalNotes");
+    if (!i || _empActionId === null) return;
+    const v = i.value.trim();
+    if (v) _empNotesObj()[_empActionId] = v; else delete _empNotesObj()[_empActionId];
+    _empNoteIcon(_empActionId);
+}
+/* small note icon next to the employee name (kept in sync after editing) */
+function _empNoteIconHtml(id) { return _empNotesObj()[id] ? '<i class="emp-note-ic" title="Has a note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/></svg></i>' : ''; }
+function _empNoteIcon(id) {
+    document.querySelectorAll(`#mainScheduleTable tr.empRow[data-emp-id="${id}"] .emp-note-slot`).forEach(s => { s.innerHTML = _empNoteIconHtml(id); });
+}
+/* hover the employee profile (left column) → show the note */
+(function () {
+    let tip = null, cur = null;
+    function show(td, id) {
+        const note = _empNotesObj()[id]; if (!note) return hide();
+        const emp = employeeData.find(e => e.id == id);
+        if (!tip) { tip = document.createElement('div'); tip.id = 'empNoteTip'; document.body.appendChild(tip); }
+        tip.innerHTML = `<div class="en-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/></svg>Note${emp ? ` · ${emp.name}` : ''}</div><div class="en-b"></div>`;
+        tip.querySelector('.en-b').textContent = note;
+        const r = td.getBoundingClientRect();
+        tip.style.display = 'block';
+        const h = tip.offsetHeight;
+        tip.style.left = (r.right + 10) + 'px';
+        tip.style.top = Math.max(8, Math.min(r.top + r.height / 2 - h / 2, window.innerHeight - h - 8)) + 'px';
+    }
+    function hide() { if (tip) tip.style.display = 'none'; cur = null; }
+    document.addEventListener('mouseover', e => {
+        const td = e.target.closest && e.target.closest('#mainScheduleTable tr.empRow > td:first-child');
+        if (!td) { if (cur !== null) hide(); return; }
+        const id = td.parentElement.dataset.empId;
+        if (id === cur) return;
+        cur = id; show(td, id);
+    });
+    document.addEventListener('mousedown', hide, true);
+    document.addEventListener('scroll', hide, true);
+})();
 function closeActionModal() { _empNoteSave(); document.getElementById("empActionOverlay").classList.add("hidden"); }
 function toggleUnassignedDept() { document.getElementById("unassignedDeptMenu").classList.toggle("hidden"); }
 function filterEmployees(){
@@ -9708,5 +9776,6 @@ function resetDemoSchedule() {
 <script src="availability-modal.js"></script>
 <script src="employee-availability.js"></script>
 <script src="team-center.js"></script>
+<script src="offer-modal.js"></script>
 </body>
 </html>
