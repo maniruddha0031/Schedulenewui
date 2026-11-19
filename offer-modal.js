@@ -175,8 +175,7 @@
     else if (!rows.length) body = empty('users', S.tab === 'eligible' ? 'No eligible employees' : 'No other employees', S.tab === 'eligible' ? 'Nobody is free and trained for this shift. Check <b>Others</b> to offer it anyway.' : 'Everyone is eligible for this shift.');
     else body = `<div class="ofx-grid">${rows.map(({ e, el, off }) => {
       const on = S.sel.has(e.id);
-      const tag = off ? `<span class="ofx-tag vio"><i data-lucide="send"></i>Offered · ${esc(off.status)}</span>`
-        : `<span class="ofx-tag ${el.tone === 'ok' ? 'ok' : el.tone === 'bad' ? 'bad' : 'warn'}"><i data-lucide="${el.ok ? 'check' : 'alert-triangle'}"></i>${esc(el.note)}</span>`;
+      const tag = off ? `<span class="ofx-tag vio"><i data-lucide="send"></i>Offered · ${esc(off.status)}</span>` : '';
       return `<button type="button" class="ofx-emp ${on ? 'sel' : ''} ${off ? 'done' : ''}" ${off ? 'disabled' : ''} data-emp="${e.id}" aria-pressed="${on}">
         <span class="top"><img src="${esc(e.avatar || '')}" alt=""><span class="min-w-0"><span class="nm" style="display:block">${esc(e.name)}</span><span class="ps" style="display:block">${esc(e.position)}</span></span>
           ${off ? '' : '<span class="ck"><i data-lucide="check"></i></span>'}</span>
