@@ -2217,7 +2217,7 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                                 </div>
                             </div>
                             <!-- employees with no shifts in the last 28 days -->
-                            <div class="flt-inactive"><div class="popover-column-title">Not Actively Scheduled</div><div id="fltInactive"></div></div>
+                            <div class="flt-inactive"><div class="popover-column-title">Inactive Employees</div><div id="fltInactive"></div></div>
                             <div class="popover-footer">
                                 <button class="btn-clear" onclick="resetFilters(); applyFilters()">Clear</button>
                                 <button class="btn-apply" onclick="applyFilters()">Apply</button>
@@ -5449,8 +5449,8 @@ function renderInactiveFilter() {
     const list = _inactiveEmps();
     box.innerHTML = `
         <label class="fi-toggle"><input type="checkbox" id="fltInactiveChk" ${activeHideInactive ? 'checked' : ''} onchange="activeHideInactive = this.checked">
-            <span class="fi-tx"><b>Hide employees not actively scheduled</b></span>
-            <span class="fi-n">${list.length}</span></label>`;
+            <span class="fi-tx"><b>Hide employees with no shifts in the last 4 weeks</b></span>
+            <span class="fi-n" title="${list.length} employee${list.length === 1 ? '' : 's'} with no shifts in the last 4 weeks">${list.length}</span></label>`;
 }
 function _wkHeadOpen(e, i) { openWeekDay(i); }
 function openWeekDay(i) {
@@ -6915,7 +6915,7 @@ function _empNoteSave() {
     _empNoteIcon(_empActionId);
 }
 /* small note icon next to the employee name (kept in sync after editing) */
-function _empNoteIconHtml(id) { return _empNotesObj()[id] ? '<i class="emp-note-ic" title="Has a note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/></svg></i>' : ''; }
+function _empNoteIconHtml(id) { return ''; }   // note icon hidden next to employee names
 function _empNoteIcon(id) {
     document.querySelectorAll(`#mainScheduleTable tr.empRow[data-emp-id="${id}"] .emp-note-slot`).forEach(s => { s.innerHTML = _empNoteIconHtml(id); });
 }
