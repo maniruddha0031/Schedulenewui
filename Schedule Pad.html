@@ -1982,6 +1982,49 @@ html.dark .density-toggle button { color: #94a3b8 !important; }
 html.dark .density-toggle button.active { background: #1e293b !important; color: #93c5fd !important; }
 html.dark .cs-btn { background: #172a4a !important; border-color: #24426e !important; color: #93c5fd !important; }
 html.dark .cs-btn.clr-btn { background: #3a1a1d !important; border-color: #6b2a2f !important; color: #fca5a5 !important; }
+/* Create Schedule / Clear / three-dot menus */
+html.dark .cs-menu, html.dark .action-dropdown { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 0 0 4px rgba(0,0,0,.18), 0 24px 48px -12px rgba(0,0,0,.7) !important; }
+html.dark .cs-head, html.dark .action-dropdown > .px-4 { color: #94a3b8 !important; }
+html.dark .cs-sep { background: #2d3f55; }
+html.dark .action-dropdown > .border-t { border-color: #2d3f55 !important; }
+html.dark .cs-txt b { color: #f1f5f9; }
+html.dark .cs-txt small { color: #94a3b8; }
+html.dark .cs-item:hover, html.dark .cs-toggle:hover { background: #243860; border-color: #3b5bdb; }
+html.dark .cs-item:hover b { color: #93c5fd; }
+html.dark .cs-menu .cs-item .cs-ic[style*="#eff6ff"] { background: rgba(59,130,246,.18) !important; color: #93c5fd !important; }
+html.dark .cs-menu .cs-item .cs-ic[style*="#ecfdf5"] { background: rgba(16,185,129,.18) !important; color: #6ee7b7 !important; }
+html.dark .cs-menu .cs-item .cs-ic[style*="#fffbeb"] { background: rgba(245,158,11,.18) !important; color: #fcd34d !important; }
+html.dark .cs-menu .cs-item .cs-ic[style*="#f5f3ff"] { background: rgba(139,92,246,.2) !important; color: #c4b5fd !important; }
+html.dark .cs-tag { background: rgba(139,92,246,.22); color: #c4b5fd; }
+html.dark .cs-switch { background: #475569; }
+html.dark .cs-auto { background: linear-gradient(135deg, #1f2550 0%, #261f4d 100%); border-color: #4f46e5; border-left-color: #6366f1; box-shadow: none; }
+html.dark .cs-auto:has(#csAutoCreate:checked) { background: linear-gradient(135deg, #252c63 0%, #2d2459 100%); border-color: #6366f1; }
+html.dark .cs-auto .cs-txt > b { color: #f1f5f9; }
+html.dark .cs-auto .cs-txt small { color: #cbd5e1; }
+html.dark .cs-auto .cs-txt small b { color: #a5b4fc; }
+html.dark .cs-auto .cs-auto-lbl { color: #a5b4fc; }
+html.dark .cs-auto-opts button { background: #162032; border-color: #3b4a7a !important; color: #cbd5e1; }
+html.dark .cs-auto-opts button:not(:disabled):hover { border-color: #818cf8 !important; color: #c7d2fe; }
+html.dark .cs-auto-opts button.active { background: #2b2f6b; border-color: #818cf8 !important; color: #c7d2fe; box-shadow: inset 0 0 0 1px #818cf8; }
+html.dark .cs-tpl { background: #162032; border-color: #334155; }
+html.dark .cs-tpl.active { background: #2b2f6b; border-color: #818cf8; box-shadow: inset 0 0 0 1px #818cf8; }
+html.dark .cs-tpl-name { color: #f1f5f9; }
+html.dark .cs-tpl.active .cs-tpl-name { color: #c7d2fe; }
+html.dark .cs-tpl-meta { color: #94a3b8; }
+/* Clear menu */
+html.dark #clearScheduleMenu .cs-item:hover { background: #3a1a1d; border-color: #6b2a2f; }
+html.dark #clearScheduleMenu .cs-item:hover b { color: #fca5a5; }
+html.dark .clr-parent.open { background: #3a1a1d; border-color: #6b2a2f; }
+html.dark .clr-parent.open .clr-caret { color: #fca5a5; }
+html.dark .clr-sub { border-left-color: #6b2a2f; }
+html.dark .clr-n { background: #243248; color: #e2e8f0; }
+html.dark .clr-scope { background: #162032; color: #94a3b8; }
+/* three-dot menu items */
+html.dark .action-dropdown-item { color: #e2e8f0; }
+html.dark .action-dropdown-item > svg { background: #243248; }
+html.dark .action-dropdown-item:hover { background: #243860; border-color: #3b5bdb; color: #93c5fd; }
+html.dark .action-dropdown-item:hover > svg { background: #1e293b; }
+html.dark .relative:has(> .action-dropdown:not(.hidden)) > button { background: #243860; border-color: #3b5bdb; color: #93c5fd; }
 /* Modals */
 html.dark .modal-2xl,
 html.dark .rounded-2xl.bg-white { background-color: #1e293b !important; }
