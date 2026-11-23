@@ -1935,9 +1935,53 @@ html.dark #summaryStatsRow > div { background: #162032 !important; border-color:
 html.dark #footerTotalLabel { color: #e2e8f0 !important; }
 /* Calendar header days */
 html.dark .calendar-day-header { background: #162032 !important; color: #94a3b8 !important; border-color: #2d3f55 !important; }
-/* Shift boxes in dark — lighten pastel slightly */
-html.dark .shiftBox { filter: brightness(0.85) !important; }
-html.dark .shiftBox:hover { filter: brightness(0.9) !important; }
+/* Shift boxes in dark — deep tinted tiles with light text (instead of dimmed pastels) */
+html.dark .shiftBox { filter: none !important; }
+html.dark .shiftBox:hover { filter: brightness(1.12) !important; }
+html.dark .shiftBox.shift-gm      { background: #2b2142 !important; border-color: #6d4bb0 !important; color: #e9d5ff !important; }
+html.dark .shiftBox.shift-leader  { background: #33290f !important; border-color: #a17a14 !important; color: #fde68a !important; }
+html.dark .shiftBox.shift-kitchen { background: #12301f !important; border-color: #2f7d4b !important; color: #bbf7d0 !important; }
+html.dark .shiftBox.shift-cashier { background: #3a1b24 !important; border-color: #9f3a55 !important; color: #fecdd3 !important; }
+html.dark .shiftBox > .font-semibold { color: #f1f5f9 !important; }
+html.dark .shiftBox > .uppercase { color: #94a3b8 !important; }
+html.dark .shift-multi { background: linear-gradient(135deg, #3a2f0e, #4a3a0c) !important; color: #fde68a !important; border-left-color: #d97706 !important; }
+html.dark .partial-unavailable { filter: none !important; background: repeating-linear-gradient(45deg, #3a2412, #3a2412 10px, #4a2d14 10px, #4a2d14 20px) !important; color: #fdba74 !important; }
+html.dark .other-store-shift { filter: none !important; background: repeating-linear-gradient(135deg, #12324a, #12324a 10px, #173d59 10px, #173d59 20px) !important; color: #7dd3fc !important; }
+html.dark .other-store-shift .store-label { color: #7dd3fc !important; }
+html.dark .unassigned-shift { filter: none !important; }
+html.dark .unavailable-cell { background: #1a2436 !important; color: #64748b !important; border: 1px dashed #2d3f55; }
+html.dark table td:hover .addShift { background: #243047 !important; color: #93c5fd !important; }
+html.dark #mainScheduleTable td { border-color: #2d3f55 !important; }
+html.dark #mainScheduleTable tbody td:first-child, html.dark #mainScheduleTable tbody td.sticky { background: #1e293b !important; }
+/* footer totals row (its light first-row rule is more specific than the generic dark one) */
+html.dark .stats-footer { border-color: #2d3f55 !important; }
+html.dark .stats-footer > .stats-summary-bar:first-child { background: #162032 !important; border-top-color: #2d3f55 !important; }
+html.dark .stats-footer > .stats-summary-bar:first-child:hover { background: #1a2744 !important; }
+html.dark .stats-footer > .stats-summary-bar:first-child .stats-label-col { background: #1a2744 !important; border-right-color: #2d3f55 !important; }
+html.dark .stats-footer > .stats-summary-bar:first-child #summaryStatsRow > div,
+html.dark .stats-footer > .stats-summary-bar:first-child #summaryStatsRow > div > div { border-color: #2d3f55 !important; color: #cbd5e1 !important; }
+html.dark .stats-footer .text-slate-700, html.dark .stats-footer .text-slate-800, html.dark .stats-footer .text-slate-900,
+html.dark #summaryStatsRow .font-bold, html.dark #footerTotalLabel, html.dark .stats-label-col span { color: #e2e8f0 !important; }
+html.dark .stats-row-total, html.dark .stats-row-label { color: #cbd5e1 !important; }
+/* unassigned row (expanded) */
+html.dark .unassigned-summary-row, html.dark .unassigned-summary-row > td { background: #172133 !important; border-color: #2d3f55 !important; }
+html.dark .unassigned-summary-row .text-slate-800 { color: #f1f5f9 !important; }
+html.dark .unassigned-summary-row button.bg-white { background: #0f172a !important; border-color: #3b4f6b !important; color: #93c5fd !important; }
+html.dark .shiftBox.unassigned-shift { background: #162a4a !important; border-color: #2c4f86 !important; border-left-color: #3b82f6 !important; color: #bfdbfe !important; }
+html.dark .shiftBox.unassigned-shift .font-bold, html.dark .shiftBox.unassigned-shift .font-semibold { color: #e0ecff !important; }
+html.dark .ua-dur { background: #24426e !important; color: #bfdbfe !important; }
+html.dark .ua-status-open { background: #243047 !important; color: #94a3b8 !important; }
+html.dark .ua-status-offered { background: #2a2350 !important; color: #c4b5fd !important; border-color: #4c3d8f !important; }
+html.dark .ua-status-offered:hover { background: #7c3aed !important; color: #fff !important; }
+html.dark .shiftBox.unassigned-shift .text-slate-500, html.dark .shiftBox.unassigned-shift .text-slate-400 { color: #94a3b8 !important; }
+html.dark .ua-cell-offered { background: #2a2350 !important; color: #c4b5fd !important; }
+/* toolbar: Day / Week / Month, density, Clear, Create Schedule */
+html.dark #btnDay:not(.bg-white), html.dark #btnWeek:not(.bg-white), html.dark #btnMonth:not(.bg-white) { background: #0f172a !important; color: #94a3b8 !important; }
+html.dark .density-toggle { background: #0f172a !important; border-color: #2d3f55 !important; }
+html.dark .density-toggle button { color: #94a3b8 !important; }
+html.dark .density-toggle button.active { background: #1e293b !important; color: #93c5fd !important; }
+html.dark .cs-btn { background: #172a4a !important; border-color: #24426e !important; color: #93c5fd !important; }
+html.dark .cs-btn.clr-btn { background: #3a1a1d !important; border-color: #6b2a2f !important; color: #fca5a5 !important; }
 /* Modals */
 html.dark .modal-2xl,
 html.dark .rounded-2xl.bg-white { background-color: #1e293b !important; }
@@ -9777,5 +9821,6 @@ function resetDemoSchedule() {
 <script src="employee-availability.js"></script>
 <script src="team-center.js"></script>
 <script src="offer-modal.js"></script>
+<script src="crew-bridge.js"></script>
 </body>
 </html>

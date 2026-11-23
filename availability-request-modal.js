@@ -193,8 +193,9 @@
     if (act === 'confirm-no') return decide('rejected', ($('arqNote') || {}).value || '');
   }
 
-  function decide(kind) {
+  function decide(kind, note) {
     S.decided = kind; S.declining = false;
+    if (typeof S.onDecide === 'function') S.onDecide(kind, note || '');   // real crew request: save the decision
     markRow(kind);
     toast(kind === 'approved' ? `${S.name}’s availability approved — effective ${fmt(S.q.eff)}` : `${S.name}’s availability request disapproved`);
     render();
@@ -222,9 +223,10 @@
     setTimeout(() => t.remove(), 3000);
   }
 
-  function open(name, userId) {
+  /* custom (optional): a real request from the crew app — { role, cur, req, curSince, eff, sub, reason, shifts, mgrUp, onDecide } */
+  function open(name, userId, custom) {
     ensureDom();
-    S = { name, id: userId, q: reqFor(userId), view: 'compare', declining: false, decided: null };
+    S = { name, id: userId, q: custom || reqFor(userId), view: 'compare', declining: false, decided: null, onDecide: custom && custom.onDecide };
     $('arqWrap').classList.add('open');
     render();
   }

@@ -72,13 +72,40 @@
   const spark = (g, c) => `<span class="ea-spark" style="--c:${c}" aria-hidden="true">${g.map((r, d) => { const n = rowHrs(r); return `<span><i class="${n ? '' : 'z'}" style="height:${Math.max(2, Math.round(n / 24 * 18))}px"></i><em>${DAYS[d][0]}</em></span>`; }).join('')}</span>`;
 
   /* ---------------- Me (logged-in employee) ---------------- */
+  /* Crew app (crew.html) sets window.CREW_CTX = { me, versions, storeKey, empId }:
+     real availability from the manager + the crew member's own saved requests. */
+  const CREW = window.CREW_CTX || null;
   function me() {
+    if (CREW) return CREW.me;
     const e = (typeof employeeData !== 'undefined' && employeeData[0]) || { name: 'Angie Vasquez', position: 'Shift Leader', avatar: '' };
     return { name: e.name, role: e.position || 'Employee', avatar: e.avatar || '' };
   }
 
   /* ---------------- Data / scenarios ---------------- */
   let S = null;
+  function crewLoadAll() { try { return JSON.parse(localStorage.getItem(CREW.storeKey) || '{}') || {}; } catch (e) { return {}; } }
+  function crewSave() {
+    if (!CREW || !S) return;
+    const all = crewLoadAll();
+    all[CREW.empId] = { req: S.req, history: S.history };
+    try { localStorage.setItem(CREW.storeKey, JSON.stringify(all)); } catch (e) {}
+    if (typeof window.onCrewAvailChange === 'function') window.onCrewAvailChange();
+  }
+  function crewScenario() {
+    const T = TODAY();
+    const vs = (CREW.versions || []).slice().sort((a, b) => a.eff.localeCompare(b.eff));
+    const cur = vs.filter(v => v.eff <= T).pop();
+    const mine = crewLoadAll()[CREW.empId] || {};
+    // an approved request is already saved by the manager as the upcoming version: show it once, as "My request"
+    const up = vs.find(v => v.eff > T && !(mine.req && mine.req.status === 'approved' && v.eff === mine.req.eff));
+    S = {
+      current: cur ? { eff: cur.eff, grid: cur.grid, src: cur.updatedBy ? 'Set by ' + cur.updatedBy : 'Set by your manager' }
+                   : { eff: T, grid: emptyGrid(), src: 'No availability has been saved for you yet' },
+      mgrUp: up ? { eff: up.eff, grid: up.grid, by: up.updatedBy || 'Store Manager', at: up.updatedAt || `${T}T09:00`, reason: 'Updated by your manager' } : null,
+      req: mine.req || null, history: mine.history || [],
+      sel: 'current', compare: false, mode: 'view', baseKey: null, draft: null, eff: '', tried: false, mDay: weekday(T),
+    };
+  }
   function gCurrent() { const g = emptyGrid(); for (let d = 0; d < 7; d++) for (let h = 8; h < 22; h++) g[d][h] = true; for (let h = 8; h < 12; h++) g[2][h] = false; return g; }
   function gMgr() { const g = gCurrent(); for (let d = 1; d <= 5; d++) for (let h = 19; h < 22; h++) g[d][h] = false; return g; }
   function gReq() { const g = emptyGrid(); for (let d = 1; d <= 5; d++) for (let h = 8; h < 19; h++) g[d][h] = true; for (let h = 10; h < 24; h++) { g[0][h] = true; g[6][h] = true; } return g; }
@@ -163,6 +190,10 @@
         <div class="df"><button type="button" class="ea-btn" id="eaDCancel">Cancel</button><button type="button" class="ea-btn primary" id="eaDOk">OK</button></div>
       </div>`;
     document.body.appendChild(dw);
+    if (CREW) {   // crew app: no "back to Team Center", no prototype menu
+      const back = v.querySelector('#eaBack'); if (back) back.style.display = 'none';
+      const demo = v.querySelector('.ea-demo'); if (demo) demo.style.display = 'none';
+    }
     bindEvents();
   }
 
@@ -425,7 +456,7 @@
       S.req = { status: 'pending', eff: E, grid: clone(S.draft), submittedAt: at, log: [{ t: 'Submitted', at, by: ME, note: 'Effective ' + fmt(E) }] };
       toast('Request submitted');
     }
-    exitEdit(); S.sel = 'req'; render();
+    exitEdit(); S.sel = 'req'; render(); crewSave();
   }
   function cancelRequest() {                                                                       // R8
     const o = openReq();
@@ -435,7 +466,7 @@
       onOk: () => {
         // cancelled requests leave the timeline entirely; only a record stays in "Past requests"
         o.status = 'cancelled'; o.log.push({ t: 'Cancelled', at: nowStamp(), by: me().name });
-        S.history.unshift(o); S.req = null;
+        S.history.unshift(o); S.req = null; crewSave();
         S.sel = 'current'; S.compare = false;
         render(); toast('Request cancelled and removed');
       } });
@@ -521,7 +552,8 @@
   /* ---------------- Open / close ---------------- */
   function openMyAvailability() {
     ensureDom();
-    if (!S) scenario('both');
+    if (CREW) crewScenario();          // always fresh: the manager may have changed something
+    else if (!S) scenario('both');
     rollForward();
     if (S.mode !== 'edit') { S.sel = 'current'; S.compare = false; }   // always land on the current availability
     $('eaView').style.display = 'block';

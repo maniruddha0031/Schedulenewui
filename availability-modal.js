@@ -60,6 +60,13 @@
   const baseAvail = window._empAvail;            // the schedule's original mock availability
   const STORE = {};                              // empId → [versions]
   let _vid = 1;
+  /* saved in the browser so changes survive a reload and reach the crew app (crew.html) */
+  const AV_KEY = 'zipAvailStore';
+  try { const raw = JSON.parse(localStorage.getItem(AV_KEY) || 'null'); if (raw && raw.v === 1 && raw.store) { Object.assign(STORE, raw.store); _vid = Math.max(_vid, raw.vid || 1); } } catch (e) {}
+  function persist(exportCrew) {
+    try { localStorage.setItem(AV_KEY, JSON.stringify({ v: 1, store: STORE, vid: _vid })); } catch (e) {}
+    if (exportCrew !== false && typeof window.crewExport === 'function') window.crewExport();
+  }
 
   function gridFromBase(emp) {
     const g = emptyGrid();
@@ -429,7 +436,7 @@
     const nv = { id: 'v' + (_vid++), eff: E, grid: cloneGrid(S.draft), updatedAt: nowStamp(), updatedBy: MANAGER };
     STORE[S.empId].push(nv);
     exitEdit(); S.view = nv.id;                            // C12
-    render(); refreshSchedule();
+    render(); refreshSchedule(); persist();
     toast(`Availability saved, effective ${E === T ? 'today' : fmt(E)}`);
   }
 
@@ -449,7 +456,7 @@
         if (d === u.eff) { err.textContent = 'Pick a different date to update.'; return false; }
         if (d === T) STORE[S.empId] = versionsOf(S.empId).filter(v => v.id === u.id || v.eff !== T);
         u.eff = d; u.updatedAt = nowStamp(); u.updatedBy = MANAGER;
-        S.view = u.id; render(); refreshSchedule();
+        S.view = u.id; render(); refreshSchedule(); persist();
         toast(d === T ? 'Upcoming availability is now current' : `Effective date updated to ${fmt(d)}`);
       }
     });
@@ -461,7 +468,7 @@
       tone: 'danger', icon: 'trash-2', title: 'Delete upcoming availability?',
       body: `<p>The availability scheduled from <b>${fmt(u.eff)}</b> will be removed. The current availability keeps applying after that date.</p>`,
       ok: 'Delete upcoming', okCls: 'danger',
-      onOk: () => { STORE[S.empId] = versionsOf(S.empId).filter(v => v.id !== u.id); S.view = cur() ? cur().id : null; render(); refreshSchedule(); toast('Upcoming availability deleted'); }
+      onOk: () => { STORE[S.empId] = versionsOf(S.empId).filter(v => v.id !== u.id); S.view = cur() ? cur().id : null; render(); refreshSchedule(); persist(); toast('Upcoming availability deleted'); }
     });
   }
 
@@ -540,6 +547,13 @@
   function closeModal() { guardDiscard(() => { if (S && S.mode === 'edit') exitEdit(); $('avmOverlay').classList.remove('open'); }); }
 
   window.openAvailabilityModal = openAvailabilityModal;
+  /* every employee's versions (seeds the ones not opened yet) — used by the crew export */
+  window.__availAll = function () {
+    const out = {};
+    (typeof employeeData !== 'undefined' ? employeeData : []).forEach(e => { out[e.id] = versionsOf(e.id).map(v => ({ eff: v.eff, grid: v.grid, updatedAt: v.updatedAt, updatedBy: v.updatedBy })); });
+    persist(false);
+    return out;
+  };
   window.openAvailabilityFromAction = function () {
     const id = typeof _empActionId !== 'undefined' ? _empActionId : null;
     if (typeof closeActionModal === 'function') closeActionModal();

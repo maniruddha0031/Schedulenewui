@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZIP Schedule - Crew</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="design-system/colors_and_type.css">
+<link rel="stylesheet" href="crew.css">
+<link rel="stylesheet" href="employee-availability.css">
+<script>
+  /* theme (shared with the manager pages) */
+  try { if (localStorage.getItem('zipDarkMode') === '1') { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', 'dark'); } else document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
+  /* who is logged in + data written by the manager's Schedule Pad (crew-bridge.js) */
+  window.CREW_DATA = (function () { try { const d = JSON.parse(localStorage.getItem('zipCrewData') || 'null'); return d && d.v === 1 ? d : null; } catch (e) { return null; } })();
+  (function () {
+    const D = window.CREW_DATA; if (!D) return;
+    const id = new URLSearchParams(location.search).get('emp');
+    const me = D.employees.find(e => String(e.id) === String(id)) || D.employees[0];
+    window.CREW_ME = me;
+    window.CREW_CTX = { empId: me.id, storeKey: 'zipCrewAvailReq', me: { name: me.name, role: me.position, avatar: me.avatar }, versions: (D.availability || {})[me.id] || [] };
+  })();
+</script>
+</head>
+<body>
+
+<header class="cw-top">
+  <span class="cw-logo"><i data-lucide="calendar-clock" style="width:18px;height:18px"></i></span>
+  <button type="button" class="cw-toplink" data-go="dashboard"><i data-lucide="home"></i>Dashboard</button>
+  <button type="button" class="cw-toplink" data-go="schedule"><i data-lucide="calendar-days"></i>My Schedule</button>
+  <span class="cw-store"><i data-lucide="map-pin" style="width:18px;height:18px"></i>085 - Del Mar</span>
+  <span class="cw-clock"><i data-lucide="cloud-sun" style="width:18px;height:18px"></i>75&deg;F<span class="sep"></span><span id="cwClock"></span>&nbsp;AMERICA/CHICAGO</span>
+  <span class="cw-role"><i data-lucide="user-round"></i>Crew view</span>
+  <button type="button" class="cw-avatar-btn" id="cwAvatarBtn" title="Profile"><img id="cwAvatar" alt=""></button>
+</header>
+
+<div class="cw-prof" id="cwProf">
+  <div class="ban"><img id="cwProfImg" alt=""></div>
+  <div class="who"><b id="cwProfName"></b><span id="cwProfRole"></span><br><span class="chip"><i data-lucide="user-round" style="width:11px;height:11px"></i>Logged in as crew</span></div>
+  <div class="row col"><span class="t"><i data-lucide="users-round"></i>Login as another crew member</span><select id="cwSwitch" aria-label="Switch crew member"></select></div>
+  <div class="row"><i data-lucide="moon"></i>Dark Mode<button type="button" class="cw-switch" id="cwDark" aria-label="Dark mode"></button></div>
+  <a class="row" href="Schedule Pad.html"><i data-lucide="shield-check"></i>Back to manager view</a>
+  <button type="button" class="row" id="cwLogout"><i data-lucide="log-out"></i>Logout</button>
+</div>
+
+<nav class="cw-side" aria-label="Main">
+  <button type="button" class="cw-nav" data-go="dashboard"><i data-lucide="home"></i><span>Dashboard</span></button>
+  <button type="button" class="cw-nav" data-go="schedule"><i data-lucide="calendar-days"></i><span>My Schedule</span></button>
+  <button type="button" class="cw-nav" data-go="availability"><i data-lucide="user-check"></i><span>Availability</span></button>
+  <button type="button" class="cw-nav" data-go="timeoff"><i data-lucide="umbrella"></i><span>Time Off</span></button>
+  <button type="button" class="cw-nav" data-go="site"><i data-lucide="map-pinned"></i><span>Site Schedule</span></button>
+</nav>
+
+<main class="cw-main" id="cwMain">
+  <section class="cw-view" id="v-dashboard"></section>
+  <section class="cw-view" id="v-schedule"></section>
+  <section class="cw-view" id="v-timeoff"></section>
+  <section class="cw-view" id="v-site"></section>
+  <section class="cw-view" id="v-nodata">
+    <div class="cw-card cw-nodata"><div class="cw-empty" style="padding:40px"><span class="ic"><i data-lucide="database"></i></span>
+      <b>No schedule data yet</b><p style="margin:0">Open the manager's Schedule once, then use <b>Login as crew</b> from the profile menu.</p>
+      <a class="cw-btn pri" href="Schedule Pad.html" style="text-decoration:none;margin-top:8px"><i data-lucide="arrow-left"></i>Go to Schedule</a></div></div>
+  </section>
+</main>
+
+<div class="cw-dw" id="cwDw"><div class="cw-dlg" role="dialog" aria-modal="true" aria-labelledby="cwDTitle" id="cwDlg"></div></div>
+<div class="cw-toast" id="cwToast" role="status"><i data-lucide="check-circle-2"></i><span></span></div>
+
+<script>
+/* toast used by this page and by employee-availability.js */
+window.showToast = function (msg) {
+  const t = document.getElementById('cwToast'); t.querySelector('span').textContent = msg;
+  t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
+};
+</script>
+<script src="employee-availability.js"></script>
+<script>
+(function () {
+  'use strict';
+  const D = window.CREW_DATA, ME = window.CREW_ME;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const icons = () => { try { lucide.createIcons(); } catch (e) {} };
+  const POS = { 'General Manager': '#7c3aed', 'Assistant Manager': '#7c3aed', 'Shift Leader': '#d97706', 'Line Cook': '#16a34a', 'Prep Cook': '#16a34a', 'Dishwasher': '#0d9488', 'Cashier': '#2563eb', 'Crew': '#e11d48' };
+  const pc = p => POS[p] || '#64748b';
+  const DOW = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  /* ---------- dates (store time zone) ---------- */
+  const TZ = 'America/Chicago';
+  function parts() { const p = {}; new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).forEach(x => { p[x.type] = x.value; }); return p; }
+  const TODAY = () => { const p = parts(); return `${p.year}-${p.month}-${p.day}`; };
+  const toD = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+  const addDays = (iso, n) => { const d = toD(iso); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  const wd = iso => toD(iso).getUTCDay();
+  const monday = iso => addDays(iso, -((wd(iso) + 6) % 7));
+  const dShort = iso => { const d = toD(iso); return `${MON[d.getUTCMonth()]} ${String(d.getUTCDate()).padStart(2, '0')}`; };
+  const dLong = iso => { const d = toD(iso); return `${DOW[d.getUTCDay()].charAt(0) + DOW[d.getUTCDay()].slice(1).toLowerCase()}, ${MON[d.getUTCMonth()]} ${d.getUTCDate()}`; };
+  const t12 = h => { h = ((h % 24) + 24) % 24; const H = Math.floor(h), M = Math.round((h - H) * 60); return `${String(H % 12 || 12).padStart(2, '0')}:${String(M).padStart(2, '0')}${H < 12 ? 'A' : 'P'}`; };
+  const hhmm12 = s => { const [h, m] = s.split(':').map(Number); return t12(h + m / 60); };
+  const len = s => s.end > s.start ? s.end - s.start : s.end + 24 - s.start;
+  const hrs = n => (Math.round(n * 100) / 100).toString().replace(/\.0+$/, '') + 'h';
+
+  if (!D || !ME) { document.querySelectorAll('.cw-view').forEach(v => v.classList.toggle('on', v.id === 'v-nodata')); icons(); return; }
+
+  /* ---------- crew data ---------- */
+  const TO_KEY = 'zipCrewTimeOff', AR_KEY = 'zipCrewAvailReq', SCH_KEY = 'zipSchedStore';
+  const read = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  function timeOffAll() {
+    const all = read(TO_KEY) || {};
+    if (!all[ME.id]) {   // first visit: a little history so the list isn't empty
+      const T = TODAY();
+      all[ME.id] = [
+        { id: 'to1', type: 'ALL_DAY', start: addDays(T, -30), end: addDays(T, -29), reason: 'Family event', status: 'Approved', note: '', at: addDays(T, -45) },
+        { id: 'to2', type: 'PARTIAL', start: addDays(T, -12), end: addDays(T, -12), from: '14:00', to: '18:00', reason: 'Doctor appointment', status: 'Disapproved', note: 'Short staffed that afternoon - please swap with a co-worker.', at: addDays(T, -20) },
+      ];
+      write(TO_KEY, all);
+    }
+    return all;
+  }
+  const myTimeOff = () => timeOffAll()[ME.id];
+  function saveTimeOff(list) { const all = timeOffAll(); all[ME.id] = list; write(TO_KEY, all); }
+  const myAvailReq = () => ((read(AR_KEY) || {})[ME.id] || {});
+
+  /* ---- the manager's live schedule store (shift assignments + unassigned shifts) ---- */
+  let SCH = read(SCH_KEY);
+  const refreshSch = () => { SCH = read(SCH_KEY); };
+  const toH = v => typeof v === 'number' ? v : (+String(v).slice(0, 2) + (+String(v).slice(3, 5) || 0) / 60);
+  const hhmm = h => { const m = Math.round(h * 60) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const defBreaks = (s, e) => ((e > s ? e - s : e + 24 - s) >= 6 ? [{ type: 'Meal', start: s + 3, end: s + 3.5 }] : []);
+  const empById = id => D.employees.find(e => e.id === id) || { name: 'Employee', position: '', avatar: '', unavailableDays: [], skills: [] };
+  /* an employee's shift on a weekday: the manager's latest assignment wins over the exported copy */
+  function shiftsFor(empId, day) {
+    if ((empById(empId).unavailableDays || []).includes(day)) return [];
+    const k = `w_${empId}_${day}`;
+    if (SCH && SCH.sa && Object.prototype.hasOwnProperty.call(SCH.sa, k)) {
+      const a = SCH.sa[k]; if (!a) return [];
+      const s = toH(a.startHHMM || a.start), e = toH(a.endHHMM || a.end);
+      const brk = (a.breaks || []).length ? a.breaks.map(b => ({ type: b.type || 'Break', start: toH(b.start), end: toH(b.end) })) : defBreaks(s, e);
+      return [{ empId, day, start: s, end: e, position: a.position, breaks: brk }];
+    }
+    return D.shifts.filter(x => x.empId === empId && x.day === day);
+  }
+  const shiftsOn = (empId, iso) => shiftsFor(empId, wd(iso)).sort((a, b) => a.start - b.start);
+
+  /* open-shift offers sent by the manager */
+  function myOffers() {
+    const out = [];
+    const src = SCH && SCH.ua ? SCH.ua.flatMap((list, d) => (list || []).map(s => ({ ...s, day: d }))) : (D.offers || []);
+    src.forEach(s => { const o = (s.offers || []).find(x => x.empId === ME.id); if (o) out.push({ id: s.id, day: s.day, start: s.start, end: s.end, position: s.position, dept: s.dept, breaks: s.breaks, status: o.status }); });
+    return out;
+  }
+  function declineOffer(id, day) {
+    refreshSch(); if (!SCH || !SCH.ua) return;
+    const s = (SCH.ua[day] || []).find(x => x.id === id);
+    if (s) { const o = (s.offers || []).find(x => x.empId === ME.id); if (o) o.status = 'Declined'; write(SCH_KEY, SCH); }
+  }
+  /* a shift the manager offered: accepting assigns it straight away (no second approval) */
+  function acceptOffer(id, day) {
+    refreshSch(); if (!SCH || !SCH.ua) return false;
+    const s = (SCH.ua[day] || []).find(x => x.id === id); if (!s) return false;
+    const a = hhmm(s.start), b = hhmm(s.end);
+    SCH.sa[`w_${ME.id}_${day}`] = { start: Math.floor(s.start), end: Math.floor(s.end), startHHMM: a, endHHMM: b, time: `${a} - ${b}`, position: s.position, notes: '', breaks: s.breaks || [] };
+    SCH.ua[day] = SCH.ua[day].filter(x => x.id !== id);
+    write(SCH_KEY, SCH);
+    return true;
+  }
+  /* next date (this week or later) for a weekday-based shift */
+  function nextDateFor(day) { const T = TODAY(); let iso = addDays(monday(T), (day + 6) % 7); if (iso < T) iso = addDays(iso, 7); return iso; }
+
+  /* ---- shifts offered between co-workers ('zipCrewSwaps'); a pick-up request goes to the manager ---- */
+  const SW_KEY = 'zipCrewSwaps';
+  const swaps = () => read(SW_KEY) || [];
+  const saveSwaps = l => write(SW_KEY, l);
+  function eligibleFor(sh) {
+    return D.employees.filter(e => e.id !== ME.id && (e.skills || [e.position]).includes(sh.position)
+      && !(e.unavailableDays || []).includes(sh.day) && !shiftsFor(e.id, sh.day).length);
+  }
+  const timeOffOn = iso => myTimeOff().filter(t => (t.status === 'Approved' || t.status === 'Pending') && t.start <= iso && iso <= t.end);
+
+  /* ---------- views ---------- */
+  let VIEW = 'dashboard', dashNeed = 'offer', dashWait = 'timeoff', schedFrom = monday(TODAY()), siteFrom = monday(TODAY()), toFilter = 'all', siteQ = '';
+  function go(v) {
+    VIEW = v;
+    refreshSch();
+    if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
+    document.querySelectorAll('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === v));
+    document.querySelectorAll('.cw-view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+    if (v === 'availability') { window.openMyAvailability(); return; }
+    window.closeMyAvailability && window.closeMyAvailability(true);
+    ({ dashboard: rDash, schedule: rSched, timeoff: rTimeOff, site: rSite })[v]();
+    icons();
+  }
+  window.onCrewAvailChange = () => {};
+
+  const empty = (ic, t, p) => `<div class="cw-empty"><span class="ic"><i data-lucide="${ic}"></i></span><b>${t}</b>${p ? `<span>${p}</span>` : ''}</div>`;
+  const pill = st => `<span class="cw-pill p-${String(st).toLowerCase()}">${esc(st === 'Pending' ? 'Pending' : st)}</span>`;
+
+  /* ---- Dashboard ---- */
+  function rDash() {
+    const T = TODAY(), hour = +parts().hour;
+    const first = ME.name.split(' ')[0];
+    let next = null;
+    for (let i = 0; i < 14 && !next; i++) { const iso = addDays(T, i); const s = shiftsOn(ME.id, iso).find(x => i > 0 || x.end > hour); if (s && !timeOffOn(iso).some(t => t.status === 'Approved')) next = { iso, s }; }
+    const wkFrom = monday(T); let wkHrs = 0, wkN = 0;
+    for (let i = 0; i < 7; i++) shiftsOn(ME.id, addDays(wkFrom, i)).forEach(s => { wkHrs += len(s); wkN++; });
+
+    // needing action: shifts offered to me (by the manager or by co-workers)
+    const mgrOffers = myOffers().filter(o => o.status === 'Pending');
+    const SW = swaps().filter(s => s.date >= T);
+    const coOffers = SW.filter(s => s.status === 'Offered' && (s.to || []).includes(ME.id) && !(s.declined || []).includes(ME.id));
+    const needN = mgrOffers.length + coOffers.length;
+    // awaiting: my requests
+    const tos = myTimeOff().filter(t => t.status === 'Pending');
+    const ar = myAvailReq().req, arOpen = ar && ar.status === 'pending' ? [ar] : [];
+    const myPickups = SW.filter(s => s.status === 'Requested' && s.requestedBy === ME.id);          // I asked for a co-worker's shift
+    const myOffered = SW.filter(s => s.from === ME.id && (s.status === 'Offered' || s.status === 'Requested'));   // I offered my shift
+    const waitN = { timeoff: tos.length, avail: arOpen.length, swap: myPickups.length, offer: myOffered.length };
+
+    const needRows = needN ? mgrOffers.map(o => { const iso = nextDateFor(o.day); return `
+      <div class="cw-row" style="--pc:${pc(o.position)}"><span class="ic"><i data-lucide="send"></i></span>
+        <div class="tx"><b>${esc(o.position)} <span class="cw-pill p-cancelled">From your manager</span></b><span>${dLong(iso)} &bull; ${t12(o.start)} - ${t12(o.end)} &bull; ${hrs(len(o))}${o.dept ? ' &bull; ' + esc(o.dept) : ''}</span></div>
+        <div class="act"><button type="button" class="cw-btn sm ok" data-offer="${o.id}|${o.day}|Accepted"><i data-lucide="check"></i>Accept</button>
+          <button type="button" class="cw-btn sm no" data-offer="${o.id}|${o.day}|Declined"><i data-lucide="x"></i>Decline</button></div></div>`; }).join('')
+      + coOffers.map(s => { const f = empById(s.from); return `
+      <div class="cw-row" style="--pc:${pc(s.position)}"><span class="ic"><i data-lucide="repeat"></i></span>
+        <div class="tx"><b>${esc(s.position)} <span class="cw-pill p-cancelled">Offered by ${esc(f.name)}</span></b><span>${dLong(s.date)} &bull; ${t12(s.start)} - ${t12(s.end)} &bull; ${hrs(len(s))} &bull; needs manager approval</span></div>
+        <div class="act"><button type="button" class="cw-btn sm ok" data-swap="${s.id}|request"><i data-lucide="hand"></i>Request</button>
+          <button type="button" class="cw-btn sm no" data-swap="${s.id}|decline"><i data-lucide="x"></i>Decline</button></div></div>`; }).join('')
+      : empty('inbox', 'You have no pending actions.', 'Shifts offered to you appear here.');
+
+    let waitRows;
+    if (dashWait === 'timeoff') waitRows = tos.length ? tos.map(t => `
+      <div class="cw-row" style="--pc:#db2777"><span class="ic"><i data-lucide="umbrella"></i></span>
+        <div class="tx"><b>Time Off ${pill('Pending')}</b><span>${toDuration(t)}${t.reason ? ' &bull; ' + esc(t.reason) : ''} &bull; waiting for your manager</span></div>
+        <div class="act"><button type="button" class="cw-x" data-cancel-to="${t.id}" title="Cancel request" aria-label="Cancel request"><i data-lucide="x"></i></button></div></div>`).join('')
+      : empty('umbrella', 'No pending time off requests.');
+    else if (dashWait === 'avail') waitRows = arOpen.length ? arOpen.map(r => `
+      <div class="cw-row" style="--pc:#16a34a"><span class="ic"><i data-lucide="user-check"></i></span>
+        <div class="tx"><b>Availability Request ${pill('Pending')}</b><span>From ${dLong(r.eff)} &bull; ${r.grid.reduce((a, row) => a + row.filter(Boolean).length, 0)} hrs / week &bull; waiting for your manager</span></div>
+        <div class="act"><button type="button" class="cw-btn sm" data-go="availability">View</button><button type="button" class="cw-x" data-cancel-ar="1" title="Cancel request" aria-label="Cancel request"><i data-lucide="x"></i></button></div></div>`).join('')
+      : empty('user-check', 'No availability request waiting.');
+    else if (dashWait === 'swap') waitRows = myPickups.length ? myPickups.map(s => `
+      <div class="cw-row" style="--pc:${pc(s.position)}"><span class="ic"><i data-lucide="repeat"></i></span>
+        <div class="tx"><b>${esc(s.position)} ${pill('Pending')}</b><span>${esc(empById(s.from).name)}'s shift &bull; ${dLong(s.date)} &bull; ${t12(s.start)} - ${t12(s.end)} &bull; waiting for manager approval</span></div>
+        <div class="act"><button type="button" class="cw-x" data-swap="${s.id}|cancel" title="Withdraw request" aria-label="Withdraw request"><i data-lucide="x"></i></button></div></div>`).join('')
+      : empty('repeat', 'No shift swap requests.');
+    else waitRows = myOffered.length ? myOffered.map(s => `
+      <div class="cw-row" style="--pc:${pc(s.position)}"><span class="ic"><i data-lucide="send"></i></span>
+        <div class="tx"><b>${esc(s.position)} ${s.status === 'Requested' ? '<span class="cw-pill p-pending">Requested - manager approval</span>' : pill('Pending')}</b>
+          <span>${dLong(s.date)} &bull; ${t12(s.start)} - ${t12(s.end)} &bull; ${s.status === 'Requested' ? `${esc(empById(s.requestedBy).name)} wants it` : `offered to ${(s.to || []).length} co-worker${(s.to || []).length === 1 ? '' : 's'}`}</span></div>
+        <div class="act"><button type="button" class="cw-x" data-swap="${s.id}|cancel" title="Take back" aria-label="Take back"><i data-lucide="x"></i></button></div></div>`).join('')
+      : empty('send', 'You haven\'t offered any of your shifts.', 'Use Offer on a shift in My Schedule.');
+
+    const tab = (k, label, n) => `<button type="button" data-wait="${k}" class="${dashWait === k ? 'on' : ''}">${label} <span class="cw-count">${n}</span></button>`;
+    const waitTotal = waitN.timeoff + waitN.avail + waitN.swap + waitN.offer;
+    $('v-dashboard').innerHTML = `
+      <div class="cw-hello"><div><h1>${hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'}, ${esc(first)}</h1><p>${dLong(T)} &bull; ${esc(ME.position)} &bull; 085 - Del Mar</p></div></div>
+      <div class="cw-kpis">
+        <div class="cw-kpi k-green"><span class="ic"><i data-lucide="clock-3"></i></span><div><div class="k">Next shift</div>
+          <div class="v">${next ? `${dShort(next.iso)}, ${t12(next.s.start)}` : 'None scheduled'}</div><div class="m">${next ? `${t12(next.s.start)} - ${t12(next.s.end)} &bull; ${esc(next.s.position)}` : 'No shifts in the next 2 weeks'}</div></div></div>
+        <div class="cw-kpi k-orange"><span class="ic"><i data-lucide="calendar-range"></i></span><div><div class="k">This week</div>
+          <div class="v">${hrs(wkHrs)} scheduled</div><div class="m">${wkN} shift${wkN === 1 ? '' : 's'} &bull; ${dShort(wkFrom)} - ${dShort(addDays(wkFrom, 6))}</div></div></div>
+        <div class="cw-kpi k-violet"><span class="ic"><i data-lucide="hourglass"></i></span><div><div class="k">Requests</div>
+          <div class="v">${needN} to answer</div><div class="m">${waitTotal} waiting on others</div></div></div>
+      </div>
+      <div class="cw-two">
+        <div class="cw-card"><div class="cw-hd"><span class="ic"><i data-lucide="bell"></i></span><div><h2>Needing Action <span class="cw-count">${needN}</span></h2><p>Shifts offered to you</p></div></div>
+          <div class="cw-tabs"><button type="button" class="on">Shift Offer <span class="cw-count">${needN}</span></button></div>
+          <div class="cw-list">${needRows}</div></div>
+        <div class="cw-card"><div class="cw-hd"><span class="ic"><i data-lucide="hourglass"></i></span><div><h2>Awaiting Action from Others <span class="cw-count">${waitTotal}</span></h2><p>Your requests waiting for your manager or co-workers</p></div></div>
+          <div class="cw-tabs">${tab('timeoff', 'Time Off', waitN.timeoff)}${tab('avail', 'Availability', waitN.avail)}${tab('swap', 'Shift Swap', waitN.swap)}${tab('offer', 'Shift Offer', waitN.offer)}</div>
+          <div class="cw-list">${waitRows}</div></div>
+      </div>`;
+  }
+
+  /* ---- My Schedule (2 weeks) ---- */
+  function rSched() {
+    const T = TODAY(), to = addDays(schedFrom, 13);
+    const SW = swaps();
+    let total = 0, n = 0, cells = '';
+    for (let i = 0; i < 14; i++) {
+      const iso = addDays(schedFrom, i), list = shiftsOn(ME.id, iso), off = timeOffOn(iso);
+      const offApproved = off.some(t => t.status === 'Approved' && t.type === 'ALL_DAY');
+      let inner = off.map(t => `<div class="cw-off"><i data-lucide="umbrella"></i>Time off${t.type === 'PARTIAL' ? ` ${hhmm12(t.from)}-${hhmm12(t.to)}` : ''} ${pill(t.status)}</div>`).join('');
+      if (!offApproved) inner += list.map(s => { total += len(s); n++;
+        const offered = SW.find(x => x.from === ME.id && x.date === iso && (x.status === 'Offered' || x.status === 'Requested'));
+        return `
+        <div class="cw-shift" style="--pc:${pc(s.position)}"><div class="t" style="display:flex;align-items:center;gap:6px">${t12(s.start)} - ${t12(s.end)}
+            ${iso > T && !offered ? `<button type="button" class="cw-icon" style="margin-left:auto;width:26px;height:26px" data-offer-mine="${iso}" title="Offer this shift to co-workers" aria-label="Offer this shift"><i data-lucide="send" style="width:13px;height:13px"></i></button>` : ''}</div>
+          <div class="b"><span class="cw-pos">${esc(s.position)}</span><span class="h">${hrs(len(s))}</span></div>
+          ${(s.breaks || []).map(b => `<div class="cw-brk"><i data-lucide="coffee"></i>${esc(b.type)} ${t12(b.start)} - ${t12(b.end)}</div>`).join('')}
+          ${offered ? `<div class="cw-brk" style="color:var(--cw-vio)"><i data-lucide="send" style="color:var(--cw-vio)"></i>${offered.status === 'Requested' ? `${esc(empById(offered.requestedBy).name.split(' ')[0])} requested - waiting for manager` : `Offered to ${offered.to.length} co-worker${offered.to.length === 1 ? '' : 's'}`}</div>` : ''}</div>`; }).join('');
+      if (!inner) inner = `<div class="cw-none">No shifts scheduled for this day</div>`;
+      cells += `<div class="cw-day ${iso === T ? 'today' : iso < T ? 'past' : ''}"><div class="dt"><b>${toD(iso).getUTCDate()}</b><small>${iso === T ? 'Today' : MON[toD(iso).getUTCMonth()]}</small></div>${inner}</div>`;
+    }
+    $('v-schedule').innerHTML = `<div class="cw-card">
+      <div class="cw-hd"><span class="ic"><i data-lucide="calendar-days"></i></span><div><h2>Schedule for ${dShort(schedFrom)} - ${dShort(to)}</h2><p>${n} shift${n === 1 ? '' : 's'} &bull; ${hrs(total)} scheduled &bull; use <b>send</b> on a shift to offer it to a co-worker</p></div>
+        <div class="r"><button type="button" class="cw-btn" data-go="availability"><i data-lucide="user-check"></i>Availability</button>
+          <button type="button" class="cw-btn" data-sched="today">Today</button>
+          <div class="cw-datenav"><button type="button" data-sched="-14" aria-label="Previous 2 weeks"><i data-lucide="chevron-left"></i></button><span><i data-lucide="calendar"></i>${dShort(schedFrom)} - ${dShort(to)}</span><button type="button" data-sched="14" aria-label="Next 2 weeks"><i data-lucide="chevron-right"></i></button></div></div></div>
+      <div class="cw-cal">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => `<div class="dh">${d}</div>`).join('')}${cells}</div></div>`;
+  }
+
+  /* offer one of my shifts to co-workers (they request it, the manager approves) */
+  function offerMyShift(iso) {
+    const s = shiftsOn(ME.id, iso)[0]; if (!s) return;
+    const list = eligibleFor(s);
+    const what = `${s.position}, ${dLong(iso)}, ${t12(s.start)} - ${t12(s.end)}`;
+    dialog('Offer your shift', 'send', `
+      <p style="margin:0"><b>${esc(what)}</b><br>Pick the co-workers who can see this offer. Whoever requests it is sent to your manager for approval; until then the shift stays yours.</p>
+      ${list.length ? `<label class="cw-type" style="cursor:pointer"><input type="checkbox" id="swAll" style="accent-color:#2563eb;width:16px;height:16px"> Select all (${list.length})</label>
+        <div style="max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:6px">${list.map(e => `
+          <label class="cw-row" style="cursor:pointer;padding:8px 10px"><input type="checkbox" class="swPick" value="${e.id}" style="accent-color:#2563eb;width:16px;height:16px">
+            <img src="${esc(e.avatar)}" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover"><span class="tx"><b>${esc(e.name)}</b><span>${esc(e.position)} &bull; free that day</span></span></label>`).join('')}</div>`
+        : '<p style="margin:0;color:var(--cw-bad)">No co-worker is trained for this position and free that day.</p>'}
+      <div class="cw-err" id="swErr"></div>`, 'Send offer', () => {
+      const ids = [...document.querySelectorAll('.swPick:checked')].map(x => +x.value);
+      if (!ids.length) { $('swErr').textContent = 'Pick at least one co-worker.'; return false; }
+      const all = swaps();
+      all.push({ id: 'sw' + Date.now(), from: ME.id, date: iso, day: s.day, start: s.start, end: s.end, position: s.position, breaks: s.breaks || [], to: ids, declined: [], status: 'Offered', at: new Date().toISOString() });
+      saveSwaps(all); showToast(`Shift offered to ${ids.length} co-worker${ids.length === 1 ? '' : 's'}`); go(VIEW);
+    });
+    const a = $('swAll'); if (a) a.addEventListener('change', () => document.querySelectorAll('.swPick').forEach(x => { x.checked = a.checked; }));
+  }
+
+  /* ---- Time Off ---- */
+  function toDuration(t) {
+    const d = t.start === t.end ? dLong(t.start) : `${dLong(t.start)} - ${dLong(t.end)}`;
+    return t.type === 'PARTIAL' ? `${d}, ${hhmm12(t.from)} - ${hhmm12(t.to)}` : d;
+  }
+  function rTimeOff() {
+    const T = TODAY();
+    let list = myTimeOff().slice().sort((a, b) => b.start.localeCompare(a.start));
+    const counts = { all: list.length, pending: list.filter(t => t.status === 'Pending').length, upcoming: list.filter(t => t.end >= T).length, past: list.filter(t => t.end < T).length };
+    if (toFilter === 'pending') list = list.filter(t => t.status === 'Pending');
+    if (toFilter === 'upcoming') list = list.filter(t => t.end >= T);
+    if (toFilter === 'past') list = list.filter(t => t.end < T);
+    const seg = (k, l) => `<button type="button" data-tof="${k}" class="${toFilter === k ? 'on' : ''}">${l} <span class="n">${counts[k]}</span></button>`;
+    $('v-timeoff').innerHTML = `<div class="cw-card">
+      <div class="cw-hd"><span class="ic"><i data-lucide="umbrella"></i></span><div><h2>Time Off</h2><p>Request time off and track its status</p></div>
+        <div class="r"><div class="cw-seg">${seg('all', 'All')}${seg('pending', 'Pending')}${seg('upcoming', 'Upcoming')}${seg('past', 'Past')}</div>
+          <button type="button" class="cw-btn pri" data-act="add-to"><i data-lucide="plus"></i>Add</button></div></div>
+      ${list.length ? `<table class="cw-tbl"><thead><tr><th>Type</th><th>Duration</th><th>Reason</th><th>Status</th><th>Manager note</th><th style="width:110px">Actions</th></tr></thead><tbody>
+        ${list.map(t => `<tr><td><span class="cw-type"><i data-lucide="${t.type === 'PARTIAL' ? 'clock-4' : 'sun'}"></i>${t.type === 'PARTIAL' ? 'Partial day' : 'All day'}</span></td>
+          <td>${toDuration(t)}</td><td class="${t.reason ? '' : 'mut'}">${esc(t.reason || '-')}</td><td>${pill(t.status)}</td><td class="${t.note ? '' : 'mut'}">${esc(t.note || '-')}</td>
+          <td>${t.status === 'Pending' ? `<button type="button" class="cw-btn sm no" data-cancel-to="${t.id}"><i data-lucide="x"></i>Cancel</button>` : ''}</td></tr>`).join('')}
+      </tbody></table>` : `<div class="cw-list">${empty('umbrella', 'No time off here.', 'Use Add to request time off.')}</div>`}</div>`;
+  }
+  function addTimeOff() {
+    const T = TODAY(), min = addDays(T, 1);
+    dialog('Request time off', 'umbrella', `
+      <div class="cw-f"><label>Are you taking off a portion of the day or whole day(s)?</label>
+        <div class="cw-radio"><label><input type="radio" name="toType" value="ALL_DAY" checked>All day</label><label><input type="radio" name="toType" value="PARTIAL">Partial day</label></div></div>
+      <div class="cw-grid2"><div class="cw-f"><label for="toStart">Start date <em>*</em></label><input type="date" id="toStart" min="${min}" value="${min}"></div>
+        <div class="cw-f"><label for="toEnd">End date <em>*</em></label><input type="date" id="toEnd" min="${min}" value="${min}"></div></div>
+      <div class="cw-grid2" id="toTimes" style="display:none"><div class="cw-f"><label for="toFrom">From <em>*</em></label><input type="time" id="toFrom" value="09:00"></div>
+        <div class="cw-f"><label for="toTo">To <em>*</em></label><input type="time" id="toTo" value="13:00"></div></div>
+      <div class="cw-f"><label for="toReason">Reason</label><textarea id="toReason" placeholder="Optional - shown to your manager"></textarea></div>
+      <div class="cw-err" id="toErr"></div>`, 'Create time off', () => {
+      const type = document.querySelector('input[name="toType"]:checked').value, s = $('toStart').value;
+      let e = $('toEnd').value; const err = $('toErr');
+      if (!s || !e) { err.textContent = 'Choose the start and end date.'; return false; }
+      if (s < min) { err.textContent = 'Time off must start tomorrow or later.'; return false; }
+      if (type === 'PARTIAL') e = s;
+      if (e < s) { err.textContent = 'End date can’t be before the start date.'; return false; }
+      if (type === 'PARTIAL' && !($('toFrom').value < $('toTo').value)) { err.textContent = 'End time must be after the start time.'; return false; }
+      const list = myTimeOff();
+      if (list.some(t => (t.status === 'Pending' || t.status === 'Approved') && t.start <= e && s <= t.end)) { err.textContent = 'You already have time off on these dates.'; return false; }
+      list.push({ id: 'to' + Date.now(), type, start: s, end: e, from: type === 'PARTIAL' ? $('toFrom').value : null, to: type === 'PARTIAL' ? $('toTo').value : null, reason: $('toReason').value.trim(), status: 'Pending', note: '', at: TODAY() });
+      saveTimeOff(list); showToast('Time off requested - waiting for your manager'); go(VIEW);
+    });
+    document.querySelectorAll('input[name="toType"]').forEach(r => r.addEventListener('change', () => {
+      const p = document.querySelector('input[name="toType"]:checked').value === 'PARTIAL';
+      $('toTimes').style.display = p ? '' : 'none'; $('toEnd').disabled = p; if (p) $('toEnd').value = $('toStart').value;
+    }));
+    $('toStart').addEventListener('change', () => { if ($('toEnd').value < $('toStart').value || $('toEnd').disabled) $('toEnd').value = $('toStart').value; });
+  }
+
+  /* ---- Site Schedule (read only) ---- */
+  function rSite() {
+    const T = TODAY(), days = Array.from({ length: 7 }, (_, i) => addDays(siteFrom, i));
+    const q = siteQ.toLowerCase();
+    const emps = D.employees.filter(e => !q || e.name.toLowerCase().includes(q) || (e.position || '').toLowerCase().includes(q))
+      .sort((a, b) => (a.id === ME.id ? -1 : b.id === ME.id ? 1 : 0));
+    const dayCount = days.map(iso => D.shifts.filter(s => s.day === wd(iso)).length);
+    const rows = emps.map(e => `<tr class="${e.id === ME.id ? 'me' : ''}"><td><div class="cw-emp"><img src="${esc(e.avatar)}" alt=""><div><b>${esc(e.name)}${e.id === ME.id ? '<span class="cw-you">You</span>' : ''}</b><span>${esc(e.position)}</span></div></div></td>
+      ${days.map(iso => { const list = shiftsOn(e.id, iso);
+        if ((e.unavailableDays || []).includes(wd(iso))) return `<td><div class="cw-chip un"><b>Unavailable</b></div></td>`;
+        return `<td>${list.map(s => `<div class="cw-chip" style="--pc:${pc(s.position)}"><b>${t12(s.start)} - ${t12(s.end)}</b><span>${esc(s.position)}</span></div>`).join('')}</td>`; }).join('')}</tr>`).join('');
+    $('v-site').innerHTML = `<div class="cw-card">
+      <div class="cw-hd"><span class="ic"><i data-lucide="map-pinned"></i></span><div><h2>Site Schedule</h2><p>Everyone's published shifts at 085 - Del Mar</p></div>
+        <div class="r"><span class="cw-ro"><i data-lucide="eye"></i>View only</span>
+          <label class="cw-search"><i data-lucide="search"></i><input id="siteSearch" placeholder="Search employees" value="${esc(siteQ)}"></label>
+          <button type="button" class="cw-btn" data-site="today">Today</button>
+          <div class="cw-datenav"><button type="button" data-site="-7" aria-label="Previous week"><i data-lucide="chevron-left"></i></button><span><i data-lucide="calendar"></i>${dShort(siteFrom)} - ${dShort(addDays(siteFrom, 6))}</span><button type="button" data-site="7" aria-label="Next week"><i data-lucide="chevron-right"></i></button></div></div></div>
+      <div class="cw-site"><table><thead><tr><th>Employees (${emps.length})</th>${days.map((iso, i) => `<th class="${iso === T ? 'today' : ''}">${DOW[wd(iso)]} ${toD(iso).getUTCDate()}<div style="font-weight:600;color:var(--cw-ink-3);font-size:10.5px;letter-spacing:0">${dayCount[i]} shifts</div></th>`).join('')}</tr></thead>
+        <tbody>${rows || `<tr><td colspan="8">${empty('search', 'No employees match your search.')}</td></tr>`}</tbody></table></div></div>`;
+    const s = $('siteSearch'); s.addEventListener('input', () => { siteQ = s.value; const pos = s.selectionStart; rSite(); icons(); const n = $('siteSearch'); n.focus(); n.setSelectionRange(pos, pos); });
+  }
+
+  /* ---------- dialog ---------- */
+  let dOk = null;
+  function dialog(title, icon, body, okLabel, onOk, tone) {
+    $('cwDlg').innerHTML = `<div class="dh"><span class="ic ${tone === 'bad' ? 'bad' : ''}"><i data-lucide="${icon}"></i></span><h3 id="cwDTitle">${title}</h3></div>
+      <div class="db">${body}</div><div class="df"><button type="button" class="cw-btn" data-dlg="cancel">Cancel</button><button type="button" class="cw-btn ${tone === 'bad' ? 'no' : 'pri'}" data-dlg="ok">${okLabel}</button></div>`;
+    dOk = onOk; $('cwDw').classList.add('open'); icons();
+  }
+  const closeDlg = () => $('cwDw').classList.remove('open');
+  $('cwDw').addEventListener('click', e => {
+    const b = e.target.closest('[data-dlg]'); if (!b) return;
+    if (b.dataset.dlg === 'ok' && dOk && dOk() === false) return;
+    closeDlg();
+  });
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', e => {
+    const t = e.target;
+    if (!t.closest('#cwProf') && !t.closest('#cwAvatarBtn')) $('cwProf').classList.remove('open');
+    const g = t.closest('[data-go]'); if (g) return go(g.dataset.go);
+    const w = t.closest('[data-wait]'); if (w) { dashWait = w.dataset.wait; return go('dashboard'); }
+    /* manager's open-shift offer: Accept = assigned straight away */
+    const of = t.closest('[data-offer]');
+    if (of) {
+      const [id, day, st] = of.dataset.offer.split('|');
+      const o = myOffers().find(x => String(x.id) === id); if (!o) return;
+      const what = `${o.position}, ${dLong(nextDateFor(o.day))}, ${t12(o.start)} - ${t12(o.end)}`;
+      if (st === 'Accepted') {
+        const cur = shiftsFor(ME.id, +day)[0];
+        const doIt = () => { if (acceptOffer(+id, +day)) showToast(`Shift added to your schedule: ${what}`); else showToast('This shift is no longer available'); go(VIEW); };
+        if (!cur) return doIt();
+        return dialog('Replace your shift that day?', 'alert-triangle', `<p style="margin:0">You already work <b>${t12(cur.start)} - ${t12(cur.end)} (${esc(cur.position)})</b> on ${DOW[+day].charAt(0) + DOW[+day].slice(1).toLowerCase()}. Accepting <b>${esc(what)}</b> replaces it.</p>`, 'Accept and replace', () => { doIt(); }, 'bad');
+      }
+      return dialog('Decline this shift?', 'x-circle', `<p style="margin:0">${esc(what)}</p>`, 'Decline', () => { declineOffer(+id, +day); showToast('Shift offer declined'); go(VIEW); }, 'bad');
+    }
+    /* shifts between co-workers */
+    const sw = t.closest('[data-swap]');
+    if (sw) {
+      const [id, act] = sw.dataset.swap.split('|');
+      const list = swaps(), s = list.find(x => x.id === id); if (!s) return;
+      const what = `${s.position}, ${dLong(s.date)}, ${t12(s.start)} - ${t12(s.end)}`;
+      if (act === 'request') {
+        const cur = shiftsFor(ME.id, s.day)[0];
+        if (cur) return showToast(`You already have a shift that day (${t12(cur.start)} - ${t12(cur.end)})`);
+        s.status = 'Requested'; s.requestedBy = ME.id; s.requestedAt = new Date().toISOString(); saveSwaps(list);
+        showToast(`Requested ${empById(s.from).name.split(' ')[0]}'s shift - sent to your manager for approval`); return go(VIEW);
+      }
+      if (act === 'decline') return dialog('Decline this shift?', 'x-circle', `<p style="margin:0">${esc(empById(s.from).name)} offered you: ${esc(what)}</p>`, 'Decline', () => {
+        s.declined = (s.declined || []).concat(ME.id); saveSwaps(list); showToast('Shift declined'); go(VIEW); }, 'bad');
+      if (act === 'cancel') return dialog(s.from === ME.id ? 'Take back your shift offer?' : 'Withdraw your request?', 'x-circle', `<p style="margin:0">${esc(what)}</p>`, s.from === ME.id ? 'Take back' : 'Withdraw', () => {
+        if (s.from === ME.id) s.status = 'Cancelled'; else { s.status = 'Offered'; s.requestedBy = null; }
+        saveSwaps(list); showToast(s.from === ME.id ? 'Shift offer cancelled' : 'Request withdrawn'); go(VIEW); }, 'bad');
+    }
+    const os = t.closest('[data-offer-mine]');
+    if (os) { const [iso] = os.dataset.offerMine.split('|'); return offerMyShift(iso); }
+    const ct = t.closest('[data-cancel-to]');
+    if (ct) { const id = ct.dataset.cancelTo, item = myTimeOff().find(x => x.id === id);
+      return dialog('Cancel time off request?', 'x-circle', `<p style="margin:0">${esc(toDuration(item))}</p>`, 'Cancel request', () => { saveTimeOff(myTimeOff().map(x => x.id === id ? { ...x, status: 'Cancelled' } : x)); showToast('Time off request cancelled'); go(VIEW); }, 'bad'); }
+    if (t.closest('[data-cancel-ar]')) {
+      return dialog('Cancel availability request?', 'x-circle', '<p style="margin:0">Your availability stays as it is now.</p>', 'Cancel request', () => {
+        const all = read(AR_KEY) || {}, mine = all[ME.id] || {};
+        if (mine.req) { mine.req.status = 'cancelled'; (mine.req.log = mine.req.log || []).push({ t: 'Cancelled', at: TODAY() + 'T12:00', by: ME.name }); mine.history = [mine.req].concat(mine.history || []); mine.req = null; }
+        all[ME.id] = mine; write(AR_KEY, all); showToast('Availability request cancelled'); go(VIEW); }, 'bad');
+    }
+    const ss = t.closest('[data-sched]'); if (ss) { schedFrom = ss.dataset.sched === 'today' ? monday(TODAY()) : addDays(schedFrom, +ss.dataset.sched); return go('schedule'); }
+    const sv = t.closest('[data-site]'); if (sv) { siteFrom = sv.dataset.site === 'today' ? monday(TODAY()) : addDays(siteFrom, +sv.dataset.site); return go('site'); }
+    const tf = t.closest('[data-tof]'); if (tf) { toFilter = tf.dataset.tof; return go('timeoff'); }
+    if (t.closest('[data-act="add-to"]')) return addTimeOff();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDlg(); $('cwProf').classList.remove('open'); } });
+  // manager changes in another tab (offers, schedule)
+  window.addEventListener('storage', e => { if (['zipSchedStore', 'zipCrewData', TO_KEY, AR_KEY, 'zipCrewSwaps'].includes(e.key) && VIEW !== 'availability') go(VIEW); });
+
+  /* ---------- profile ---------- */
+  $('cwAvatar').src = $('cwProfImg').src = ME.avatar || '';
+  $('cwProfName').textContent = ME.name; $('cwProfRole').textContent = ME.position;
+  $('cwSwitch').innerHTML = D.employees.map(e => `<option value="${e.id}" ${e.id === ME.id ? 'selected' : ''}>${esc(e.name)} · ${esc(e.position)}</option>`).join('');
+  $('cwSwitch').addEventListener('change', e => { location.href = 'crew.html?emp=' + encodeURIComponent(e.target.value) + location.hash; });
+  $('cwAvatarBtn').addEventListener('click', e => { e.stopPropagation(); $('cwProf').classList.toggle('open'); });
+  const paintDark = () => $('cwDark').classList.toggle('on', document.documentElement.classList.contains('dark'));
+  $('cwDark').addEventListener('click', () => {
+    const dark = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', dark); document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    try { localStorage.setItem('zipDarkMode', dark ? '1' : '0'); } catch (e) {}
+    paintDark();
+  });
+  $('cwLogout').addEventListener('click', () => { location.href = 'Schedule Pad.html'; });
+  paintDark();
+  const tick = () => { const p = parts(); const h = +p.hour; $('cwClock').textContent = `${String(h % 12 || 12).padStart(2, '0')}:${p.minute} ${h < 12 ? 'AM' : 'PM'}`; };
+  tick(); setInterval(tick, 30000);
+  document.title = `ZIP Schedule - ${ME.name} (Crew)`;
+
+  const start = (location.hash || '').slice(1);
+  go(['dashboard', 'schedule', 'availability', 'timeoff', 'site'].includes(start) ? start : 'dashboard');
+})();
+</script>
+</body>
+</html>
