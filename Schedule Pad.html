@@ -760,6 +760,26 @@ table td:hover .addShift {
 .cs-auto .cs-auto-lbl { color: #6366f1; }
 .cs-auto .cs-auto-opts button:not(.active) { border-color: #c7d2fe; }
 
+/* Min Hrs / Week: blue "i" next to the employee name + Information popup */
+.emp-flags { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; }
+.emp-flags:empty { display:none; }
+.minhrs-ic { width:16px; height:16px; padding:0; border:0; background:none; color:#0ea5e9; cursor:pointer; display:flex; border-radius:50%; transition:transform .12s, box-shadow .12s; }
+.minhrs-ic svg { width:16px; height:16px; }
+.minhrs-ic:hover { transform:scale(1.12); box-shadow:0 0 0 3px rgba(14,165,233,.18); }
+#minHrsPopup { position:fixed; z-index:600; width:256px; background:#fff; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 18px 40px -12px rgba(15,23,42,.35); animation:csIn .14s ease-out; }
+#minHrsPopup::before { content:''; position:absolute; left:-7px; top:calc(var(--arrow-y, 26px) - 7px); width:12px; height:12px; background:#fff; border-left:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0; transform:rotate(45deg); }
+#minHrsPopup .minhrs-head { display:flex; align-items:center; justify-content:space-between; padding:9px 10px 9px 14px; background:#2563eb; color:#fff; font-size:13.5px; font-weight:600; border-radius:9px 9px 0 0; position:relative; }
+#minHrsPopup .minhrs-head button { width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:6px; color:#fff; }
+#minHrsPopup .minhrs-head button:hover { background:rgba(255,255,255,.18); }
+#minHrsPopup .minhrs-body { padding:12px 14px 13px; font-size:12.5px; line-height:1.45; color:#334155; }
+#minHrsPopup .minhrs-body b { color:#0f172a; font-weight:700; }
+#minHrsPopup .minhrs-meta { margin-top:6px; font-size:11.5px; color:#64748b; }
+html.dark #minHrsPopup, html.dark #minHrsPopup::before { background:#1e293b; border-color:#334155; }
+html.dark #minHrsPopup .minhrs-body { color:#cbd5e1; }
+html.dark #minHrsPopup .minhrs-body b { color:#f1f5f9; }
+html.dark #minHrsPopup .minhrs-meta { color:#94a3b8; }
+html.dark .minhrs-ic { color:#38bdf8; }
+
 /* HEADER ICON STYLING */
 .header-icon-btn {
     width: 26px;
@@ -3280,6 +3300,11 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
     </div>
 </div>
 </div>
+<!-- MIN HRS / WEEK INFO POPUP -->
+<div id="minHrsPopup" class="hidden" role="dialog" aria-label="Information">
+    <div class="minhrs-head"><span>Information</span><button type="button" onclick="closeMinHrsPopup()" aria-label="Close"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div>
+    <div id="minHrsMsg" class="minhrs-body"></div>
+</div>
 <div id="alertPopup" class="hidden fixed bg-white border rounded-lg shadow-xl w-[260px] z-[500]">
     <div id="alertList" class="max-h-[160px] overflow-y-auto text-[12px] p-3 space-y-2"></div>
 </div>
@@ -3801,6 +3826,8 @@ let employeeData = Array.from({length:50},(_,i)=>({
     position:i%3===0?"General Manager":i%2===0?"Shift Leader":"Line Cook",
     payrate:(18 + ((i * 37) % 100) / 10).toFixed(2),
     totalHours: (20 + ((i * 7919) % 2000) / 100).toFixed(2),
+    // Min Hrs / Week: hours the employer commits to schedule this employee (20–35)
+    minHrs: [30, 20, 24, 28, 32, 25, 35, 22, 26, 30, 34, 24][i % 12],
     isShared: (i === 0), isMinor: (i === 1),
     unavailableDays: (i === 2) ? [0, 1, 2, 3, 4, 5, 6] : [],
     partialUnavailableDays: (i === 4) ? {start: 8, end: 12, label: "08:00 - 12:00"} : null,
@@ -3832,6 +3859,46 @@ UNSCHEDULED_EMPS.forEach(([id, name, position]) => {
     shiftAssignments[_dk(id)] = null;
     for (let c = 0; c < 31; c++) shiftAssignments[`w_${id}_${c}`] = null;
 });
+
+// Min Hrs / Week demo: a few employees are scheduled for fewer hours than their minimum,
+// so the blue "i" shows next to their name until enough shifts are added.
+//   id 5 Evelia Gonzalez  min 30 → 3 shifts (24 h) → 6 hrs remaining
+//   id 7 Jessica Smith    min 32 → 3 shifts (24 h) → 8 hrs remaining
+//   id 8 Angie Vasquez    min 35 → 4 shifts (32 h) → 3 hrs remaining
+const MIN_HRS_DEMO = { 5: { min: 30, off: [1, 2, 4] }, 7: { min: 32, off: [0, 3] }, 8: { min: 35, off: [6] } };
+Object.entries(MIN_HRS_DEMO).forEach(([id, d]) => { const e = employeeData.find(x => x.id === +id); if (e) e.minHrs = d.min; });
+function _seedMinHrsDemo() {
+    Object.entries(MIN_HRS_DEMO).forEach(([id, d]) => d.off.forEach(c => { shiftAssignments[`w_${id}_${c}`] = null; }));
+}
+// hours still needed this week to reach the employee's minimum (0 = met)
+function minHrsShort(emp) {
+    if (!emp || !emp.minHrs) return 0;
+    const short = emp.minHrs - (parseFloat(emp.totalHours) || 0);
+    return short > 0.004 ? short : 0;
+}
+function minHrsIconHtml(emp) {
+    if (!minHrsShort(emp)) return '';
+    return `<button type="button" class="minhrs-ic" title="Minimum weekly hours not met" onclick="openMinHrsPopup(event, ${emp.id})"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><rect x="10.8" y="10.2" width="2.4" height="7.4" rx="1.2" fill="#fff"/><circle cx="12" cy="7" r="1.5" fill="#fff"/></svg></button>`;
+}
+function openMinHrsPopup(e, id) {
+    e.stopPropagation();
+    const emp = employeeData.find(x => x.id === id), pop = document.getElementById('minHrsPopup');
+    if (!emp || !pop) return;
+    const short = minHrsShort(emp);
+    document.getElementById('minHrsMsg').innerHTML = short
+        ? `Minimum weekly hours not met. <b>${short.toFixed(2)} hrs</b> remaining`
+        : 'Minimum weekly hours met.';
+    const r = e.currentTarget.getBoundingClientRect();
+    pop.classList.remove('hidden');
+    pop.style.left = (r.right + 12) + 'px';
+    pop.style.top = Math.max(8, Math.min(window.innerHeight - pop.offsetHeight - 8, r.top + r.height / 2 - 58)) + 'px';
+    pop.style.setProperty('--arrow-y', (r.top + r.height / 2 - parseFloat(pop.style.top)) + 'px');
+}
+function closeMinHrsPopup() { document.getElementById('minHrsPopup')?.classList.add('hidden'); }
+// close on any click outside — capture phase, so handlers that stop propagation can't block it
+document.addEventListener('pointerdown', e => { if (!e.target.closest('#minHrsPopup') && !e.target.closest('.minhrs-ic')) closeMinHrsPopup(); }, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMinHrsPopup(); });
+document.addEventListener('scroll', closeMinHrsPopup, true);
 
 // ── Typeable time combobox (.tc) ────────────────────────────────────────────
 // Users can type a time ("9", "930", "9:30", "9:30p", "21:30") or pick it from the
@@ -5253,7 +5320,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                             <div class="font-bold text-[13px] text-blue-600 hover:underline truncate flex items-center gap-1">
                                 ${emp.name}${statusHtml}<span class="emp-note-slot">${_empNoteIconHtml(emp.id)}</span>
                             </div>
-                            ${emp.alerts && emp.alerts.length ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;" onclick="openAlertPopup(event,${emp.id})"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>` : ``}
+                            <div class="emp-flags">${minHrsIconHtml(emp)}${emp.alerts && emp.alerts.length ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;" onclick="openAlertPopup(event,${emp.id})"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>` : ``}</div>
                         </div>
                         <div class="text-[12px] text-slate-400 uppercase tracking-tighter">Hrs ${fmtHrs(emp.totalHours)} | OT 00:00</div>
                     </div>
@@ -6283,7 +6350,7 @@ function openAssignModal(el){
     document.getElementById('sdNotesCount').innerText = `${document.getElementById('sdNotes').value.length}/256`;
     document.getElementById('sdSaveStandard').checked = false;
     document.getElementById('sdWeekHrs').innerText = fmtHrs(emp.totalHours);
-    document.getElementById('sdMinHrs').innerText = emp.isMinor ? 'Max 28:00' : '20:00';
+    document.getElementById('sdMinHrs').innerText = fmtHrs(emp.minHrs || 0);
     setShiftType('custom');
     renderRepeatDays(emp, shiftDate);
     updateShiftHours();
@@ -6949,7 +7016,7 @@ function openActionModal(e, id) {
     document.getElementById("actionModalRole").innerText = emp.position || 'Employee';
     document.getElementById("actionModalAvatar").src = emp.avatar || '';
     document.getElementById("actionModalPay").innerText = `$${(+emp.payrate || 0).toFixed(2)}`;
-    document.getElementById("actionModalMin").innerText = emp.isMinor ? 'Max 28:00' : '20:00';
+    document.getElementById("actionModalMin").innerText = fmtHrs(emp.minHrs || 0);
     document.getElementById("actionModalWeek").innerText = fmtHrs(emp.totalHours); // same figure as the row's "Hrs"
     document.getElementById("actionModalNotes").value = _empNotesObj()[emp.id] || '';
     // primary position first, then the other positions the employee is trained for
@@ -7281,8 +7348,11 @@ window.addEventListener('mousedown', function(e) {
 window.onload = () => {
     _seedUaOffers();
     _seedWeekDefaults();
+    _seedMinHrsDemo();
     snapshotBaseSchedule();
     schedStoreLoad();
+    // a schedule saved before the Min Hrs demo existed gets the short weeks once
+    try { if (!localStorage.getItem('zipMinHrsDemo')) { _seedMinHrsDemo(); localStorage.setItem('zipMinHrsDemo', '1'); } } catch (e) {}
     _seedWeekDefaults();
     renderCalendar();
     updateDateRangeLabel(); 
