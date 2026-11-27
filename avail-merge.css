@@ -165,3 +165,18 @@
   .avx-drawer { width: 100%; }
   .avx-sh .v2-vstrip { margin-left: 0; width: 100%; }
 }
+
+/* ---------- Design Versions flag 'availTempReg': temporary hours on the Regular view ---------- */
+.v2 { --ae-tmp: #7c3aed; --ae-tmp-ink: #6d28d9; --ae-tmp-soft: #f3edff; --ae-tmp-line: #d9c8fb; }
+html.dark .v2 { --ae-tmp: #9b6bf5; --ae-tmp-ink: #c4a6ff; --ae-tmp-soft: #241a3d; --ae-tmp-line: #4a3680; }
+.ae-tmp .ae-lbl small { font-size: 11.5px; color: var(--a-faint); }
+.ae-view .ae-tmp .ae-trk { height: 54px; }
+.ae-view .ae-tmp .ae-blk.ae-rb { top: 4px; bottom: auto; height: 26px; }
+.ae-trk .ae-ts { position: absolute; top: 33px; height: 17px; border-radius: 5px; background: var(--ae-tmp); color: #fff; font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
+.ae-trk .ae-ts span { overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
+.ae-trk .ae-ts.ae-toff { justify-content: flex-start; background: repeating-linear-gradient(135deg, var(--ae-tmp-soft) 0 6px, transparent 6px 12px); border: 1.5px dashed var(--ae-tmp); color: var(--ae-tmp-ink); font-weight: 500; }
+.ae-trk .ae-ts.ae-toff b { font-weight: 700; margin-right: 4px; }
+.ae-tchip { font-size: 10.5px; font-weight: 700; color: var(--ae-tmp-ink); background: var(--ae-tmp-soft); border: 1px solid var(--ae-tmp-line); border-radius: 999px; padding: 0 7px; line-height: 15px; white-space: nowrap; }
+.ae-tchip.ae-tat { position: absolute; top: 33px; }
+.ae-tsum { font-size: 12px; font-weight: 600; color: var(--ae-tmp-ink); }

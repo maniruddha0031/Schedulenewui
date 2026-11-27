@@ -363,14 +363,19 @@
     TA().wgBind('ea', { get: k => S.draft[+k.slice(1)], set: (k, r) => { S.draft[+k.slice(1)] = r; }, setSel: k => { S.selRow = k; }, rerender: render,
       keys: () => ORDER.map(d => 'd' + d), weekday: k => +k.slice(1) });
     if (edit && window.AVED) return AVED.mount($('eaGrid'), 'ea', edCfg());
-    if (window.AVED) { const td2 = weekday(TODAY()); $('eaGrid').innerHTML = AVED.viewHTML({ keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td2 })), get: k => g[+k.slice(1)], ref: k => ref ? ref.g[+k.slice(1)] : null, refShort: ref ? ref.short : '' }); return; }
+    if (window.AVED) { const td2 = weekday(TODAY()), tw = tempOnReg(); $('eaGrid').innerHTML = AVED.viewHTML({ keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td2 })), get: k => g[+k.slice(1)], ref: k => ref ? ref.g[+k.slice(1)] : null, refShort: ref ? ref.short : '', temp: tw ? k => tw.map[k] : null }); return; }
     $('eaGrid').innerHTML = TA().wgHTML('ea', { rows, sel: S.selRow, edit, colHead: 'Weekday', sumHead: 'Your hours', refName: ref ? ref.name : '', refShort: ref ? ref.short : '', copyAllLabel: 'Copy to every day', bars: !edit });
   }
+  /* Design Versions flag 'availTempReg': temporary hours of the next 7 days on the Regular view (current version only) */
+  function tempOnReg() {
+    if (!(window.DFLAGS && DFLAGS.get('availTempReg') && TA() && window.AVED && AVED.tempWeek) || S.mode !== 'view' || S.sel !== 'current' || merged()) return null;
+    return AVED.tempWeek(iso => TA().effective(myId(), iso), TODAY());
+  }
   function renderFoot() {
-    const edit = S.mode === 'edit', g = edit ? S.draft : gridOf(S.sel), ref = refInfo();
+    const edit = S.mode === 'edit', g = edit ? S.draft : gridOf(S.sel), ref = refInfo(), tw = tempOnReg();
     const diff = ref ? gridHrs(g) - gridHrs(ref.g) : 0;
     $('eaFoot').style.display = edit && window.AVED ? 'none' : ''; if (edit && window.AVED) return;
-    $('eaFoot').innerHTML = `<div class="vlegend"><span><i class="vsw" style="background:var(--a-avail)"></i>Available</span><span><i class="vsw" style="border:1px solid var(--a-line-2)"></i>Unavailable</span>
+    $('eaFoot').innerHTML = `<div class="vlegend"><span><i class="vsw" style="background:var(--a-avail)"></i>${tw ? 'Regular' : 'Available'}</span>${tw ? `<span><i class="vsw" style="background:var(--ae-tmp)"></i>Temporary (${tw.range})</span>` : ''}<span><i class="vsw" style="border:1px solid var(--a-line-2)"></i>Unavailable</span>
         ${ref ? `<span><i class="vsw" style="border:1px dashed var(--a-primary);background:transparent"></i>${ref.legend}</span><span><span class="vtag diff">Changed</span>Differs from ${ref.short}</span>` : ''}</div>
       <span class="grow"></span>
       ${edit ? `<div class="vtotal">Weekly available hours ${ref && diff ? `<span class="delta ${diff > 0 ? 'up' : 'dn'}">${diff > 0 ? '+' : ''}${diff} hrs</span>` : ''}<b>${gridHrs(g)} hrs</b>${ref ? `<span>vs ${gridHrs(ref.g)} hrs</span>` : ''}</div>` : ''}`;

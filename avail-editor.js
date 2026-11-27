@@ -336,6 +336,8 @@
           <div class="ae-trk ro">${ref ? ranges(ref).map(([a, b]) => `<i class="ae-rf" style="left:${pct(a)};width:${pct(b - a)}"></i>`).join('') : ''}${ranges(row).map(([a, b]) => `<div class="ae-blk" style="left:${pct(a)};width:${pct(b - a)}" title="${tLong(a)} – ${tLong(b)}"><span>${blockLabel(a, b)}</span></div>`).join('')}</div>
           <div class="ae-vsum"><b>${hrs(row) ? hrs(row) + ' hrs' : 'Off'}</b><small class="${chg ? 'chg' : ''}">${diffTx(row, ref)}</small></div>
         </div>`;
+        const tp = c.temp && c.temp(o.k);
+        if (tp) return tempRowHTML(o, row, tp);
         // day label only (hours are already in the "Your hours" column); keeps the date / "Changed" note when there is one
         const sub = [o.date || '', chg ? '<em>Changed</em>' : ''].filter(Boolean).join(' · ');
         return `<div class="ae-lr" data-aek="${o.k}">
@@ -346,9 +348,43 @@
     </div>`;
   }
 
+  /* Temporary availability on the Regular view: the regular bar stays as it is and a second, thinner
+     strip under it shows the temporary hours for that date, with a "Temp · dates" tag beside it.
+     tp = { row: bool[24], label, date, range } */
+  function tempRowHTML(o, row, tp) {
+    const off = !tp.row.some(Boolean), rs = ranges(tp.row), fmtR = r => ranges(r).map(([x, y]) => `${tS(x)}–${tS(y)}`).join(', ') || 'Unavailable';
+    // the tag goes after the last strip, or before the first one when there is no room on the right
+    const end = rs.length ? rs[rs.length - 1][1] : 0, start = rs.length ? rs[0][0] : 0;
+    const tag = off ? '' : end <= 19 ? `<span class="ae-tchip ae-tat" style="left:calc(${pct(end)} + 6px)">${esc(tp.label)}</span>`
+      : `<span class="ae-tchip ae-tat" style="right:calc(${pct(24 - start)} + 6px)">${esc(tp.label)}</span>`;
+    return `<div class="ae-lr ae-tmp" data-aek="${o.k}">
+      <div class="ae-lbl"><b>${esc(LB.short(o))}${o.today ? ' <span class="ae-today">Today</span>' : ''}</b>${tp.date ? `<small>${esc(tp.date)}</small>` : ''}</div>
+      <div class="ae-trk ro">${ranges(row).map(([x, y]) => `<div class="ae-blk ae-rb" style="left:${pct(x)};width:${pct(y - x)}" title="Regular: ${tLong(x)} – ${tLong(y)}"><span>${blockLabel(x, y)}</span></div>`).join('')}
+        ${off ? `<div class="ae-ts ae-toff" style="left:0;width:100%"><span><b>Temporary · Unavailable</b> ${esc(tp.range)}</span></div>`
+          : rs.map(([x, y]) => `<div class="ae-ts" style="left:${pct(x)};width:${pct(y - x)}" title="Temporary: ${tLong(x)} – ${tLong(y)}"><span>${blockLabel(x, y)}</span></div>`).join('') + tag}</div>
+      <div class="ae-vsum"><b>${fmtR(row)}</b><small>${hrs(row)} hrs</small><span class="ae-tsum">Temp: ${off ? 'Off' : fmtR(tp.row) + ' · ' + hrs(tp.row) + ' hrs'}</span></div>
+    </div>`;
+  }
+  /* temporary records that apply in the next 7 days, keyed by weekday ('d0'..'d6'), or null.
+     eff(iso) -> { rec, row } | null (TA.effective for one employee) */
+  function tempWeek(eff, today) {
+    const add = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+    const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dm = iso => [+iso.slice(8, 10), M[+iso.slice(5, 7) - 1]];
+    const rng = (a, b) => { const [d1, m1] = dm(a), [d2, m2] = dm(b); return a === b ? `${d1} ${m1}` : m1 === m2 ? `${d1}–${d2} ${m1}` : `${d1} ${m1} – ${d2} ${m2}`; };
+    const out = {}; let any = null;
+    for (let i = 0; i < 7; i++) {
+      const iso = add(today, i), e = eff(iso);
+      if (!e) continue;
+      out['d' + new Date(iso + 'T00:00:00Z').getUTCDay()] = { row: e.row, label: 'Temp · ' + rng(e.rec.start, e.rec.end), range: rng(e.rec.start, e.rec.end), rec: e.rec, date: rng(iso, iso) };
+      if (!any) any = e.rec;
+    }
+    return any ? { map: out, first: any, range: rng(any.start, any.end) } : null;
+  }
+
   /* ---------------- API ---------------- */
   window.AVED = {
-    viewHTML,
+    viewHTML, tempWeek,
     mount(el, id, cfg) {
       const E = st(id); E.el = el; E.cfg = cfg;
       if (!E.day || !cfg.keys.some(o => o.k === E.day)) E.day = cfg.keys[0].k;

@@ -8,8 +8,9 @@
    Flags (localStorage 'zipDesignFlags'):
      availPanel  Availability: Regular + Temporary on one screen, editing in a side panel
      availFull   Availability: Regular + Temporary on one screen, editing full screen
-   The two availability flags are alternatives: turning one on turns the other off.
-   Both off = current design (separate Regular / Temporary tabs).
+     availTempReg Availability: current tabs, with temporary hours shown on the Regular view
+   The availability flags are alternatives: only one can be on at a time.
+   All off = current design (separate Regular / Temporary tabs).
 
    API: window.DFLAGS.get(name) · set(name, on) · availMode() → 'panel' | 'full' | null
    Event: window 'dflags:change' (also fired when another tab changes the flags)
@@ -26,6 +27,8 @@
           desc: 'Regular and temporary availability on one screen. "Add/Update Availability" opens the editor in a side panel from the right, like Add Shift.' },
         { key: 'availFull', title: 'Availability feature with full screen',
           desc: 'Regular and temporary availability on one screen. "Add/Update Availability" opens the editor full screen in place of the page.' },
+        { key: 'availTempReg', title: 'Temporary availability on the Regular view',
+          desc: 'Current design with tabs, but the Regular tab also shows temporary availability for the next 7 days: the temporary hours replace the bar on those days, the regular hours stay as a dashed outline, and a "Temp · dates" tag sits under the day.' },
       ] },
   ];
 
@@ -138,7 +141,7 @@
             <span class="st ${on ? 'on' : ''}">${on ? 'Version ' + (s.flags.indexOf(on) + 1) + ' on' : 'Current design'}</span></div>
           ${s.flags.map((f, i) => `<label class="df-f"><span class="n">${i + 1}</span><span class="tx"><b>${f.title}</b><span class="d">${f.desc}</span></span>
             <span class="df-sw"><input type="checkbox" data-flag="${f.key}" ${v[f.key] ? 'checked' : ''} aria-label="${f.title}"><i></i></span></label>`).join('')}
-          <div class="df-def ${on ? '' : 'on'}"><i data-lucide="${on ? 'circle' : 'check-circle-2'}"></i>Both off: current design, with separate Regular and Temporary availability tabs.</div>
+          <div class="df-def ${on ? '' : 'on'}"><i data-lucide="${on ? 'circle' : 'check-circle-2'}"></i>All off: current design, with separate Regular and Temporary availability tabs.</div>
         </section>`; }).join('')}</div>`;
     icons();
   }
