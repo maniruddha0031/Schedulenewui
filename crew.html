@@ -277,7 +277,7 @@ window.showToast = function (msg) {
       </div>
       <div class="cw-two">
         <div class="cw-card"><div class="cw-hd"><span class="ic"><i data-lucide="bell"></i></span><div><h2>Needing Action <span class="cw-count">${needN}</span></h2><p>Shifts offered to you</p></div></div>
-          <div class="cw-tabs"><button type="button" class="on">Shift Offer <span class="cw-count">${needN}</span></button></div>
+          <div class="cw-tabs"><button type="button" class="on">Available Shifts <span class="cw-count">${needN}</span></button></div>
           <div class="cw-list">${needRows}</div></div>
         <div class="cw-card"><div class="cw-hd"><span class="ic"><i data-lucide="hourglass"></i></span><div><h2>Awaiting Action from Others <span class="cw-count">${waitTotal}</span></h2><p>Your requests waiting for your manager or co-workers</p></div></div>
           <div class="cw-tabs">${tab('timeoff', 'Time Off', waitN.timeoff)}${tab('avail', 'Availability', waitN.avail)}${tab('swap', 'Shift Swap', waitN.swap)}${tab('offer', 'Shift Offer', waitN.offer)}</div>
