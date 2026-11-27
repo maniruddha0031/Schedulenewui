@@ -62,9 +62,11 @@
       e.preventDefault();
       openTeamCenter(a.dataset.tc);
     });
-    // remember expanded state
-    let open = false; try { open = localStorage.getItem('tcMenuOpen') === '1'; } catch (e) {}
-    setExpanded(open);
+    // the sub-menu starts collapsed and collapses again whenever the sidebar closes;
+    // it only opens when the user clicks Team Center or its chevron
+    try { localStorage.removeItem('tcMenuOpen'); } catch (e) {}
+    setExpanded(false);
+    parent.closest('.sidebar')?.addEventListener('mouseleave', () => setExpanded(false));
     icons();
   }
   function setExpanded(open) {
@@ -72,7 +74,6 @@
     sub.classList.toggle('open', open);
     parent.classList.toggle('tc-open', open);
     parent.setAttribute('aria-expanded', open ? 'true' : 'false');
-    try { localStorage.setItem('tcMenuOpen', open ? '1' : '0'); } catch (e) {}
   }
   function markSub(id) { if (sub) sub.querySelectorAll('[data-tc]').forEach(a => a.classList.toggle('active', a.dataset.tc === id)); }
 
@@ -131,7 +132,6 @@
     document.getElementById('teamCenterView').style.display = 'block';
     document.querySelector('.sidebar a[href="Schedule Pad.html"]')?.classList.remove(ACTIVE);
     parent && parent.classList.add(ACTIVE);
-    setExpanded(true);
     const hash = itemId ? '#team-center/' + itemId : '#team-center';
     if (location.hash !== hash) history.replaceState(null, '', hash);
     markSub(itemId || null);
