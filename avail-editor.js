@@ -336,8 +336,10 @@
           <div class="ae-trk ro">${ref ? ranges(ref).map(([a, b]) => `<i class="ae-rf" style="left:${pct(a)};width:${pct(b - a)}"></i>`).join('') : ''}${ranges(row).map(([a, b]) => `<div class="ae-blk" style="left:${pct(a)};width:${pct(b - a)}" title="${tLong(a)} – ${tLong(b)}"><span>${blockLabel(a, b)}</span></div>`).join('')}</div>
           <div class="ae-vsum"><b>${hrs(row) ? hrs(row) + ' hrs' : 'Off'}</b><small class="${chg ? 'chg' : ''}">${diffTx(row, ref)}</small></div>
         </div>`;
+        // day label only (hours are already in the "Your hours" column); keeps the date / "Changed" note when there is one
+        const sub = [o.date || '', chg ? '<em>Changed</em>' : ''].filter(Boolean).join(' · ');
         return `<div class="ae-lr" data-aek="${o.k}">
-          <div class="ae-lbl"><b>${esc(LB.short(o))}${o.today ? ' <span class="ae-today">Today</span>' : ''}</b><small>${LB.date(o)}${hrs(row) ? hrs(row) + 'h' : 'Off'}${chg ? ' · <em>Changed</em>' : ''}</small></div>
+          <div class="ae-lbl"><b>${esc(LB.short(o))}${o.today ? ' <span class="ae-today">Today</span>' : ''}</b>${sub ? `<small>${sub}</small>` : ''}</div>
           <div class="ae-trk ro">${chg ? ranges(ref).map(([a, b]) => `<i class="ae-rf" style="left:${pct(a)};width:${pct(b - a)}"></i>`).join('') : ''}${ranges(row).map(([a, b]) => `<div class="ae-blk" style="left:${pct(a)};width:${pct(b - a)}" title="${tLong(a)} – ${tLong(b)}"><span>${blockLabel(a, b)}</span></div>`).join('')}</div>
           <div class="ae-vsum"><b>${fmtR(row)}</b><small>${hrs(row)} hrs${chg ? ` · ${hrs(row) - hrs(ref) > 0 ? '+' : hrs(row) - hrs(ref) < 0 ? '−' : ''}${hrs(row) - hrs(ref) ? Math.abs(hrs(row) - hrs(ref)) + ' vs ' + esc(c.refShort) : 'different times'}` : ''}</small></div>
         </div>`; }).join('')}</div>

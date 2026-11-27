@@ -1,0 +1,167 @@
+/* =====================================================================
+   Merged availability screen (design versions)          prefix: avx-
+   See avail-merge.js. Uses the v2 tokens from availability-v2.css.
+   ===================================================================== */
+.avx-on .v2-top { min-height: 0; align-items: center; }
+.avx-title { display: flex; flex-direction: column; min-width: 0; }
+.avx-title h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; color: var(--a-text); }
+.avx-title p { margin: 2px 0 0; font-size: 13px; color: var(--a-muted); }
+
+/* section heads */
+.avx-sh { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 6px 2px 0; }
+.avx-sh[hidden] { display: none; }
+.avx-sh-tx { min-width: 0; }
+.avx-sh-tx h2 { margin: 0; font-size: 16px; font-weight: 700; color: var(--a-text); display: flex; align-items: center; gap: 8px; }
+.avx-sh-tx small { display: block; font-size: 12.5px; color: var(--a-muted); }
+.avx-grow { flex: 1; }
+.avx-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.avx-ic.reg { background: var(--a-avail-soft); color: var(--a-avail-2); }
+.avx-ic.temp { background: var(--a-temp-soft); color: var(--a-temp); }
+.avx-ic svg.lucide { width: 18px; height: 18px; }
+.avx-n { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--a-pending); color: #fff; font-size: 11.5px; font-weight: 700; display: inline-grid; place-items: center; }
+.avx-sh .v2-vstrip { margin-left: auto; }
+#eaRegMain, #avmRegMain { display: flex; flex-direction: column; gap: 10px; }
+#eaRegMain[hidden], #avmRegMain[hidden], #eaTempWrap[hidden], #avmTempWrap[hidden] { display: none; }
+#eaTempWrap, #avmTempWrap { display: flex; flex-direction: column; gap: 0; }
+.avx-on #eaTempWrap, .avx-on #avmTempWrap { margin-top: 10px; }
+.avx-on #eaTempWrap > .avx-sh + *, .avx-on #avmTempWrap > .avx-sh + * { margin-top: 10px; }
+.avx-on #eaView #taMain > .tv, .avx-on #taMain > .tv, .avx-ghost > .tv { margin-top: 0; }
+.avx-on .tv-side > h2 { display: none; }   /* the section head already names it */
+
+/* regular card: no separate head row; Current / Requested chips sit in the card's bar,
+   next to "Weekly available hours". Compact rows so the temporary section is on screen too. */
+.avx-on #eaRegHead, .avx-on #avmRegHead { display: none !important; }
+.avx-on .v2-page { gap: 10px; padding-top: 12px; }
+.avx-on .v2-reg .ea-bar { padding: 10px 18px; }
+.avx-on .v2-reg .ea-bar > .r { gap: 14px; align-items: center; }
+.avx-on .v2-reg .ea-bar .v2-vstrip { margin-right: 6px; }
+.avx-on .v2-reg .ea-bar .v2-htot { min-width: 170px; text-align: right; }   /* chips keep one place */
+/* second row: selected version's effective date + its actions */
+.avx-brow { flex-basis: calc(100% + 36px);display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 2px -18px -10px; padding: 8px 18px;
+  border-top: 1px dashed var(--a-line); background: var(--a-surface-2); }
+.avx-binfo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--a-muted); }
+.avx-eff { display: inline-flex; align-items: center; gap: 6px; color: var(--a-text); }
+.avx-eff svg.lucide { width: 15px; height: 15px; color: var(--a-primary); }
+.avx-eff b { font-weight: 700; }
+.avx-bsep { width: 4px; height: 4px; border-radius: 50%; background: var(--a-line-2); }
+.avx-brow .ea-btn { padding-top: 6px; padding-bottom: 6px; }
+
+/* compact page head */
+#eaView.avx-on .v2-top, .avm-overlay.avx-on .v2-top { min-height: 0; }
+#eaView.avx-on .v2-page { padding-top: 8px; gap: 8px; }
+.avx-title { flex-direction: row; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.avx-title h1 { font-size: 18px; }
+.avx-title p { margin: 0; font-size: 12.5px; }
+.avx-on .v2-top .vbtn.primary { padding-top: 7px; padding-bottom: 7px; }
+.avx-on .v2-reg .ea-note { margin-top: 10px; margin-bottom: 0; padding-top: 7px; padding-bottom: 7px; }
+.avx-on .v2-reg .ae-view { padding: 8px 14px 10px; }
+.avx-on .v2-reg .ae-view .ae-rows { gap: 4px; margin-top: 2px; }
+.avx-on .v2-reg .ae-view .ae-trk { height: 30px; }
+.avx-on .v2-reg .ae-view .ae-lbl { padding: 2px 8px; }
+.avx-on .v2-reg .ae-view .ae-vsum b { font-size: 13px; }
+.avx-on .v2-reg .ae-view .ae-vsum small { font-size: 11.5px; }
+.avx-on .v2-reg .v2-foot { padding-top: 6px; padding-bottom: 10px; }
+
+/* Add/Update dropdown */
+.avx-dd { position: relative; }
+.avx-dd .avx-car { margin-left: 2px; width: 15px !important; height: 15px !important; transition: transform .15s; }
+.avx-dd [aria-expanded="true"] .avx-car { transform: rotate(180deg); }
+.avx-ddm { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: 340px; max-width: 86vw; padding: 6px; background: var(--a-surface);
+  border: 1px solid var(--a-line); border-radius: 14px; box-shadow: 0 18px 40px rgba(16, 30, 54, .18); display: flex; flex-direction: column; gap: 2px; }
+.avx-ddm[hidden] { display: none; }
+.avx-ddi { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border: 0; background: none; border-radius: 10px; text-align: left; width: 100%; color: var(--a-text); }
+.avx-ddi:hover, .avx-ddi:focus-visible { background: var(--a-surface-2); }
+.avx-ddi .avx-ic { width: 32px; height: 32px; border-radius: 9px; }
+.avx-ddi .avx-ic svg.lucide { width: 16px; height: 16px; }
+.avx-ddi b { display: block; font-size: 13.5px; font-weight: 600; }
+.avx-ddi small { display: block; font-size: 12px; color: var(--a-muted); margin-top: 1px; line-height: 1.4; }
+
+/* frozen copy of the page behind the drawer */
+.avx-ghost { pointer-events: none; user-select: none; }
+
+/* side panel (like Add Shift). The host stops scrolling while it is open; backdrop-filter is dropped
+   because it would make the host the containing block of the fixed panel. */
+.avx-lock { overflow: hidden !important; backdrop-filter: none !important; }
+.avx-scrim { position: fixed; z-index: 40; background: rgba(10, 18, 32, .42); opacity: 0; transition: opacity .2s; }
+.avx-scrim.in { opacity: 1; }
+.avx-drawer { position: fixed; z-index: 41; width: min(880px, 100%); display: flex; flex-direction: column; background: var(--a-bg);
+  box-shadow: -18px 0 48px rgba(10, 18, 32, .22); border-left: 1px solid var(--a-line); transform: translateX(24px); opacity: 0; transition: transform .22s ease, opacity .22s ease; }
+.avx-drawer.in { transform: none; opacity: 1; }
+.avx-dh { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--a-surface); border-bottom: 1px solid var(--a-line); flex: none; }
+.avx-dh .avx-sh-tx { flex: 1; }
+.avx-dh h2 { font-size: 17px; }
+.avx-x { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--a-line); background: var(--a-surface); color: var(--a-muted); display: grid; place-items: center; flex: none; }
+.avx-x:hover { color: var(--a-text); background: var(--a-surface-2); }
+.avx-db { flex: 1; min-height: 0; overflow: auto; padding: 14px 16px 18px; }
+.avx-df { flex: none; display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; background: var(--a-surface); border-top: 1px solid var(--a-line); }
+.avx-df:empty { display: none; }
+.avx-hid { display: none !important; }
+
+/* regular editor inside the drawer: title moves to the drawer head, buttons to the footer */
+.avx-drawer .v2-reg { box-shadow: none; }
+.avx-drawer .ea-bar > .ti { display: none; }
+.avx-drawer .ea-bar { padding-top: 12px; }
+.avx-drawer .ea-bar > .r { justify-content: flex-start; width: 100%; }
+.avx-drawer .ea-bar .ea-eff { flex-wrap: wrap; }
+/* drag view inside the drawer: narrow day column so the timeline gets the room; slimmer day panel */
+.avx-drawer .ae-drag { grid-template-columns: minmax(0, 1fr) 260px; }
+.avx-drawer .ae-tl { padding: 12px 12px 0; }
+.avx-drawer .ae-tlh, .avx-drawer .ae-lr { grid-template-columns: 58px minmax(0, 1fr); gap: 6px; }
+.avx-drawer .ae-lbl { padding: 4px 6px; }
+.avx-drawer .ae-lbl b { font-size: 13px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.avx-drawer .ae-lbl small { font-size: 11px; }
+.avx-drawer .ae-lbl .wg-today, .avx-drawer .ae-lbl .ae-today { font-size: 9px; padding: 0 4px; }
+.avx-drawer .ae-rows { gap: 6px; }
+.avx-drawer .ae-trk { height: 36px; }
+.avx-drawer .ae-blk { font-size: 11.5px; }
+.avx-drawer .ae-blk span { padding: 0 6px; }
+.avx-drawer .ae-hrs em { font-size: 11px; }
+.avx-drawer .ae-hints { gap: 6px 16px; font-size: 12px; padding-top: 10px; margin-top: 10px; }
+.avx-drawer .ae-pnl { padding: 14px; gap: 8px; }
+.avx-drawer .ae-ph b { font-size: 15px; }
+.avx-drawer .ae-ph button, .avx-drawer .ae-ph a { font-size: 12px; }
+.avx-drawer .ae-pnl .ae-seg button { padding: 8px 4px; font-size: 12.5px; }
+.avx-drawer .ae-pnl .ae-seg button svg.lucide { display: none; }
+.avx-drawer .ae-pslots .ae-slot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto; align-items: center; gap: 6px; }
+.avx-drawer .ae-pslots .ae-slot input[type="time"] { width: 100%; min-width: 0; padding-left: 8px; padding-right: 6px; }
+.avx-drawer .ae-dchips { gap: 4px; }
+.avx-drawer .ae-dchips button { height: 32px; font-size: 12px; }
+.avx-drawer .ae-lab { font-size: 12.5px; }
+.avx-drawer .ae-pnl > button:not(.ae-addln) { font-size: 12.5px; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+
+/* Enter times inside the drawer: each day is a small card
+     line 1: tick · day · total · vs · copy/reset
+     line 2: status · time slots (one slot per line, + under them)
+     line 3: the day's bar */
+.avx-drawer .ae-th { grid-template-columns: 22px 1fr; height: 32px; }
+.avx-drawer .ae-th > :nth-child(n+3) { display: none; }
+.avx-drawer .ae-tr { grid-template-columns: 22px auto minmax(0, 1fr) auto auto auto; gap: 8px 10px; padding: 10px 14px;
+  grid-template-areas: "ck day day tot vs act" ". seg slots slots slots slots" ". bar bar bar bar bar"; align-items: center; min-height: 0; }
+.avx-drawer .ae-tr > .ae-ck { grid-area: ck; }
+.avx-drawer .ae-tr > .ae-day { grid-area: day; flex-direction: row; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.avx-drawer .ae-tr > .ae-seg { grid-area: seg; align-self: start; }
+.avx-drawer .ae-tr > .ae-slots { grid-area: slots; display: grid; grid-template-columns: auto auto; justify-content: start; align-items: center; gap: 6px 8px; }
+.avx-drawer .ae-tr > .ae-slots > .ae-slot, .avx-drawer .ae-tr > .ae-slots > .ae-note { grid-column: 1; }
+.avx-drawer .ae-tr > .ae-slots > .ae-add { grid-column: 2; }   /* sits beside the last slot */
+.avx-drawer .ae-tr > .ae-tot { grid-area: tot; }
+.avx-drawer .ae-tr > .ae-bar { grid-area: bar; height: 10px; }
+.avx-drawer .ae-tr > .ae-vs { grid-area: vs; font-size: 12px; white-space: nowrap; }
+.avx-drawer .ae-tr > .ae-act { grid-area: act; }
+.avx-drawer .ae-day b { font-size: 14px; }
+.avx-drawer .ae-seg button { padding: 6px 9px; font-size: 12.5px; }
+.avx-drawer .ae-slots .ae-slot input[type="time"] { width: 112px; height: 32px; font-size: 13.5px; }
+.avx-drawer .ae-slots .ae-note { line-height: 32px; }
+.avx-drawer .ae-ib { width: 28px; height: 28px; }
+.avx-drawer .ae-time .ae-foot { padding-top: 10px; }
+
+/* temporary request inside the drawer: one column */
+.avx-drawer .tv-head > div:first-child, .avx-drawer .tv-head > .grow { display: none; }
+.avx-drawer .tv-head { padding: 0; min-height: 0; border: 0; }
+.avx-drawer .tv-dates { flex-wrap: wrap; }
+.avx-drawer .tv-reason { flex-basis: 100%; }
+.avx-drawer #taMain > .tv { margin-top: 0; }
+
+@media (max-width: 720px) {
+  .avx-drawer { width: 100%; }
+  .avx-sh .v2-vstrip { margin-left: 0; width: 100%; }
+}

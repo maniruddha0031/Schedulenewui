@@ -185,6 +185,7 @@
               <div class="v2-topr" id="avmTopR"></div>
             </div>
             <div id="avmRegMain">
+              <div class="avx-sh" id="avmRegHead" hidden></div>
               <section class="v2-card v2-reg">
                 <div class="ea-bar" id="avmBar"></div>
                 <div id="avmNote"></div>
@@ -193,7 +194,7 @@
                 <div class="v2-foot" id="avmFoot"></div>
               </section>
             </div>
-            <div id="avmTemp" hidden></div>
+            <div id="avmTempWrap"><div class="avx-sh" id="avmTempHead" hidden></div><div id="avmTemp" hidden></div></div>
           </div>
         </div>
       </div>
@@ -206,10 +207,69 @@
       </div>`;
     document.body.appendChild(wrap);
     bindEvents();
+    const ov = $('avmOverlay');
+    if (window.AVMERGE) MX = AVMERGE.host({
+      root: ov, frame: null, top: $('avmTopR'),
+      regMain: $('avmRegMain'), regSec: ov.querySelector('.v2-reg'), regHead: $('avmRegHead'),
+      tempWrap: $('avmTempWrap'), tempHead: $('avmTempHead'), tempEl: $('avmTemp'),
+      regEditing: () => !!S && S.mode === 'edit', tempEditing: () => !!(TA() && TA().crewEditing($('avmTemp'))),
+      titles: { reg: () => S && S.baseKey === 'up' ? 'Edit Upcoming Availability' : S && S.baseKey === 'req' ? 'Edit Availability Request' : 'Update Regular Availability',
+        temp: () => { const h = ov.querySelector('#avmTemp .tv-head h1'); return h ? h.textContent : 'Add Temporary Availability'; } },
+      acts: { reg: ['#avmCancel', '#avmSave'], temp: ['.tv-head [data-tv="cancel"]', '.tv-head [data-tv="review"]'] },
+      onAct: a => {
+        if (a === 'reg') { startEdit(); if (merged() === 'full') ov.scrollTop = 0; return; }
+        if (TA()) TA().crewNew({ noScroll: true });
+      },
+    });
   }
+
+  /* ---------------- Merged screen (Design Versions flag, avail-merge.js) ----------------
+     Regular + Temporary on one screen; "Add/Update Availability" opens the editor in a side
+     panel ('panel') or full screen ('full'). Both flags off -> the Regular | Temporary tabs. */
+  let MX = null;
+  const merged = () => (MX && window.AVMERGE ? AVMERGE.mode() : null);
+  function renderMergedChrome() {
+    const tE = !!(TA() && TA().crewEditing($('avmTemp'))), editing = S.mode === 'edit' || tE;
+    const e = emp(), fn = esc(first(e.name)), r = pendReq(), u = upc();
+    $('avmModes').className = 'avx-title'; $('avmModes').removeAttribute('role');
+    $('avmModes').innerHTML = `<p>${fn}’s weekly hours, plus any dates with different hours.</p>`;
+    $('avmTopR').innerHTML = merged() === 'full' && editing ? '' : AVMERGE.ddHTML([
+      { act: 'reg', tone: 'reg', title: r ? `Edit ${fn}’s request` : u ? 'Edit upcoming availability' : 'Update regular availability', sub: `Change the hours ${fn} can work every week, from a date you pick.` },
+      { act: 'temp', tone: 'temp', title: 'Add temporary availability', sub: 'Different hours for specific dates. No approval needed.' }]);
+    $('avmRegHead').innerHTML = '';
+    const n = TA() ? TA().mgrPending(S.empId) : 0;
+    $('avmTempHead').innerHTML = AVMERGE.headHTML({ tone: 'temp', title: 'Temporary availability', sub: 'Different hours for specific dates. They take priority over regular hours on those dates.', count: n, countTitle: `${n} pending request${n > 1 ? 's' : ''}` });
+  }
+  function renderMerged() {
+    $('avmOverlay').classList.add('avx-on');
+    AVMERGE.pre(MX);
+    renderHead();
+    $('avmRegMain').hidden = false; $('avmTemp').hidden = false;
+    const k2 = secondKey(); if (S.sel !== 'current' && S.sel !== k2) S.sel = 'current';
+    renderMergedChrome();
+    renderBar(); renderNote(); renderGrid(); renderTools(); renderFoot();
+    if (S.mode === 'view') {   // Current / Requested chips inside the card; the selected version's date + actions on a second row
+      const u = upc(), r = pendReq(), T = today();
+      const inN = iso => { const n = daysBetween(T, iso); return n <= 0 ? 'Starts today' : `Starts in ${n} day${n === 1 ? '' : 's'}`; };
+      const info = S.sel === 'up' && u ? AVMERGE.effHTML(fmt(u.eff), [inN(u.eff), 'Saved by ' + esc(u.updatedBy)])
+        : S.sel === 'req' && r ? AVMERGE.effHTML(fmt(r.eff), ['<span class="ea-chip st-pending">Pending approval</span>', r.submittedAt ? 'Submitted ' + fmt(r.submittedAt.split('T')[0]) : '']) : '';
+      AVMERGE.barLayout($('avmBar'), vstripHTML(), info);
+    }
+    if (TA()) TA().renderCrew($('avmTemp'), { role: 'manager', empId: S.empId, me: { name: MANAGER }, top: null,
+      onChange: () => render(),
+      beforeRender: () => AVMERGE.pre(MX), onRender: () => { if (merged()) { renderMergedChrome(); AVMERGE.sync(MX); icons(); } } });
+    AVMERGE.sync(MX); icons();
+  }
+  window.addEventListener('dflags:change', () => {
+    const ov = $('avmOverlay'); if (!ov || !ov.classList.contains('open') || !S) return;
+    if (!merged() && TA() && TA().crewEditing($('avmTemp'))) S.tab = 'temp';
+    render();
+  });
 
   /* ---------------- Render ---------------- */
   function render() {
+    if (merged()) return renderMerged();
+    if (MX) { AVMERGE.sync(MX); $('avmOverlay').classList.remove('avx-on'); $('avmModes').className = 'v2-tabs'; $('avmModes').setAttribute('role', 'tablist'); }
     renderHead(); renderModes();
     const temp = S.tab === 'temp' && TA();
     $('avmRegMain').hidden = !!temp; $('avmTemp').hidden = !temp;
@@ -231,6 +291,7 @@
       ${TA() ? `<button type="button" role="tab" data-mtab="temp" class="temp" aria-selected="${S.tab === 'temp'}"><i data-lucide="calendar-clock"></i>Temporary Availability${n ? `<span class="n" title="${n} pending request${n > 1 ? 's' : ''}">${n}</span>` : ''}</button>` : ''}`;
   }
   function switchTab(tab) {
+    if (merged()) { const w = $(tab === 'temp' ? 'avmTempWrap' : 'avmRegMain'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (tab === S.tab) return;
     const go = () => { S.tab = tab; render(); };
     if (S.tab === 'temp' && TA()) return TA().crewGuard(go);
@@ -239,14 +300,17 @@
 
   /* version tiles (top right) + Update */
   function renderTopR() {
+    $('avmTopR').innerHTML = `${vstripHTML()}
+      ${S.mode === 'view' ? '<button type="button" class="vbtn primary" id="avmStartEdit"><i data-lucide="pencil"></i>Update Regular Availability</button>' : ''}`;
+  }
+  function vstripHTML() {
     const c = cur(), u = upc(), r = pendReq(), k2 = secondKey();
     const vp = (key, k, v) => { const on = S.sel === key && S.mode === 'view';
       return `<button type="button" class="vp ${on ? 'on' : ''}" data-sel="${key}" style="--c:${KIND[key]}" aria-pressed="${on}" title="Show in the grid below"><span class="dot"></span><span class="tx"><span class="k">${k}</span><span class="v">${v}</span></span>${on ? '<i data-lucide="check" class="ck"></i>' : ''}</button>`; };
     let h = vp('current', 'Current', c ? `Since ${fmtShort(c.eff)} · ${gridHrs(c.grid)} hrs` : 'Not set');
     if (k2 === 'req') h += vp('req', `Requested <span class="ea-chip st-pending">Pending approval</span>`, `From ${fmtShort(r.eff)} · ${gridHrs(r.grid)} hrs`);
     else if (k2 === 'up') h += vp('up', `Upcoming · ${esc(u.updatedBy)}`, `From ${fmtShort(u.eff)} · ${gridHrs(u.grid)} hrs`);
-    $('avmTopR').innerHTML = `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>
-      ${S.mode === 'view' ? '<button type="button" class="vbtn primary" id="avmStartEdit"><i data-lucide="pencil"></i>Update Regular Availability</button>' : ''}`;
+    return `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>`;
   }
 
   function renderBar() {
@@ -550,7 +614,7 @@
       const t = e.target;
       if (t.closest('#avmClose')) return closeModal();
       const mt = t.closest('[data-mtab]'); if (mt) return switchTab(mt.dataset.mtab);
-      if (S.tab === 'temp') return;                           // the temporary tab handles its own clicks
+      if (merged() ? t.closest('#avmTemp') : S.tab === 'temp') return;   // temporary availability handles its own clicks
       if (t.closest('#avmStartEdit')) return startEdit();
       const sv = t.closest('[data-sel]');
       if (sv) { if (S.mode === 'edit') return guardDiscard(() => { exitEdit(); S.sel = sv.dataset.sel; render(); }); S.sel = sv.dataset.sel; return render(); }
@@ -587,7 +651,8 @@
     render();
   }
   function closeModal() {
-    const hide = () => { if (S && S.mode === 'edit') exitEdit(); $('avmOverlay').classList.remove('open'); };
+    const hide = () => { if (S && S.mode === 'edit') exitEdit(); if (MX) AVMERGE.close(MX); $('avmOverlay').classList.remove('open'); };
+    if (merged() && TA()) return TA().crewGuard(() => guardDiscard(hide));
     if (S && S.tab === 'temp' && TA()) return TA().crewGuard(hide);
     guardDiscard(hide);
   }

@@ -1231,9 +1231,11 @@
     }
     if (ctx.top && !ctx.top._tvBound) { ctx.top._tvBound = true; ctx.top.addEventListener('click', e => { if (S_TAB_TEMP()) tvClick(e); }); }
     if (ctx.top) ctx.top.innerHTML = '';
+    if (ctx.beforeRender) ctx.beforeRender(CH.mode);          // merged availability screen (avail-merge.js)
     main.innerHTML = CH.mode === 'request' ? tvRequest() : tvView();
     if (CH.mode === 'request' && window.AVED) AVED.mount(main.querySelector('#tvEd'), 'tvr', reqCfg());
     icons();
+    if (ctx.onRender) ctx.onRender(CH.mode);
   }
   const crewRerender = () => { if (CH.main) renderCrew(CH.main, CH.ctx); };
   const S_TAB_TEMP = () => !!(CH.main && !CH.main.hidden);
@@ -1724,7 +1726,9 @@
     windowsPanel, host, hasErrors, resetKeys, keepOnly, wgHTML, wgBind, tlHTML, tlBind,
     // views
     renderManager, managerDirty, managerGuard, resetManager: () => { MH = { empId: null, mode: 'view', scope: 'emp', E: null, open: {}, flash: null, carry: null }; },
-    renderCrew, crewDirty, crewGuard, crewDiscard: () => { if (CH.mode === 'request') exitCrewEdit(); }, crewPending: empId => forEmp(empId).filter(isPending).length,
+    renderCrew, crewDirty, crewGuard,
+    crewNew: o => { if (!CH.main) return; newReq(); CH.mode = 'request'; crewRerender(); if (!(o && o.noScroll)) toTop(); },
+    crewEditing: main => CH.mode === 'request' && !!CH.main && (!main || CH.main === main), crewDiscard: () => { if (CH.mode === 'request') exitCrewEdit(); }, crewPending: empId => forEmp(empId).filter(isPending).length,
     openReview, dashRows,
     // formatting helpers
     fmt, fmtRange, rangeText, slotSummary, recHrs, recDates, isPending, TODAY,

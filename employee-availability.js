@@ -156,6 +156,7 @@
           <div class="v2-topr" id="eaTopR"></div>
         </div>
         <div id="eaRegMain">
+          <div class="avx-sh" id="eaRegHead" hidden></div>
           <section class="v2-card v2-reg">
             <div class="ea-bar" id="eaBar"></div>
             <div id="eaNote"></div>
@@ -164,7 +165,7 @@
             <div class="v2-foot" id="eaFoot"></div>
           </section>
         </div>
-        <div id="taMain" hidden></div>
+        <div id="eaTempWrap"><div class="avx-sh" id="eaTempHead" hidden></div><div id="taMain" hidden></div></div>
       </div>`;
     document.body.appendChild(v);
     const dw = document.createElement('div');
@@ -176,12 +177,66 @@
       </div>`;
     document.body.appendChild(dw);
     bindEvents();
+    if (window.AVMERGE) MX = AVMERGE.host({
+      root: v, frame: () => v, top: $('eaTopR'),
+      regMain: $('eaRegMain'), regSec: v.querySelector('.v2-reg'), regHead: $('eaRegHead'),
+      tempWrap: $('eaTempWrap'), tempHead: $('eaTempHead'), tempEl: $('taMain'),
+      regEditing: () => !!S && S.mode === 'edit', tempEditing: () => !!(TA() && TA().crewEditing($('taMain'))),
+      titles: { reg: () => editingOpen() ? 'Update Regular Availability Request' : 'Update Regular Availability',
+        temp: () => { const h = v.querySelector('#taMain .tv-head h1'); return h ? h.textContent : 'Request Temporary Availability'; } },
+      acts: { reg: ['#eaCancelEdit', '#eaSubmit'], temp: ['.tv-head [data-tv="cancel"]', '.tv-head [data-tv="review"]'] },
+      onAct: a => {
+        if (a === 'reg') { startEdit(); if (merged() === 'full') v.scrollTop = 0; return; }
+        if (TA()) TA().crewNew({ noScroll: merged() === 'panel' });
+      },
+    });
   }
+
+  /* ---------------- Merged screen (Design Versions flag, avail-merge.js) ----------------
+     Regular + Temporary on one page; "Add/Update Availability" opens the editor in a side
+     panel ('panel') or full screen ('full'). Both flags off -> the Regular | Temporary tabs. */
+  let MX = null;
+  const merged = () => (MX && window.AVMERGE ? AVMERGE.mode() : null);
+  function renderMergedChrome() {
+    const tE = !!(TA() && TA().crewEditing($('taMain'))), editing = S.mode === 'edit' || tE, o = openReq();
+    $('eaModes').className = 'avx-title'; $('eaModes').removeAttribute('role');
+    $('eaModes').innerHTML = '<h1>My Availability</h1><p>Your weekly hours, plus any dates where you can work different hours.</p>';
+    $('eaTopR').innerHTML = merged() === 'full' && editing ? '' : AVMERGE.ddHTML([
+      { act: 'reg', tone: 'reg', title: o ? 'Update regular availability request' : 'Update regular availability', sub: 'Change the hours you can work every week, from a date you pick.' },
+      { act: 'temp', tone: 'temp', title: 'Request temporary availability', sub: 'Different hours for specific dates, like exams or a trip.' }]);
+    $('eaRegHead').innerHTML = '';
+    const n = TA() ? TA().crewPending(myId()) : 0;
+    $('eaTempHead').innerHTML = AVMERGE.headHTML({ tone: 'temp', title: 'Temporary availability', sub: 'Different hours for specific dates. They replace your regular hours on those dates only.', count: n, countTitle: `${n} waiting for your manager` });
+  }
+  function renderMerged() {
+    $('eaView').classList.add('avx-on');
+    AVMERGE.pre(MX);
+    $('eaRegMain').hidden = false; $('taMain').hidden = false;
+    renderMergedChrome();
+    renderBar(); renderNote(); renderGrid(); renderTools(); renderFoot();
+    if (S.mode === 'view') {   // Current / Requested chips inside the card; the selected version's date + actions on a second row
+      const sub = S.req && S.req.submittedAt ? 'Submitted ' + fmt(S.req.submittedAt.split('T')[0]) : '';
+      const info = S.sel === 'req' && S.req ? AVMERGE.effHTML(fmt(S.req.eff), [chip(S.req.status), inDays(S.req.eff) !== 'today' && S.req.eff > TODAY() ? 'Starts ' + inDays(S.req.eff) : '', sub])
+        : S.sel === 'mgr' && S.mgrUp ? AVMERGE.effHTML(fmt(S.mgrUp.eff), ['Starts ' + inDays(S.mgrUp.eff), 'Set by ' + esc(S.mgrUp.by)]) : '';
+      AVMERGE.barLayout($('eaBar'), vstripHTML(), info);
+    }
+    if (TA()) TA().renderCrew($('taMain'), { top: null, empId: myId(), me: me(),
+      onChange: () => { render(); if (typeof window.onCrewAvailChange === 'function') window.onCrewAvailChange(); },
+      beforeRender: () => AVMERGE.pre(MX), onRender: () => { if (merged()) { renderMergedChrome(); AVMERGE.sync(MX); icons(); } } });
+    AVMERGE.sync(MX); icons();
+  }
+  window.addEventListener('dflags:change', () => {
+    const v = $('eaView'); if (!v || v.style.display !== 'block' || !S) return;
+    if (!merged() && TA() && TA().crewEditing($('taMain'))) S.tab = 'temp';
+    render();
+  });
 
   /* ---------------- Render ---------------- */
   const TA = () => window.TA || null;
   const myId = () => CREW ? CREW.empId : ((typeof employeeData !== 'undefined' && employeeData[0]) ? employeeData[0].id : 0);
   function render() {
+    if (merged()) return renderMerged();
+    if (MX) { AVMERGE.sync(MX); $('eaView').classList.remove('avx-on'); $('eaModes').className = 'v2-tabs'; $('eaModes').setAttribute('role', 'tablist'); }
     renderModes();
     const temp = S.tab === 'temp' && TA();
     $('eaRegMain').hidden = !!temp; $('taMain').hidden = !temp;
@@ -195,6 +250,7 @@
       ${TA() ? `<button type="button" role="tab" data-eatab="temp" class="temp" aria-selected="${S.tab === 'temp'}"><i data-lucide="calendar-clock"></i>Temporary Availability${n ? `<span class="n" title="${n} waiting for your manager">${n}</span>` : ''}</button>` : ''}`;
   }
   function switchTab(tab) {
+    if (merged()) { const w = $(tab === 'temp' ? 'eaTempWrap' : 'eaRegMain'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (tab === S.tab) return;
     const go = () => { S.tab = tab; render(); };
     if (S.tab === 'temp') return TA().crewGuard(go);
@@ -212,6 +268,10 @@
     return null;
   }
   function renderVstrip() {
+    $('eaTopR').innerHTML = `${vstripHTML()}
+      ${S.mode === 'view' ? `<button type="button" class="vbtn primary" data-start="1"><i data-lucide="pencil"></i>Update Regular Availability</button>` : ''}`;
+  }
+  function vstripHTML() {
     const k2 = secondKey(); if (S.sel !== 'current' && S.sel !== k2) S.sel = 'current';
     const vp = (key, k, v, cls) => { const on = S.sel === key && S.mode === 'view';
       return `<button type="button" class="vp ${on ? 'on' : ''} ${cls || ''}" data-sel="${key}" style="--c:${KIND[key].c}" aria-pressed="${on}" title="Show ${KIND[key].label.toLowerCase()} in the grid below"><span class="dot"></span><span class="tx"><span class="k">${k}</span><span class="v">${v}</span></span>${on ? '<i data-lucide="check" class="ck"></i>' : ''}</button>`; };
@@ -219,9 +279,7 @@
     if (k2 === 'req' && S.req.status === 'approved') h += vp('req', 'Upcoming · approved', `From ${fmtS(S.req.eff)} · ${gridHrs(S.req.grid)} hrs`);
     else if (k2 === 'req') h += vp('req', `Requested ${chip(S.req.status)}`, `From ${fmtS(S.req.eff)} · ${gridHrs(S.req.grid)} hrs`, isOpen(S.req) ? '' : 'muted');
     else if (k2 === 'mgr') h += vp('mgr', 'Upcoming · manager', `From ${fmtS(S.mgrUp.eff)} · ${gridHrs(S.mgrUp.grid)} hrs`);
-    const o = openReq();
-    $('eaTopR').innerHTML = `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>
-      ${S.mode === 'view' ? `<button type="button" class="vbtn primary" data-start="1"><i data-lucide="pencil"></i>Update Regular Availability</button>` : ''}`;
+    return `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>`;
   }
   function renderBar() {
     const o = openReq();
@@ -449,7 +507,7 @@
     v.addEventListener('click', e => {
       const t = e.target;
       const tb = t.closest('[data-eatab]'); if (tb) return switchTab(tb.dataset.eatab);
-      if (S.tab === 'temp') return;                                  // temporary tab handles its own clicks
+      if (merged() ? t.closest('#taMain') : S.tab === 'temp') return;   // temporary availability handles its own clicks
       if (t.closest('[data-start]')) return startEdit();
       const sv = t.closest('[data-sel]');
       if (sv) {
@@ -494,11 +552,13 @@
     const v = $('eaView'); if (!v || v.style.display !== 'block') return;
     const hide = () => {
       if (S && S.mode === 'edit') exitEdit();
+      if (MX) AVMERGE.close(MX);
       v.style.display = 'none';
       if (location.hash === '#team-center/availability') history.replaceState(null, '', '#team-center');
       document.querySelectorAll('.sidebar .tc-sub a.active').forEach(a => a.classList.remove('active'));
     };
     if (force === true) { if (TA()) TA().crewDiscard(); return hide(); }
+    if (merged() && TA()) return TA().crewGuard(() => guard(hide));
     if (S && S.tab === 'temp' && TA()) return TA().crewGuard(hide);
     guard(hide);
   }
