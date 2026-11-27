@@ -8,7 +8,7 @@
      #cloud          Cloud Connection
      #matrix, #matrix/<id|new>
      #labor,  #labor/<id|new>/<rule|minor|sites|audit>
-     #site-days, #site-labor   (Site Settings, needs a site)
+     #site-days, #site-labor, #site-pref   (Site Settings, needs a site)
    Data is kept in localStorage 'zipAppSettings'.
    ===================================================================== */
 (function () {
@@ -119,6 +119,7 @@
         <div class="as-grid">
           ${opt('site-days', 'calendar-check', '#3b82f6', 'Operational Days', 'Set up the weekly operational days for this store.', !SITE)}
           ${opt('site-labor', 'scale', '#8b5cf6', 'Labor Rules', 'Setup the Labor rules for this store that comply with the local laws.', !SITE)}
+          ${opt('site-pref', 'calendar-plus', '#4f46e5', 'Schedule Preference', 'Choose how new weeks are auto-created on the schedule pad for this store.')}
         </div>${SITE ? '' : '<div class="as-note" style="margin-top:8px">Select a site to open its settings.</div>'}</div></div>`;
   }
 
@@ -199,6 +200,48 @@
         ${row('restrictTO', 'Restrict Time Off Requests For Scheduled Published Days', "By enabling this flag, employees won't be able to request a time-off on their own, if the time-off request lies between the scheduled hours.")}
         ${row('autoOffer', 'Enable Auto Offer Feature for Unassigned Shifts', 'By enabling this flag, System will auto offer the unassigned shifts when user published the weekly schedule.')}
       </div>`, 'Adjust your settings with the multiple features of Zip Schedules to customize your day to day scheduling per your business requirements.');
+  }
+
+  /* --- site: schedule preference --- */
+  // Auto-create shifts from preferences, per site. Shared with the Schedule Pad's Create Schedule
+  // menu (read-only there) through localStorage 'zipSchedPref' = { [site]: { on, method, tpl } }.
+  // Only one method at a time.
+  const SP_KEY = 'zipSchedPref';
+  const AC_METHODS = [
+    ['copy', 'copy', 'Copy Schedule', "Duplicate the previous week's schedule"],
+    ['template', 'file-text', 'Load Template', 'Apply a saved staffing template'],
+    ['aiStd', 'calendar-clock', 'AI Scheduling Using Standard Shift', 'Build an AI roster from your standard shifts'],
+    ['ai', 'sparkles', 'AI Scheduling', 'Build shifts from the forecast and assign them'],
+  ];
+  const AC_TEMPLATES = ['Balanced Week', 'Peak Sales Template', 'Weekend Heavy', 'Minimal Labor'];
+  function spAll() { try { return JSON.parse(localStorage.getItem(SP_KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function spLoad(site) {
+    const a = { on: true, method: 'copy', tpl: 0 };
+    Object.assign(a, spAll()[site] || {});
+    if (!AC_METHODS.some(m => m[0] === a.method)) a.method = 'copy';
+    return { on: !!a.on, method: a.method, tpl: String(a.tpl || 0), _site: site };
+  }
+  let pDraft = null;
+  function vSitePref() {
+    if (!SITE) { location.hash = 'zip'; return ''; }
+    crumbs(ZC.concat([[SITE, 'zip'], ['Schedule Preference', 'site-pref']]));
+    if (!pDraft || pDraft._site !== SITE) pDraft = spLoad(SITE);
+    const p = pDraft;
+    const opts = AC_METHODS.map(([v, ic, name, desc]) => `
+        <label class="as-ac-opt ${p.method === v ? 'sel' : ''} ${p.on ? '' : 'dis'}">
+          <input type="radio" name="spMethod" value="${v}" ${p.method === v ? 'checked' : ''} ${p.on ? '' : 'disabled'}>
+          <span class="ic"><i data-lucide="${ic}"></i></span><span class="tx"><b>${name}</b><small>${desc}</small></span></label>`).join('');
+    const tpl = p.on && p.method === 'template' ? `
+        <div class="as-ac-tpl"><label class="as-lbl" for="spTpl">Template</label>
+          <select class="as-sel" id="spTpl" style="width:240px">${AC_TEMPLATES.map((n, i) => `<option value="${i}" ${p.tpl === String(i) ? 'selected' : ''}>${n}</option>`).join('')}</select></div>` : '';
+    return card('Schedule Preference', 'calendar-plus', `<button type="button" class="as-btn ok" data-act="sp-save"><i data-lucide="save"></i>Save</button>`, `
+      <div class="as-rows"><div class="as-row"><div class="t"><b>Auto-create shifts from preferences</b>
+        <div class="as-note">By enabling this flag, new weeks on the Schedule Pad for this site are created automatically using the option selected below.</div></div>
+        ${tg(p.on, 'data-sp="on"')}</div></div>
+      <div class="as-ac ${p.on ? '' : 'off'}">
+        <div class="as-ac-lbl">Auto-create using <span>Select one</span></div>
+        <div class="as-ac-opts" role="radiogroup" aria-label="Auto-create using">${opts}</div>${tpl}
+      </div>`);
   }
 
   /* --- cloud --- */
@@ -355,10 +398,11 @@
   function route() {
     const [a, b, c] = (location.hash || '#').slice(1).split('/');
     if (a !== 'schedule-settings') draftS = null;
+    if (a !== 'site-pref') pDraft = null;
     if (a !== 'matrix' || !b) mDraft = null;
     if (a !== 'labor' || !b) lDraft = null;
     const v = { '': vApps, zip: vZip, positions: vPositions, 'schedule-settings': vSchedSettings, certs: vCerts, cloud: vCloud,
-      matrix: () => vMatrix(b), labor: () => vLabor(b, c), 'site-days': vSiteDays, 'site-labor': vSiteLabor }[a] || vApps;
+      matrix: () => vMatrix(b), labor: () => vLabor(b, c), 'site-days': vSiteDays, 'site-labor': vSiteLabor, 'site-pref': vSitePref }[a] || vApps;
     $('asMain').innerHTML = `<div class="as-wrap">${v()}</div>`;
     icons();
   }
@@ -367,6 +411,12 @@
   /* ================= events ================= */
   document.addEventListener('click', e => {
     const t = e.target;
+    // Schedule Preference is always clickable; without a site it points to the site picker
+    if (t.closest('a[href="#site-pref"]') && !SITE) {
+      e.preventDefault();
+      const s = $('asSite'); if (s) { s.classList.add('err'); s.focus(); }
+      toast('Select a site first to open Schedule Preference', true); return;
+    }
     // modal
     const mb = t.closest('[data-m]');
     if (mb) { if (mb.dataset.m === 'ok' && mOk && mOk() === false) return; closeM(); return; }
@@ -377,6 +427,7 @@
     if (t.closest('#pEx')) { $('pEx').classList.toggle('on'); return; }
     // toggles inside views
     const st = t.closest('[data-st]'); if (st) { draftS[st.dataset.st] = !draftS[st.dataset.st]; st.classList.toggle('on'); return; }
+    if (t.closest('[data-sp]')) { pDraft.on = !pDraft.on; return route(); }
     const lr = t.closest('[data-lr]'); if (lr && !lr.disabled) { lDraft.rule[lr.dataset.lr] = !lDraft.rule[lr.dataset.lr]; return route(); }
     const sd = t.closest('[data-sd]'); if (sd) { const d = DB.siteDays[SITE][+sd.dataset.sd]; d.open = !d.open; return route(); }
     const a = t.closest('[data-act]'); if (!a) return;
@@ -396,6 +447,12 @@
         const mn = +draftS.minMin, mx = +draftS.minMax;
         if (!mn || !mx || mn > mx) { toast('Minimum minor age must be less than or equal to the maximum', true); return; }
         DB.settings = JSON.parse(JSON.stringify(draftS)); save(); toast('Schedule settings saved'); return;
+      }
+      case 'sp-save': {
+        const all = spAll();
+        all[SITE] = { on: pDraft.on, method: pDraft.method, tpl: +pDraft.tpl || 0 };
+        try { localStorage.setItem(SP_KEY, JSON.stringify(all)); } catch (e) {}
+        toast('Schedule preference saved'); return;
       }
       case 'cloud': DB.cloud = arg || null; save(); toast(arg ? `Connected to ${arg === 's3' ? 'Amazon S3' : 'Dropbox'}` : 'Cloud connection removed'); return route();
       case 'mx-row': mDraft.staff.push(String((+mDraft.staff[mDraft.staff.length - 1] || 0) + 1)); return route();
@@ -439,6 +496,8 @@
     const t = e.target;
     if (t.id === 'asSite') { SITE = t.value; sessionStorage.setItem('asSite', SITE); return route(); }
     if (t.dataset.sv) draftS[t.dataset.sv] = t.value;
+    if (t.name === 'spMethod') { pDraft.method = t.value; return route(); }   // one option at a time; shows the template picker
+    if (t.id === 'spTpl') { pDraft.tpl = t.value; return; }
     if (t.id === 'lzAge') { lDraft._age = t.value; return route(); }
     if (t.id === 'lsAdd' && t.value) { lDraft.sites.push(t.value); return route(); }
     if (t.id === 'slZone') {

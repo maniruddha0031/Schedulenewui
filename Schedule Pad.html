@@ -660,45 +660,34 @@ table td:hover .addShift {
 .cs-switch::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .15s; }
 .cs-toggle input:checked + .cs-switch { background:#4f46e5; }
 .cs-toggle input:checked + .cs-switch::after { transform:translateX(14px); }
-.clr-btn { background:#fff; border-color:#fecaca; color:#b91c1c; }
-.clr-btn:hover { background:#fef2f2; border-color:#fca5a5; }
-#clearScheduleWrap:has(.cs-menu:not(.hidden)) .clr-btn { background:#fee2e2; border-color:#f87171; }
-#clearScheduleWrap:has(.cs-menu:not(.hidden)) .cs-chev { transform:rotate(180deg); }
 #clearScheduleMenu .cs-item { align-items:center; }
 #clearScheduleMenu .cs-item:hover b { color:#b91c1c; }
 #clearScheduleMenu .cs-item:hover { background:#fef6f6; }
 .clr-n { margin-left:auto; min-width:26px; height:22px; padding:0 7px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:#f1f5f9; color:#334155; font-size:11.5px; font-weight:700; }
 .cs-item.clr-off { opacity:.45; cursor:not-allowed; }
-#clearScheduleMenu { width:420px; }
+#createScheduleMenu { width:400px; max-height:calc(100vh - 140px); overflow-y:auto; }
+.cs-head-clr { color:#dc2626; }
+#clearScheduleMenu > .cs-item .cs-txt b { color:#dc2626; }
+html.dark #clearScheduleMenu > .cs-item .cs-txt b { color:#f87171; }
+html.dark .cs-head-clr { color:#f87171; }
 .clr-parent { align-items:center; }
-.clr-parent .clr-caret { margin-left:auto; color:#94a3b8; transition:transform .15s; flex-shrink:0; }
+.clr-parent .clr-caret { margin-left:4px; color:#94a3b8; transition:transform .15s; flex-shrink:0; }
 .clr-parent.open { background:#fef2f2; border-color:#fecaca; }
 .clr-parent.open .clr-caret { transform:rotate(180deg); color:#b91c1c; }
 .clr-sub { margin:4px 0 2px 22px; padding-left:8px; border-left:2px solid #fecaca; }
 .clr-sub .cs-item { padding:7px 10px; }
 .clr-sub .cs-ic { width:28px; height:28px; }
-.clr-scope { display:flex; align-items:center; gap:6px; margin:6px 4px 2px; padding:8px 10px; border-radius:9px; background:#f8fafc; color:#64748b; font-size:11.5px; font-weight:600; }
-.cs-auto { margin: 0 2px 2px; border: 1px solid #e0e7ff; background: #f8f9ff; border-radius: 12px; }
-.cs-auto .cs-toggle:hover { background: transparent; }
-.cs-auto .cs-txt small b { display: inline; font-size: inherit; color: #4338ca; font-weight: 600; }
-.cs-tpl-list { margin-top: 10px; }
-.cs-tpl { display: flex; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 4px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; cursor: pointer; transition: border-color .12s, background .12s; }
-.cs-tpl:hover { border-color: #a5b4fc; }
-.cs-tpl.active { border-color: #6366f1; background: #eef2ff; box-shadow: inset 0 0 0 1px #6366f1; }
-.cs-tpl input { accent-color: #4f46e5; width: 14px; height: 14px; flex: none; }
-.cs-tpl-name { font-size: 12px; font-weight: 600; color: #1e293b; }
-.cs-tpl.active .cs-tpl-name { color: #4338ca; }
-.cs-tpl-meta { margin-left: auto; font-size: 11px; color: #64748b; white-space: nowrap; }
-.cs-auto-pick { padding: 0 10px 10px 54px; transition: opacity .15s; }
-.cs-auto-pick.off { opacity: .45; }
-.cs-auto-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
-.cs-auto-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.cs-auto-opts button { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; font-size: 11.5px; font-weight: 600; color: #475569; text-align: left; white-space: nowrap; transition: all .12s; }
-.cs-auto-opts button:not(:disabled):hover { border-color: #a5b4fc; color: #4338ca; }
-.cs-auto-opts button.active { border-color: #6366f1; background: #eef2ff; color: #4338ca; box-shadow: inset 0 0 0 1px #6366f1; }
-.cs-auto-opts button:disabled { cursor: not-allowed; }
 .cs-auto-tag { display: none; font-style: normal; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: #4f46e5; color: #fff; }
 .cs-auto-tag.show { display: inline-flex; }
+/* Auto-create shifts from preferences: plain informational line at the top of Manage Schedule */
+.cs-info { display:flex; align-items:flex-start; gap:10px; padding:10px 12px 8px; color:#64748b; }
+.cs-info > svg { flex:none; margin-top:1px; color:#94a3b8; }
+.cs-info-t { font-size:12.5px; color:#475569; line-height:1.4; }
+.cs-info-t b { font-weight:600; color:#1e293b; }
+.cs-info-s { font-size:11px; color:#94a3b8; margin-top:2px; }
+html.dark .cs-info-t { color:#94a3b8; }
+html.dark .cs-info-t b { color:#e2e8f0; }
+html.dark .cs-info-s, html.dark .cs-info > svg { color:#64748b; }
 .cs-btn.cs-has-auto { position: relative; }
 .cs-btn.cs-has-auto::after { content: ''; position: absolute; top: -3px; right: -3px; width: 9px; height: 9px; border-radius: 50%; background: #4f46e5; border: 2px solid #fff; }
 .action-dropdown {
@@ -752,15 +741,6 @@ table td:hover .addShift {
 .action-dropdown-item:hover > svg { background: #fff; }
 /* the button whose menu is open stays highlighted */
 .relative:has(> .action-dropdown:not(.hidden)) > button { background: #eef2ff; border-color: #a5b4fc; color: #4338ca; }
-/* Auto-create shifts from preferences: highlighted panel inside the Create Schedule menu */
-.cs-auto { margin: 6px 2px 2px; border: 1px solid #a5b4fc; border-left: 4px solid #4f46e5; background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%); border-radius: 12px; box-shadow: 0 4px 12px -6px rgba(79,70,229,.35); }
-.cs-auto:has(#csAutoCreate:checked) { background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%); border-color: #818cf8; border-left-color: #4f46e5; }
-.cs-auto .cs-toggle, .cs-auto .cs-toggle:hover { background: transparent !important; border-color: transparent !important; }
-.cs-auto .cs-toggle .cs-ic { background: linear-gradient(135deg,#6366f1,#8b5cf6) !important; color: #fff !important; box-shadow: 0 4px 10px -3px rgba(99,102,241,.5); }
-.cs-auto .cs-txt > b { color: #1e1b4b; }
-.cs-auto .cs-txt small { color: #475569; }
-.cs-auto .cs-auto-lbl { color: #6366f1; }
-.cs-auto .cs-auto-opts button:not(.active) { border-color: #c7d2fe; }
 
 /* Min Hrs / Week: blue "i" next to the employee name + Information popup */
 .emp-flags { display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; }
@@ -2003,7 +1983,6 @@ html.dark .density-toggle { background: #0f172a !important; border-color: #2d3f5
 html.dark .density-toggle button { color: #94a3b8 !important; }
 html.dark .density-toggle button.active { background: #1e293b !important; color: #93c5fd !important; }
 html.dark .cs-btn { background: #172a4a !important; border-color: #24426e !important; color: #93c5fd !important; }
-html.dark .cs-btn.clr-btn { background: #3a1a1d !important; border-color: #6b2a2f !important; color: #fca5a5 !important; }
 /* Create Schedule / Clear / three-dot menus */
 html.dark .cs-menu, html.dark .action-dropdown { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 0 0 4px rgba(0,0,0,.18), 0 24px 48px -12px rgba(0,0,0,.7) !important; }
 html.dark .cs-head, html.dark .action-dropdown > .px-4 { color: #94a3b8 !important; }
@@ -2019,20 +1998,6 @@ html.dark .cs-menu .cs-item .cs-ic[style*="#fffbeb"] { background: rgba(245,158,
 html.dark .cs-menu .cs-item .cs-ic[style*="#f5f3ff"] { background: rgba(139,92,246,.2) !important; color: #c4b5fd !important; }
 html.dark .cs-tag { background: rgba(139,92,246,.22); color: #c4b5fd; }
 html.dark .cs-switch { background: #475569; }
-html.dark .cs-auto { background: linear-gradient(135deg, #1f2550 0%, #261f4d 100%); border-color: #4f46e5; border-left-color: #6366f1; box-shadow: none; }
-html.dark .cs-auto:has(#csAutoCreate:checked) { background: linear-gradient(135deg, #252c63 0%, #2d2459 100%); border-color: #6366f1; }
-html.dark .cs-auto .cs-txt > b { color: #f1f5f9; }
-html.dark .cs-auto .cs-txt small { color: #cbd5e1; }
-html.dark .cs-auto .cs-txt small b { color: #a5b4fc; }
-html.dark .cs-auto .cs-auto-lbl { color: #a5b4fc; }
-html.dark .cs-auto-opts button { background: #162032; border-color: #3b4a7a !important; color: #cbd5e1; }
-html.dark .cs-auto-opts button:not(:disabled):hover { border-color: #818cf8 !important; color: #c7d2fe; }
-html.dark .cs-auto-opts button.active { background: #2b2f6b; border-color: #818cf8 !important; color: #c7d2fe; box-shadow: inset 0 0 0 1px #818cf8; }
-html.dark .cs-tpl { background: #162032; border-color: #334155; }
-html.dark .cs-tpl.active { background: #2b2f6b; border-color: #818cf8; box-shadow: inset 0 0 0 1px #818cf8; }
-html.dark .cs-tpl-name { color: #f1f5f9; }
-html.dark .cs-tpl.active .cs-tpl-name { color: #c7d2fe; }
-html.dark .cs-tpl-meta { color: #94a3b8; }
 /* Clear menu */
 html.dark #clearScheduleMenu .cs-item:hover { background: #3a1a1d; border-color: #6b2a2f; }
 html.dark #clearScheduleMenu .cs-item:hover b { color: #fca5a5; }
@@ -2040,7 +2005,6 @@ html.dark .clr-parent.open { background: #3a1a1d; border-color: #6b2a2f; }
 html.dark .clr-parent.open .clr-caret { color: #fca5a5; }
 html.dark .clr-sub { border-left-color: #6b2a2f; }
 html.dark .clr-n { background: #243248; color: #e2e8f0; }
-html.dark .clr-scope { background: #162032; color: #94a3b8; }
 /* three-dot menu items */
 html.dark .action-dropdown-item { color: #e2e8f0; }
 html.dark .action-dropdown-item > svg { background: #243248; }
@@ -2381,20 +2345,22 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                         <i data-lucide="check-square" class="w-5 h-5 text-slate-400"></i> Select
                     </button>
 
-                    <!-- Clear: delete unassigned shifts by length, or clear the schedule -->
-                    <div class="relative" id="clearScheduleWrap">
-                        <button id="clearScheduleBtn" onclick="customTogglePopover('clearScheduleMenu'); renderClearMenu()" class="cs-btn clr-btn">
-                            <i data-lucide="eraser" class="w-4 h-4"></i> Clear <i data-lucide="chevron-down" class="w-3.5 h-3.5 cs-chev"></i>
-                        </button>
-                        <div id="clearScheduleMenu" class="hidden cs-menu"></div>
-                    </div>
-
-                    <!-- Create Schedule: the schedule preference options as an inline menu -->
+                    <!-- Manage Schedule (Create Schedule + Clear in one menu):
+                         auto-create preference on top, then fill this week / AI scheduling, then Clear at the bottom -->
                     <div class="relative" id="createScheduleWrap">
-                        <button id="createScheduleBtn" onclick="customTogglePopover('createScheduleMenu')" class="cs-btn">
-                            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Create Schedule <i data-lucide="chevron-down" class="w-3.5 h-3.5 cs-chev"></i>
+                        <button id="createScheduleBtn" onclick="customTogglePopover('createScheduleMenu'); renderClearMenu()" class="cs-btn">
+                            <i data-lucide="calendar-cog" class="w-4 h-4"></i> Manage Schedule <i data-lucide="chevron-down" class="w-3.5 h-3.5 cs-chev"></i>
                         </button>
                         <div id="createScheduleMenu" class="hidden cs-menu">
+                            <!-- Auto-create: read-only here — shows the option chosen in App Settings → Site Settings → Schedule Preference -->
+                            <div class="cs-info" id="csAuto">
+                                <i data-lucide="wand-2" class="w-4 h-4"></i>
+                                <div>
+                                    <div class="cs-info-t">Auto-create shifts from preferences: <b id="csAutoVal"></b></div>
+                                    <div class="cs-info-s">Change in Schedule Preference from Site Settings</div>
+                                </div>
+                            </div>
+                            <div class="cs-sep"></div>
                             <div class="cs-head">Fill this week</div>
                             <button class="cs-item" onclick="csPick('copy')">
                                 <span class="cs-ic" style="background:#eff6ff;color:#2563eb"><i data-lucide="copy" class="w-4 h-4"></i></span>
@@ -2403,10 +2369,6 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                             <button class="cs-item" onclick="csPick('template')">
                                 <span class="cs-ic" style="background:#ecfdf5;color:#059669"><i data-lucide="file-text" class="w-4 h-4"></i></span>
                                 <span class="cs-txt"><b>Load Template <em class="cs-auto-tag" data-auto="template">Auto</em></b><small>Apply a saved staffing structure</small></span>
-                            </button>
-                            <button class="cs-item" onclick="csPick('scratch')">
-                                <span class="cs-ic" style="background:#fffbeb;color:#d97706"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
-                                <span class="cs-txt"><b>Start from Scratch</b><small>Begin with a blank week roster</small></span>
                             </button>
                             <div class="cs-sep"></div>
                             <div class="cs-head">AI scheduling</div>
@@ -2419,26 +2381,9 @@ td.shift-cell-selected .shiftBox { box-shadow: 0 0 0 2px #2563eb inset; }
                                 <span class="cs-txt"><b>AI Scheduling <em class="cs-tag">Recommended</em> <em class="cs-auto-tag" data-auto="ai">Auto</em></b><small>Build shifts from the forecast and assign them</small></span>
                             </button>
                             <div class="cs-sep"></div>
-                            <!-- Auto-create: on/off + which option builds new weeks automatically -->
-                            <div class="cs-auto">
-                                <label class="cs-toggle">
-                                    <span class="cs-ic" style="background:#eef2ff;color:#4f46e5"><i data-lucide="wand-2" class="w-4 h-4"></i></span>
-                                    <span class="cs-txt"><b>Auto-create shifts from preferences</b><small id="csAutoDesc"></small></span>
-                                    <input type="checkbox" id="csAutoCreate" class="sr-only peer" onchange="setCsAuto(this.checked)">
-                                    <span class="cs-switch"></span>
-                                </label>
-                                <div id="csAutoPick" class="cs-auto-pick">
-                                    <div class="cs-auto-lbl">Auto-create using</div>
-                                    <div class="cs-auto-opts">
-                                        <button type="button" data-v="copy" onclick="setCsAutoMethod('copy')"><i data-lucide="copy" class="w-3.5 h-3.5"></i>Copy Schedule</button>
-                                        <button type="button" data-v="template" onclick="setCsAutoMethod('template')"><i data-lucide="file-text" class="w-3.5 h-3.5"></i>Load Template</button>
-                                        <button type="button" data-v="aiStd" onclick="setCsAutoMethod('aiStd')"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>AI · Standard Shift</button>
-                                        <button type="button" data-v="ai" onclick="setCsAutoMethod('ai')"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i>AI Scheduling</button>
-                                    </div>
-                                    <!-- Load Template: which template new weeks are built from -->
-                                    <div id="csTplList" class="cs-tpl-list hidden"></div>
-                                </div>
-                            </div>
+                            <!-- Clear: delete unassigned shifts by length, or clear the schedule (rendered by renderClearMenu) -->
+                            <div class="cs-head cs-head-clr">Clear</div>
+                            <div id="clearScheduleMenu"></div>
                         </div>
                     </div>
 
@@ -4079,7 +4024,7 @@ const offerEmployees = Array.from({length:15},(_,i)=>({
 function customTogglePopover(id) {
     const popover = document.getElementById(id);
     const isHidden = popover.classList.contains('hidden');
-    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup', 'createScheduleMenu', 'clearScheduleMenu'];
+    const popovers = ['filtersPopover', 'sortPopover', 'viewByPopover', 'actionDropdown', 'calendarMenu', 'moreOptionsMenu', 'unassignedDeptMenu', 'storeMenu', 'myAppsMenu', 'multishiftPopup', 'createScheduleMenu'];
     popovers.forEach(pId => {
         if(pId !== id) {
             const p = document.getElementById(pId);
@@ -4093,65 +4038,36 @@ function customTogglePopover(id) {
 function openInitiateModal() { document.getElementById("initiateModal").classList.remove("hidden"); document.getElementById("initiateModal").classList.add("flex"); lucide.createIcons(); }
 function closeInitiateModal() { document.getElementById("initiateModal").classList.add("hidden"); document.getElementById("initiateModal").classList.remove("flex"); }
 function openCopyModal() { closeInitiateModal(); document.getElementById("copyModal").classList.remove("hidden"); document.getElementById("copyModal").classList.add("flex"); lucide.createIcons(); }
-// Auto-create preference: on/off + which option builds new weeks (saved in this browser)
+// Auto-create preference: set per site in App Settings → Site Settings → Schedule Preference
+// (localStorage 'zipSchedPref' = { [site]: { on, method, tpl } }), shown here read-only —
+// "Auto-create shifts from preferences: AI Scheduling"
 const _csAutoNames = { copy: 'Copy Schedule', template: 'Load Template', aiStd: 'AI Scheduling Using Standard Shift', ai: 'AI Scheduling' };
+const _csSite = '085 - Del Mar';   // the site this Schedule Pad is showing
 let _csAuto = { on: true, method: 'copy', tpl: 0 };
-try { Object.assign(_csAuto, JSON.parse(localStorage.getItem('zipAutoCreate') || '{}')); } catch (e) {}
-function _csAutoSave() { try { localStorage.setItem('zipAutoCreate', JSON.stringify(_csAuto)); } catch (e) {} }
+function _csAutoLoad() {
+    _csAuto = { on: true, method: 'copy', tpl: 0 };
+    try { Object.assign(_csAuto, (JSON.parse(localStorage.getItem('zipSchedPref') || '{}') || {})[_csSite] || {}); } catch (e) {}
+    if (!_csAutoNames[_csAuto.method]) _csAuto.method = 'copy';
+}_csAutoLoad();
 // "Load Template (Balanced Week)": the chosen template rides along with the method name
 function _csAutoLabel(m = _csAuto.method) {
     if (m !== 'template') return _csAutoNames[m];
     const tpl = (typeof scheduleTemplates !== 'undefined' && scheduleTemplates[_csAuto.tpl]) || null;
     return tpl ? `Load Template (${tpl.name})` : 'Load Template';
 }
-function setCsAutoTemplate(i) {
-    if (_csAuto.tpl === i) return;
-    _csAuto.tpl = i;
-    _csAutoSave();
-    renderCsAuto();
-    showToast(`Auto-create will now use ${_csAutoLabel()}.`, 'info');
-}
 function renderCsAuto() {
     const { on, method } = _csAuto;
-    if (typeof scheduleTemplates !== 'undefined' && !scheduleTemplates[_csAuto.tpl]) _csAuto.tpl = 0;
-    document.getElementById('csAutoCreate').checked = on;
-    document.getElementById('csAutoDesc').innerHTML = on
-        ? `New weeks are created with <b>${_csAutoLabel()}</b>`
-        : 'Off — new weeks start empty';
-    const list = document.getElementById('csTplList');
-    list.classList.toggle('hidden', !(on && method === 'template'));
-    if (on && method === 'template' && typeof scheduleTemplates !== 'undefined') {
-        list.innerHTML = `<div class="cs-auto-lbl">Template</div>` + scheduleTemplates.map((tpl, i) => `
-            <label class="cs-tpl${i === _csAuto.tpl ? ' active' : ''}">
-                <input type="radio" name="csTpl" ${i === _csAuto.tpl ? 'checked' : ''} onchange="setCsAutoTemplate(${i})">
-                <span class="cs-tpl-name">${tpl.name}</span>
-                <span class="cs-tpl-meta">${tpl.shifts} shifts · ${tpl.hours} hrs</span>
-            </label>`).join('');
-    }
-    document.getElementById('csAutoPick').classList.toggle('off', !on);
-    document.querySelectorAll('#csAutoPick button').forEach(b => {
-        b.classList.toggle('active', b.dataset.v === method);
-        b.disabled = !on;
-    });
+    document.getElementById('csAutoVal').textContent = on ? _csAutoLabel() : 'Off';
     document.querySelectorAll('.cs-auto-tag').forEach(t => t.classList.toggle('show', on && t.dataset.auto === method));
     const btn = document.getElementById('createScheduleBtn');
     btn.classList.toggle('cs-has-auto', on);
     btn.title = on ? `Auto-create: ${_csAutoLabel()}` : 'Auto-create is off';
 }
-function setCsAuto(on) {
-    _csAuto.on = on;
-    _csAutoSave();
-    renderCsAuto();
-    showToast(on ? `Auto-create on — new weeks will use ${_csAutoLabel()}.` : 'Auto-create turned off.', 'info');
-}
-function setCsAutoMethod(m) {
-    if (!_csAuto.on || _csAuto.method === m) return;
-    _csAuto.method = m;
-    _csAutoSave();
-    renderCsAuto();
-    showToast(`Auto-create will now use ${_csAutoLabel(m)}.`, 'info');
-}
 document.addEventListener('DOMContentLoaded', renderCsAuto);
+// picked up right away when Schedule Settings is saved in another tab
+window.addEventListener('storage', e => { if (e.key === 'zipSchedPref') { _csAutoLoad(); renderCsAuto(); } });
+// ...and when coming back from the settings page with the browser's Back button
+window.addEventListener('pageshow', e => { if (e.persisted) { _csAutoLoad(); renderCsAuto(); } });
 
 // Create Schedule menu: same actions as the Schedule preference tiles
 function csPick(kind) {
@@ -4206,17 +4122,17 @@ function renderClearMenu() {
         <button class="cs-item clr-parent${_clrUaOpen ? ' open' : ''}" onclick="toggleClrUa(event)">
             <span class="cs-ic" style="background:#dc262614;color:#dc2626"><i data-lucide="user-x" class="w-4 h-4"></i></span>
             <span class="cs-txt"><b>Clear Unassigned Shifts</b><small>${uaN ? `${uaN} unassigned shift${uaN === 1 ? '' : 's'} · choose what to clear` : 'Nothing to clear'}</small></span>
+            <span class="clr-n">${uaN}</span>
             <i data-lucide="chevron-down" class="w-4 h-4 clr-caret"></i></button>
         <div class="clr-sub${_clrUaOpen ? '' : ' hidden'}">${_CLR.filter(o => o.grp === 'ua').map(row).join('')}</div>
         <div class="cs-sep"></div>
-        ${row(sched).replace('<b>Clear schedule</b>', '<b>Clear Schedule</b>')}
-        <div class="clr-scope"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>Applies to ${_clrScope()}</div>`;
+        ${row(sched).replace('<b>Clear schedule</b>', '<b>Clear Schedule</b>')}`;
     lucide.createIcons();
 }
 let _clrPending = null;
 function askClear(k) {
     const o = _CLR.find(x => x.k === k), n = o.n();
-    document.getElementById('clearScheduleMenu').classList.add('hidden');
+    document.getElementById('createScheduleMenu').classList.add('hidden');   // Clear lives in the Manage Schedule menu
     _clrPending = k;
     document.getElementById('clrTitle').innerText = o.t + '?';
     document.getElementById('clrText').innerHTML = `This removes <b>${n} shift${n === 1 ? '' : 's'}</b> from the ${_clrScope()}. This can't be undone.`;
@@ -4243,10 +4159,6 @@ function doClear() {
     renderScheduleTable();
     showToast(`${o.t.replace(/^Delete /, 'Deleted ').replace(/^Clear /, 'Cleared ')} · ${n} shift${n === 1 ? '' : 's'} removed (${_clrScope()}).`, 'info');
 }
-document.addEventListener('click', function (e) {
-    const m = document.getElementById('clearScheduleMenu');
-    if (m && !m.classList.contains('hidden') && !e.target.closest('#clearScheduleWrap')) m.classList.add('hidden');
-});
 function closeCopyModal() { document.getElementById("copyModal").classList.add("hidden"); document.getElementById("copyModal").classList.remove("flex"); }
 
 /* NOTES FUNCTIONS */
