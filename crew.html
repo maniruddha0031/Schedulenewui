@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="design-system/colors_and_type.css">
 <link rel="stylesheet" href="crew.css">
 <link rel="stylesheet" href="employee-availability.css">
+<link rel="stylesheet" href="temp-availability.css">
+<link rel="stylesheet" href="availability-v2.css">
 <script>
   /* theme (shared with the manager pages) */
   try { if (localStorage.getItem('zipDarkMode') === '1') { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', 'dark'); } else document.documentElement.setAttribute('data-theme', 'light'); } catch (e) {}
@@ -75,6 +77,8 @@ window.showToast = function (msg) {
   t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
 };
 </script>
+<script src="temp-availability.js"></script>
+<script src="avail-editor.js"></script>
 <script src="employee-availability.js"></script>
 <script>
 (function () {
@@ -183,13 +187,13 @@ window.showToast = function (msg) {
 
   /* ---------- views ---------- */
   let VIEW = 'dashboard', dashNeed = 'offer', dashWait = 'timeoff', schedFrom = monday(TODAY()), siteFrom = monday(TODAY()), toFilter = 'all', siteQ = '';
-  function go(v) {
+  function go(v, opts) {
     VIEW = v;
     refreshSch();
     if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
     document.querySelectorAll('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === v));
     document.querySelectorAll('.cw-view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
-    if (v === 'availability') { window.openMyAvailability(); return; }
+    if (v === 'availability') { window.openMyAvailability(opts); return; }
     window.closeMyAvailability && window.closeMyAvailability(true);
     ({ dashboard: rDash, schedule: rSched, timeoff: rTimeOff, site: rSite })[v]();
     icons();
@@ -216,9 +220,10 @@ window.showToast = function (msg) {
     // awaiting: my requests
     const tos = myTimeOff().filter(t => t.status === 'Pending');
     const ar = myAvailReq().req, arOpen = ar && ar.status === 'pending' ? [ar] : [];
+    const taOpen = window.TA ? window.TA.forEmp(ME.id).filter(window.TA.isPending) : [];   // temporary availability requests
     const myPickups = SW.filter(s => s.status === 'Requested' && s.requestedBy === ME.id);          // I asked for a co-worker's shift
     const myOffered = SW.filter(s => s.from === ME.id && (s.status === 'Offered' || s.status === 'Requested'));   // I offered my shift
-    const waitN = { timeoff: tos.length, avail: arOpen.length, swap: myPickups.length, offer: myOffered.length };
+    const waitN = { timeoff: tos.length, avail: arOpen.length + taOpen.length, swap: myPickups.length, offer: myOffered.length };
 
     const needRows = needN ? mgrOffers.map(o => { const iso = nextDateFor(o.day); return `
       <div class="cw-row" style="--pc:${pc(o.position)}"><span class="ic"><i data-lucide="send"></i></span>
@@ -238,10 +243,13 @@ window.showToast = function (msg) {
         <div class="tx"><b>Time Off ${pill('Pending')}</b><span>${toDuration(t)}${t.reason ? ' &bull; ' + esc(t.reason) : ''} &bull; waiting for your manager</span></div>
         <div class="act"><button type="button" class="cw-x" data-cancel-to="${t.id}" title="Cancel request" aria-label="Cancel request"><i data-lucide="x"></i></button></div></div>`).join('')
       : empty('umbrella', 'No pending time off requests.');
-    else if (dashWait === 'avail') waitRows = arOpen.length ? arOpen.map(r => `
+    else if (dashWait === 'avail') waitRows = (arOpen.length || taOpen.length) ? taOpen.map(r => `
+      <div class="cw-row" style="--pc:#0891b2"><span class="ic"><i data-lucide="calendar-range"></i></span>
+        <div class="tx"><b>Temporary Availability ${pill('Pending')}</b><span>${window.TA.fmtRange(r.start, r.end)} &bull; ${window.TA.recDates(r).length} day${window.TA.recDates(r).length === 1 ? '' : 's'} &bull; ${window.TA.recHrs(r)} hrs &bull; waiting for your manager</span></div>
+        <div class="act"><button type="button" class="cw-btn sm" data-go="availability" data-tab="temp">View</button></div></div>`).join('') + arOpen.map(r => `
       <div class="cw-row" style="--pc:#16a34a"><span class="ic"><i data-lucide="user-check"></i></span>
-        <div class="tx"><b>Availability Request ${pill('Pending')}</b><span>From ${dLong(r.eff)} &bull; ${r.grid.reduce((a, row) => a + row.filter(Boolean).length, 0)} hrs / week &bull; waiting for your manager</span></div>
-        <div class="act"><button type="button" class="cw-btn sm" data-go="availability">View</button><button type="button" class="cw-x" data-cancel-ar="1" title="Cancel request" aria-label="Cancel request"><i data-lucide="x"></i></button></div></div>`).join('')
+        <div class="tx"><b>Regular Availability Request ${pill('Pending')}</b><span>From ${dLong(r.eff)} &bull; ${r.grid.reduce((a, row) => a + row.filter(Boolean).length, 0)} hrs / week &bull; waiting for your manager</span></div>
+        <div class="act"><button type="button" class="cw-btn sm" data-go="availability" data-tab="regular">View</button><button type="button" class="cw-x" data-cancel-ar="1" title="Cancel request" aria-label="Cancel request"><i data-lucide="x"></i></button></div></div>`).join('')
       : empty('user-check', 'No availability request waiting.');
     else if (dashWait === 'swap') waitRows = myPickups.length ? myPickups.map(s => `
       <div class="cw-row" style="--pc:${pc(s.position)}"><span class="ic"><i data-lucide="repeat"></i></span>
@@ -420,7 +428,7 @@ window.showToast = function (msg) {
   document.addEventListener('click', e => {
     const t = e.target;
     if (!t.closest('#cwProf') && !t.closest('#cwAvatarBtn')) $('cwProf').classList.remove('open');
-    const g = t.closest('[data-go]'); if (g) return go(g.dataset.go);
+    const g = t.closest('[data-go]'); if (g) return go(g.dataset.go, g.dataset.tab ? { tab: g.dataset.tab } : undefined);
     const w = t.closest('[data-wait]'); if (w) { dashWait = w.dataset.wait; return go('dashboard'); }
     /* manager's open-shift offer: Accept = assigned straight away */
     const of = t.closest('[data-offer]');
@@ -472,7 +480,7 @@ window.showToast = function (msg) {
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDlg(); $('cwProf').classList.remove('open'); } });
   // manager changes in another tab (offers, schedule)
-  window.addEventListener('storage', e => { if (['zipSchedStore', 'zipCrewData', TO_KEY, AR_KEY, 'zipCrewSwaps'].includes(e.key) && VIEW !== 'availability') go(VIEW); });
+  window.addEventListener('storage', e => { if (['zipSchedStore', 'zipCrewData', TO_KEY, AR_KEY, 'zipCrewSwaps', 'zipTempAvail'].includes(e.key) && VIEW !== 'availability') go(VIEW); });
 
   /* ---------- profile ---------- */
   $('cwAvatar').src = $('cwProfImg').src = ME.avatar || '';

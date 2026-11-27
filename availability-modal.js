@@ -19,6 +19,7 @@
   const STORE_TZ_LABEL = 'America/Chicago (CT)';
   const MANAGER = 'Store Manager';
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PUBLISHED_WEEKS = 2;            // published schedule horizon used for the shift-conflict check
   const NO_AVAIL_IDS = [7];             // demo: employee with no availability saved yet (C19)
@@ -121,18 +122,44 @@
     };
   }
 
-  /* ---------------- Modal state ---------------- */
-  let S = null;   // { empId, view, mode, baseId, draft, eff, triedSave }
+  /* =====================================================================
+     Modal (v2 layout, same theme as Team Center › My availability)
+       Top row:  Regular | Temporary tabs  ·  version tiles + Update button
+       Regular:  bar (title / actions / weekly hours) · note · tools · week grid · legend
+       Temporary: temp-availability.js renders the manager view into #avmTemp
+     Only two versions show at once: Current + Requested (employee's pending
+     request) or Current + Upcoming.
+     ===================================================================== */
+  let S = null;   // { empId, tab, sel: current|up|req, mode, baseKey, draft, eff, triedSave, selRow }
   const $ = id => document.getElementById(id);
   const emp = () => employeeData.find(e => e.id == S.empId) || { name: 'Employee', position: '' };
+  const first = n => String(n || '').split(' ')[0];
   const cur = () => currentV(S.empId);
   const upc = () => upcomingV(S.empId);
-  const byId = id => versionsOf(S.empId).find(v => v.id === id);
-  const baseGrid = () => (S.baseId && S.baseId !== '__blank' && byId(S.baseId)) ? byId(S.baseId).grid : emptyGrid();
-  const editingUpcoming = () => { const u = upc(); return !!(u && S.baseId === u.id); };
+  const TA = () => window.TA || null;
+  const icons = () => { try { window.lucide && lucide.createIcons(); } catch (e) {} };
+  const KIND = { current: '#16a34a', up: '#7c3aed', req: '#f59e0b' };
+  const ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+  /* ---------- the employee's pending regular-availability request (sent from the crew app) ---------- */
+  const REQ_KEY = 'zipCrewAvailReq';
+  const readReqs = () => { try { return JSON.parse(localStorage.getItem(REQ_KEY) || '{}') || {}; } catch (e) { return {}; } };
+  const writeReqs = all => { try { localStorage.setItem(REQ_KEY, JSON.stringify(all)); } catch (e) {} };
+  const pendReq = () => { const m = readReqs()[S.empId]; return m && m.req && m.req.status === 'pending' ? m.req : null; };
+  function setReq(fn) { const all = readReqs(), m = all[S.empId]; if (!m || !m.req) return; fn(m.req); writeReqs(all); }
+  const secondKey = () => pendReq() ? 'req' : upc() ? 'up' : null;
+
+  const gridFor = k => k === 'req' ? (pendReq() || {}).grid : k === 'up' ? (upc() || {}).grid : (cur() || {}).grid;
+  const baseGrid = () => S.baseKey === '__blank' ? emptyGrid() : (gridFor(S.baseKey) || emptyGrid());
+  const editingUpcoming = () => S.baseKey === 'up' && !!upc();
   const hoursChanged = () => S.mode === 'edit' && !sameGrid(S.draft, baseGrid());
-  const hasChanges = () => hoursChanged() || (editingUpcoming() && !!S.eff && S.eff !== upc().eff);   // C5
+  const hasChanges = () => hoursChanged() || ((S.baseKey === 'up' || S.baseKey === 'req') && !!S.eff && S.eff !== (S.baseKey === 'up' ? upc().eff : pendReq().eff));   // C5
   function analyse(E) { if (!E) return 'empty'; const T = today(); if (E < T) return 'past'; return E === T ? 'today' : 'future'; }
+
+  /* re-read the shared store: the crew app may have changed it (e.g. a request replaced the upcoming version) */
+  function reloadStore() {
+    try { const raw = JSON.parse(localStorage.getItem(AV_KEY) || 'null'); if (raw && raw.v === 1 && raw.store) { Object.keys(raw.store).forEach(k => { STORE[k] = raw.store[k]; }); _vid = Math.max(_vid, raw.vid || 1); } } catch (e) {}
+  }
 
   /* ---------------- DOM shell ---------------- */
   function ensureDom() {
@@ -141,7 +168,7 @@
     wrap.className = 'avm-root';
     wrap.innerHTML = `
       <div class="avm-overlay" id="avmOverlay" role="dialog" aria-modal="true" aria-labelledby="avmTitle">
-        <div class="avm-modal">
+        <div class="avm-modal av2-modal v2">
           <div class="avm-head">
             <img id="avmAvatar" alt="">
             <div class="min-w-0">
@@ -151,12 +178,23 @@
             <div class="spacer"></div>
             <button type="button" class="avm-x" id="avmClose" aria-label="Close" title="Close"><i data-lucide="x" style="width:20px;height:20px"></i></button>
           </div>
-          <div class="avm-status" id="avmStatus"></div>
-          <div class="avm-bar" id="avmBar"></div>
-          <div id="avmTools"></div>
-          <div id="avmNote"></div>
-          <div class="avm-scroll"><div id="avmBody"></div></div>
-          <div class="avm-legend" id="avmLegend"></div>
+          <div class="av2-body">
+            <div class="v2-top">
+              <div class="v2-tabs" id="avmModes" role="tablist" aria-label="Availability type"></div>
+              <span class="grow"></span>
+              <div class="v2-topr" id="avmTopR"></div>
+            </div>
+            <div id="avmRegMain">
+              <section class="v2-card v2-reg">
+                <div class="ea-bar" id="avmBar"></div>
+                <div id="avmNote"></div>
+                <div id="avmTools"></div>
+                <div class="v2-gridbox" id="avmGrid"></div>
+                <div class="v2-foot" id="avmFoot"></div>
+              </section>
+            </div>
+            <div id="avmTemp" hidden></div>
+          </div>
         </div>
       </div>
       <div class="avm-dlg-wrap" id="avmDlgWrap">
@@ -169,13 +207,16 @@
     document.body.appendChild(wrap);
     bindEvents();
   }
-  const icons = () => { try { window.lucide && lucide.createIcons(); } catch (e) {} };
 
   /* ---------------- Render ---------------- */
   function render() {
-    renderHead(); renderStatus(); renderBar(); renderTools(); renderNote(); renderBody(); renderLegend(); icons();
+    renderHead(); renderModes();
+    const temp = S.tab === 'temp' && TA();
+    $('avmRegMain').hidden = !!temp; $('avmTemp').hidden = !temp;
+    if (temp) { TA().renderCrew($('avmTemp'), { role: 'manager', empId: S.empId, me: { name: MANAGER }, top: $('avmTopR'), onChange: () => { renderModes(); icons(); } }); icons(); return; }
+    const k2 = secondKey(); if (S.sel !== 'current' && S.sel !== k2) S.sel = 'current';
+    renderTopR(); renderBar(); renderNote(); renderGrid(); renderTools(); renderFoot(); icons();
   }
-
   function renderHead() {
     const e = emp();
     const roles = [e.position, ...((window._skillsByPosition || (typeof _skillsByPosition !== 'undefined' ? _skillsByPosition : {}))[e.position] || [])]
@@ -184,195 +225,166 @@
     $('avmTitle').textContent = `Availability of ${e.name}`;
     $('avmSub').innerHTML = `<span>${esc(roles.join(', ') || 'Employee')}</span><span class="sep"></span><span>Store timezone: ${STORE_TZ_LABEL}</span>`;
   }
+  function renderModes() {
+    const n = TA() ? TA().mgrPending(S.empId) : 0, rq = pendReq() ? 1 : 0;
+    $('avmModes').innerHTML = `<button type="button" role="tab" data-mtab="regular" aria-selected="${S.tab !== 'temp'}"><i data-lucide="calendar-check"></i>Regular Availability${rq ? '<span class="n" title="1 pending request">1</span>' : ''}</button>
+      ${TA() ? `<button type="button" role="tab" data-mtab="temp" class="temp" aria-selected="${S.tab === 'temp'}"><i data-lucide="calendar-clock"></i>Temporary Availability${n ? `<span class="n" title="${n} pending request${n > 1 ? 's' : ''}">${n}</span>` : ''}</button>` : ''}`;
+  }
+  function switchTab(tab) {
+    if (tab === S.tab) return;
+    const go = () => { S.tab = tab; render(); };
+    if (S.tab === 'temp' && TA()) return TA().crewGuard(go);
+    guardDiscard(() => { if (S.mode === 'edit') exitEdit(); go(); });
+  }
 
-  function renderStatus() {
-    const c = cur(), u = upc(), lu = lastUpdatedV(S.empId), T = today();
-    const n = u ? daysBetween(T, u.eff) : 0;
-    $('avmStatus').innerHTML = `
-      <div class="avm-stat">
-        <div class="k"><i style="background:var(--avm-avail)"></i>Current availability effective</div>
-        <div class="v">${c ? 'Since ' + fmt(c.eff) : 'Not set'}</div>
-        <div class="m">${c ? gridHrs(c.grid) + ' available hrs / week' : 'No availability saved yet'}</div>
-      </div>
-      <div class="avm-stat">
-        <div class="k"><i style="background:var(--avm-info)"></i>Upcoming availability</div>
-        <div class="v">${u ? 'Effective ' + fmt(u.eff) : 'None scheduled'}</div>
-        <div class="m">${u ? `Starts in ${n} day${n === 1 ? '' : 's'}${S.mode === 'view' && S.view !== u.id ? ` · <button type="button" class="avm-link" data-view="${u.id}">View</button>` : ''}` : 'A change saved with a future date shows here'}</div>
-      </div>
-      <div class="avm-stat">
-        <div class="k"><i style="background:var(--avm-ink-3)"></i>Last updated</div>
-        <div class="v">${lu ? fmtDT(lu.updatedAt) : '—'}</div>
-        <div class="m">${lu ? 'by ' + esc(lu.updatedBy) : ''}</div>
-      </div>`;
+  /* version tiles (top right) + Update */
+  function renderTopR() {
+    const c = cur(), u = upc(), r = pendReq(), k2 = secondKey();
+    const vp = (key, k, v) => { const on = S.sel === key && S.mode === 'view';
+      return `<button type="button" class="vp ${on ? 'on' : ''}" data-sel="${key}" style="--c:${KIND[key]}" aria-pressed="${on}" title="Show in the grid below"><span class="dot"></span><span class="tx"><span class="k">${k}</span><span class="v">${v}</span></span>${on ? '<i data-lucide="check" class="ck"></i>' : ''}</button>`; };
+    let h = vp('current', 'Current', c ? `Since ${fmtShort(c.eff)} · ${gridHrs(c.grid)} hrs` : 'Not set');
+    if (k2 === 'req') h += vp('req', `Requested <span class="ea-chip st-pending">Pending approval</span>`, `From ${fmtShort(r.eff)} · ${gridHrs(r.grid)} hrs`);
+    else if (k2 === 'up') h += vp('up', `Upcoming · ${esc(u.updatedBy)}`, `From ${fmtShort(u.eff)} · ${gridHrs(u.grid)} hrs`);
+    $('avmTopR').innerHTML = `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>
+      ${S.mode === 'view' ? '<button type="button" class="vbtn primary" id="avmStartEdit"><i data-lucide="pencil"></i>Update Regular Availability</button>' : ''}`;
   }
 
   function renderBar() {
-    const c = cur(), u = upc(), T = today();
+    const c = cur(), u = upc(), r = pendReq(), T = today(), e = emp();
     if (S.mode === 'edit') {
-      const nextMon = addDays(T, ((8 - weekday(T)) % 7) || 7);
-      const k = analyse(S.eff);
-      const can = hasChanges() && k !== 'past';
-      const chip = (iso, lbl) => `<button type="button" data-q="${iso}" class="${S.eff === iso ? 'on' : ''}">${lbl}</button>`;
+      const nextMon = addDays(T, ((8 - weekday(T)) % 7) || 7), k = analyse(S.eff), can = hasChanges() && k !== 'past';
+      const q = (iso, lbl) => `<button type="button" data-q="${iso}" class="${S.eff === iso ? 'on' : ''}">${lbl}</button>`;
+      const title = S.baseKey === 'up' ? 'Edit upcoming availability' : S.baseKey === 'req' ? `Edit ${esc(first(e.name))}’s request` : 'Update availability';
+      const from = S.baseKey === 'up' ? `the upcoming availability from ${fmt(u.eff)}` : S.baseKey === 'req' ? `${esc(first(e.name))}’s pending request` : S.baseKey === '__blank' ? 'a blank week' : 'the current availability';
       $('avmBar').innerHTML = `
-        <div class="left">
-          <div class="avm-eff">
-            <label for="avmEff">Effective from <em>*</em></label>
+        <div class="ti"><span class="ic" style="--c:var(--a-primary)"><i data-lucide="pencil"></i></span><div><b>${title}</b><small>Starting from ${from}</small></div></div>
+        <div class="r">
+          <div class="ea-eff"><label for="avmEff">Effective from <em>*</em></label>
             <input type="date" id="avmEff" min="${T}" value="${S.eff}" aria-required="true" class="${(S.triedSave && !S.eff) || k === 'past' ? 'err' : ''}">
-            <div class="avm-quick">${chip(T, 'Today')}${chip(addDays(T, 1), 'Tomorrow')}${chip(nextMon, 'Next Mon')}</div>
-          </div>
-        </div>
-        <div class="right">
-          <button type="button" class="avm-btn" id="avmCancel">Cancel</button>
-          <button type="button" class="avm-btn primary" id="avmSave" ${can ? '' : 'disabled'} title="${hasChanges() ? '' : 'Change hours or the effective date to save'}"><i data-lucide="check"></i>Save availability</button>
+            <div class="ea-quick">${q(T, 'Today')}${q(addDays(T, 1), 'Tomorrow')}${q(nextMon, 'Next Mon')}</div></div>
+          <button type="button" class="ea-btn" id="avmCancel">Cancel</button>
+          <button type="button" class="ea-btn primary" id="avmSave" ${can ? '' : 'disabled'} title="${hasChanges() ? '' : 'Change hours or the effective date to save'}"><i data-lucide="check"></i>${S.baseKey === 'req' ? 'Save &amp; approve' : 'Save availability'}</button>
         </div>`;
       return;
     }
-    const tabs = [];
-    if (c) tabs.push(`<button type="button" role="tab" class="avm-tab ${S.view === c.id ? 'on' : ''}" data-view="${c.id}">Current<span class="avm-pill cur">Since ${fmtShort(c.eff)}</span></button>`);
-    if (u) tabs.push(`<button type="button" role="tab" class="avm-tab ${S.view === u.id ? 'on' : ''}" data-view="${u.id}">Upcoming<span class="avm-pill up">From ${fmtShort(u.eff)}</span></button>`);
-    if (c && u) tabs.push(`<button type="button" role="tab" class="avm-tab ${S.view === 'compare' ? 'on' : ''}" data-view="compare"><i data-lucide="git-compare" style="width:14px;height:14px"></i>Compare</button>`);
-    const onUp = u && S.view === u.id;
-    $('avmBar').innerHTML = `
-      <div class="left">${tabs.length ? `<div class="avm-tabs" role="tablist">${tabs.join('')}</div>` : '<span class="muted">No availability set</span>'}</div>
-      <div class="right">
-        ${onUp ? `<button type="button" class="avm-btn ghost-danger" id="avmDelUp"><i data-lucide="trash-2"></i>Delete upcoming</button>
-                  <button type="button" class="avm-btn" id="avmChgDate"><i data-lucide="calendar"></i>Change effective date</button>` : ''}
-        <button type="button" class="avm-btn primary" id="avmStartEdit"><i data-lucide="pencil"></i>${onUp ? 'Edit upcoming' : 'Update availability'}</button>
-      </div>`;
+    const tot = (g, ref) => { const d = ref ? gridHrs(g) - gridHrs(ref) : 0;
+      return `<div class="v2-htot"><small>Weekly available hours</small><b>${gridHrs(g)} hrs${d ? ` <span class="delta ${d > 0 ? 'up' : 'dn'}">${d > 0 ? '+' : ''}${d} vs current</span>` : ''}</b></div>`; };
+    const back = '<button type="button" class="ea-btn" data-sel="current"><i data-lucide="arrow-left"></i>Back to current</button>';
+    let h;
+    if (S.sel === 'up' && u) {
+      const n = daysBetween(T, u.eff);
+      h = `<div class="ti"><span class="ic" style="--c:${KIND.up}"><i data-lucide="calendar-clock"></i></span><div><b>Upcoming availability</b><small>Effective ${fmt(u.eff)} · starts in ${n} day${n === 1 ? '' : 's'} · saved by ${esc(u.updatedBy)}</small></div></div>
+        <div class="r"><button type="button" class="ea-btn gd" id="avmDelUp"><i data-lucide="trash-2"></i>Delete upcoming</button>
+          <button type="button" class="ea-btn" id="avmChgDate"><i data-lucide="calendar"></i>Change effective date</button>${back}${tot(u.grid, c && c.grid)}</div>`;
+    } else if (S.sel === 'req' && r) {
+      const sub = (r.submittedAt || '').split('T')[0];
+      h = `<div class="ti"><span class="ic" style="--c:${KIND.req}"><i data-lucide="send"></i></span><div><b>Requested by ${esc(first(e.name))}</b><small>Pending approval · from ${fmt(r.eff)}${sub ? ` · submitted ${fmt(sub)}` : ''}</small></div></div>
+        <div class="r"><button type="button" class="ea-btn gd" id="avmDecline"><i data-lucide="x"></i>Decline</button>
+          <button type="button" class="ea-btn ok" id="avmApprove"><i data-lucide="check"></i>Approve</button>${back}${tot(r.grid, c && c.grid)}</div>`;
+    } else if (c) {
+      h = `<div class="ti"><span class="ic" style="--c:${KIND.current}"><i data-lucide="calendar-check"></i></span><div><b>Current availability</b><small>In effect since ${fmt(c.eff)} · set by ${esc(c.updatedBy)}</small></div></div>
+        <div class="r">${tot(c.grid)}</div>`;
+    } else {
+      h = `<div class="ti"><span class="ic" style="--c:var(--a-faint)"><i data-lucide="calendar-x"></i></span><div><b>No availability set</b><small>${esc(e.name)} doesn’t have any availability saved yet</small></div></div><div class="r"></div>`;
+    }
+    $('avmBar').innerHTML = h;
+  }
+
+  const NOTE_IC = { 'n-muted': 'info', 'n-info': 'info', 'n-warn': 'alert-triangle', 'n-err': 'alert-circle' };
+  function renderNote() {
+    const c = cur(), u = upc(), r = pendReq(), e = emp(), T = today();
+    let t = '', cls = '', act = '';
+    if (S.mode === 'edit') {
+      const k = analyse(S.eff), overridesUp = u && !editingUpcoming();
+      if (k === 'empty') { t = S.triedSave ? 'Select an effective date before saving.' : 'Choose the effective date above. It can be today or any later date.'; cls = S.triedSave ? 'n-err' : 'n-muted'; }
+      else if (k === 'past') { t = 'The effective date can’t be in the past. Pick today or a later date.'; cls = 'n-err'; }
+      else if (k === 'today') {
+        t = 'Applies from <b>today</b> and replaces the current availability immediately.';
+        if (u) t += editingUpcoming() ? ` The upcoming availability from ${fmt(u.eff)} will apply from today instead.` : ` The upcoming availability from <b>${fmt(u.eff)}</b> will be removed.`;
+        cls = overridesUp ? 'n-warn' : 'n-info';
+      } else if (overridesUp) { t = `Becomes the upcoming availability from <b>${fmt(S.eff)}</b> and <b>replaces</b> the existing upcoming one from ${fmt(u.eff)}. You’ll be asked to confirm.`; cls = 'n-warn'; }
+      else if (editingUpcoming()) { t = S.eff !== u.eff ? `Upcoming availability moves from ${fmt(u.eff)} to <b>${fmt(S.eff)}</b>.` : `Updates the upcoming availability from <b>${fmt(S.eff)}</b>.`; cls = 'n-info'; }
+      else { t = `Becomes the upcoming availability from <b>${fmt(S.eff)}</b>. Current availability applies until ${fmt(addDays(S.eff, -1))}.`; cls = 'n-info'; }
+      if (r && k !== 'empty' && k !== 'past') {
+        t += S.baseKey === 'req' ? ` Saving <b>approves ${esc(first(e.name))}’s request</b> with your changes.` : ` ${esc(first(e.name))}’s <b>pending request</b> from ${fmt(r.eff)} will be closed — your update replaces it.`;
+        if (S.baseKey !== 'req') cls = 'n-warn';
+      }
+      if (k !== 'empty' && k !== 'past' && gridHrs(S.draft) === 0) t += ` <b>${esc(e.name)} will show as unavailable all week</b> from ${k === 'today' ? 'today' : fmt(S.eff)}.`;   // C11
+    } else if (S.sel === 'up' && u) {
+      t = `Takes effect on <b>${fmt(u.eff)}</b>. Until ${fmt(addDays(u.eff, -1))}, the current availability applies. Grey bars show the current hours.`; cls = 'n-info';
+    } else if (S.sel === 'req' && r) {
+      t = `${esc(first(e.name))} asked for these hours from <b>${fmt(r.eff)}</b>. Approving makes it the upcoming availability${u ? ` and replaces the one from ${fmt(u.eff)}` : ''}. Grey bars show the current hours.`; cls = u ? 'n-warn' : 'n-info';
+    } else if (!c) {
+      t = `${esc(e.name)} doesn’t have any availability saved yet. Use <b>Update Regular Availability</b> to add it — you’ll start from a blank week.`; cls = 'n-muted';   // C19
+    } else {
+      const tn = TA() && TA().activeNotice(S.empId);
+      if (tn) { t = `<b>Temporary availability ${tn.start <= T ? 'is in effect' : 'is scheduled'}</b> for ${TA().fmtRange(tn.start, tn.end)} and takes priority over these regular hours on those dates.`; cls = 'n-info'; act = '<button type="button" class="ta-link" data-mtab="temp">View</button>'; }
+    }
+    $('avmNote').innerHTML = t ? `<div class="ea-note ${cls}"><i data-lucide="${NOTE_IC[cls]}"></i><div class="tx">${t}</div>${act}</div>` : '';
   }
 
   function renderTools() {
     if (S.mode !== 'edit') { $('avmTools').innerHTML = ''; return; }
-    $('avmTools').innerHTML = `<div class="avm-tools">
-      <span class="hint"><i data-lucide="mouse-pointer-click"></i>Click or drag across hours to mark them available. Click a green hour to remove it. Changed hours show a dot.</span>
-      <button type="button" class="avm-btn sm tint-green" id="avmAllWeek"><i data-lucide="calendar-check"></i>Mark whole week available</button>
-      <button type="button" class="avm-btn sm tint-red" id="avmClearWeek"><i data-lucide="eraser"></i>Clear week</button>
-      <button type="button" class="avm-btn sm" id="avmUndoAll" ${hoursChanged() ? '' : 'disabled'}><i data-lucide="undo-2"></i>Undo changes</button>
-    </div>`;
+    if (!window.AVED) { $('avmTools').innerHTML = ''; return; }
+    const time = S.imode === 'time';
+    $('avmTools').innerHTML = `<div class="v2-tools">
+      <div class="v2-imode" role="tablist" aria-label="How to set hours">
+        <button type="button" role="tab" data-imode="drag" aria-selected="${!time}"><i data-lucide="mouse-pointer-2"></i>Drag on grid</button>
+        <button type="button" role="tab" data-imode="time" aria-selected="${time}"><i data-lucide="clock-3"></i>Enter times</button></div>
+      ${AVED.toolsHTML('avm', edCfg())}</div>`;
+  }
+  /* the hours editor (avail-editor.js) — same as Team Center: Drag on grid | Enter times */
+  function edCfg() {
+    const ref = refInfo(), td = weekday(today()), fn = first(emp().name);
+    return { keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td })),
+      get: k => S.draft[+k.slice(1)], set: (k, r) => { S.draft[+k.slice(1)] = r; }, ref: k => ref ? ref.g[+k.slice(1)] : null,
+      mode: S.imode === 'time' ? 'time' : 'drag', refShort: ref ? ref.short : '',
+      refLegend: S.baseKey === 'req' ? `${fn}’s request` : S.baseKey === 'up' ? 'Upcoming hours' : 'Current hours', own: false,
+      onChange: render };
   }
 
-  const NOTE_IC = { 'n-muted': 'info', 'n-info': 'info', 'n-warn': 'alert-triangle', 'n-err': 'alert-circle' };
-  const note = (cls, html) => `<div class="avm-note ${cls}"><i data-lucide="${NOTE_IC[cls]}"></i><div>${html}</div></div>`;
-
-  function renderNote() {
-    const c = cur(), u = upc();
-    if (S.mode === 'edit') {
-      const k = analyse(S.eff); let t, cls;
-      const overridesOther = u && !editingUpcoming();
-      if (k === 'empty') {
-        t = S.triedSave ? 'Select an effective date before saving.' : 'Choose the effective date above. It can be today or any later date.';
-        cls = S.triedSave ? 'n-err' : 'n-muted';
-      } else if (k === 'past') {
-        t = 'The effective date can’t be in the past. Pick today or a later date.'; cls = 'n-err';
-      } else if (k === 'today') {
-        t = 'Applies from <b>today</b> and replaces the current availability immediately.';
-        if (u) t += editingUpcoming() ? ` The upcoming availability from ${fmt(u.eff)} will apply from today instead.` : ` The upcoming availability from <b>${fmt(u.eff)}</b> will be removed.`;
-        cls = overridesOther ? 'n-warn' : 'n-info';
-      } else if (overridesOther) {
-        t = `This becomes the upcoming availability from <b>${fmt(S.eff)}</b> and <b>overrides</b> the existing upcoming one from ${fmt(u.eff)}. You’ll be asked to confirm.`; cls = 'n-warn';
-      } else if (editingUpcoming()) {
-        t = S.eff !== u.eff ? `Upcoming availability moves from ${fmt(u.eff)} to <b>${fmt(S.eff)}</b>.` : `Updates the upcoming availability from <b>${fmt(S.eff)}</b>.`; cls = 'n-info';
-      } else {
-        t = `Becomes the upcoming availability from <b>${fmt(S.eff)}</b>. Current availability applies until ${fmt(addDays(S.eff, -1))}.`; cls = 'n-info';
-      }
-      if (k !== 'empty' && k !== 'past' && gridHrs(S.draft) === 0) t += ` <b>${esc(emp().name)} will show as unavailable all week</b> from ${k === 'today' ? 'today' : fmt(S.eff)}.`;   // C11
-      $('avmNote').innerHTML = note(cls, t);
+  function refInfo() {
+    if (S.mode === 'edit') return S.baseKey === '__blank' ? null : { g: baseGrid(), name: S.baseKey === 'up' ? 'Upcoming' : S.baseKey === 'req' ? 'Request' : 'Current', short: S.baseKey === 'up' ? 'upcoming' : S.baseKey === 'req' ? 'request' : 'current', legend: 'Hours you started from' };
+    if (S.sel !== 'current' && cur()) return { g: cur().grid, name: 'Current', short: 'current', legend: 'Current hours' };
+    return null;
+  }
+  function renderGrid() {
+    if (!TA()) { $('avmGrid').innerHTML = ''; return; }
+    const edit = S.mode === 'edit', g = edit ? S.draft : (gridFor(S.sel) || emptyGrid()), ref = refInfo(), td = weekday(today());
+    const rows = ORDER.map(d => ({ k: 'd' + d, w: d, label: DAYS_FULL[d] + 's', title: 'Every ' + DAYS_FULL[d], sub: 'Every ' + DAYS_FULL[d], row: g[d], ref: ref ? ref.g[d] : null,
+      today: d === td, badge: d === td ? ' <span class="wg-today">Today</span>' : '' }));
+    if (window.AVED) {
+      if (edit) return AVED.mount($('avmGrid'), 'avm', edCfg());
+      $('avmGrid').innerHTML = AVED.viewHTML({ keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td })), get: k => g[+k.slice(1)], ref: k => ref ? ref.g[+k.slice(1)] : null, refShort: ref ? ref.short : '', sumHead: 'Hours' });
       return;
     }
-    if (S.view === 'compare' && c && u) { $('avmNote').innerHTML = note('n-info', `Comparing <b>Current</b> (since ${fmt(c.eff)}) with <b>Upcoming</b> (from ${fmt(u.eff)}). Underlined hours change.`); return; }
-    if (u && S.view === u.id) { $('avmNote').innerHTML = note('n-info', `Takes effect on <b>${fmt(u.eff)}</b>. Until ${fmt(addDays(u.eff, -1))}, the current availability applies. Saved ${fmtDT(u.updatedAt)} by ${esc(u.updatedBy)}.`); return; }   // C15
-    $('avmNote').innerHTML = '';
+    TA().wgBind('avm', { get: k => S.draft[+k.slice(1)], set: (k, r) => { S.draft[+k.slice(1)] = r; }, setSel: k => { S.selRow = k; }, rerender: render,
+      keys: () => ORDER.map(d => 'd' + d), weekday: k => +k.slice(1) });
+    $('avmGrid').innerHTML = TA().wgHTML('avm', { rows, sel: S.selRow, edit, colHead: 'Weekday', sumHead: 'Hours', refName: ref ? ref.name : '', refShort: ref ? ref.short : '', copyAllLabel: 'Copy to every day', bars: !edit });
   }
-
-  function gridHTML(grid, editable, base) {
-    const td = weekday(today());
-    let h = `<div class="avm-grid ${editable ? 'edit' : ''}" id="avmGrid"><div class="avm-row head"><div></div>${Array.from({ length: 24 }, (_, i) => `<div class="hc">${hourLbl(i)}</div>`).join('')}<div class="sumh">Available hours</div></div>`;
-    grid.forEach((row, d) => {
-      h += `<div class="avm-row"><div class="avm-day ${d === td ? 'today' : ''}" ${d === td ? 'title="Today"' : ''}>${DAYS[d]}</div>`;
-      row.forEach((on, hr) => {
-        const chg = base && base[d][hr] !== on, was = base && base[d][hr];
-        h += `<div class="avm-cell ${on ? 'on' : ''} ${chg ? 'chg' : ''} ${was ? 'was' : ''}" data-d="${d}" data-h="${hr}" title="${DAYS[d]} ${tLbl(hr)} – ${tLbl(hr + 1)}"></div>`;
-      });
-      h += `<div class="avm-sum"><div class="r ${rowHrs(row) ? '' : 'none'}">${rangeText(row)}</div><div class="h">${rowHrs(row)} hrs</div>`;
-      if (editable) h += `<div class="avm-acts"><button type="button" data-act="all" data-d="${d}">All day</button><button type="button" data-act="clear" data-d="${d}">Clear</button><button type="button" data-act="copy" data-d="${d}">Copy to all days</button></div>`;
-      h += `</div></div>`;
-    });
-    return h + `</div>`;
+  function renderFoot() {
+    const edit = S.mode === 'edit', g = edit ? S.draft : (gridFor(S.sel) || emptyGrid()), ref = refInfo(), diff = ref ? gridHrs(g) - gridHrs(ref.g) : 0;
+    $('avmFoot').style.display = edit && window.AVED ? 'none' : ''; if (edit && window.AVED) return;
+    $('avmFoot').innerHTML = `<div class="vlegend"><span><i class="vsw" style="background:var(--a-avail)"></i>Available</span><span><i class="vsw" style="border:1px solid var(--a-line-2)"></i>Unavailable</span>
+        ${ref ? `<span><i class="vsw" style="border:1px dashed var(--a-primary);background:transparent"></i>${ref.legend}</span><span><span class="vtag diff">Changed</span>Differs from ${ref.short}</span>` : ''}</div>
+      <span class="grow"></span>
+      ${edit ? `<div class="vtotal">Weekly available hours ${ref && diff ? `<span class="delta ${diff > 0 ? 'up' : 'dn'}">${diff > 0 ? '+' : ''}${diff} hrs</span>` : ''}<b>${gridHrs(g)} hrs</b>${ref ? `<span>vs ${gridHrs(ref.g)} hrs</span>` : ''}</div>` : ''}`;
   }
-
-  function compareHTML(a, b) {
-    let h = `<div class="avm-grid"><div class="avm-cmp-day" style="border-top:0;padding:0 0 4px"><div></div><div class="avm-cmp-line"><div></div>${Array.from({ length: 24 }, (_, i) => `<div style="font-size:10.5px;font-weight:600;color:var(--avm-ink-3)">${hourLbl(i)}</div>`).join('')}</div><div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--avm-ink-3);padding-left:14px">What changes</div></div>`;
-    DAYS.forEach((dn, d) => {
-      const diff = a.grid[d].some((v, i) => v !== b.grid[d][i]);
-      const line = (g, cls, lbl) => `<div class="avm-cmp-line ${cls}"><div class="lbl">${lbl}</div>${g[d].map((v, i) => `<div class="c ${v ? 'on' : ''} ${cls === 'new' && a.grid[d][i] !== b.grid[d][i] ? 'diff' : ''}"></div>`).join('')}</div>`;
-      h += `<div class="avm-cmp-day"><div class="avm-day">${dn}</div><div class="avm-cmp-lines">${line(a.grid, 'cur', 'Current')}${line(b.grid, 'new', 'From ' + fmtShort(b.eff))}</div>
-        <div class="avm-sum" style="border:0"><div class="r ${rowHrs(b.grid[d]) ? '' : 'none'}">${rangeText(b.grid[d])}</div>
-        <span class="avm-chg ${diff ? 'diff' : 'same'}">${diff ? `Changed (${rowHrs(a.grid[d])} → ${rowHrs(b.grid[d])} hrs)` : 'No change'}</span></div></div>`;
-    });
-    return h + `</div>`;
-  }
-
-  function renderBody() {
-    if (S.mode === 'edit') { $('avmBody').innerHTML = gridHTML(S.draft, true, baseGrid()); bindPaint(); return; }
-    if (S.view === 'compare' && cur() && upc()) { $('avmBody').innerHTML = compareHTML(cur(), upc()); return; }
-    const v = byId(S.view);
-    $('avmBody').innerHTML = v ? gridHTML(v.grid, false, null)
-      : `<div class="avm-empty"><div class="ic"><i data-lucide="calendar-clock"></i></div><div class="t">No availability set</div>
-         <div>${esc(emp().name)} doesn’t have any availability saved yet. Use <b>Update availability</b> to add it — you’ll start from a blank week.</div></div>`;   // C19
-  }
-
-  function renderLegend() {
-    const sw = s => `<i style="${s}"></i>`;
-    let items;
-    if (S.mode === 'edit') items = `<span>${sw('background:var(--avm-avail)')}Available</span><span>${sw('background:var(--avm-cell)')}Unavailable</span><span>${sw('background:repeating-linear-gradient(135deg,var(--avm-cell),var(--avm-cell) 4px,var(--avm-ghost) 4px,var(--avm-ghost) 6px)')}Removed (was available)</span><span>${sw('background:var(--avm-brand);border-radius:50%;width:8px;height:8px;border:0;vertical-align:0')}Changed hour</span>`;
-    else if (S.view === 'compare') items = `<span>${sw('background:var(--avm-cur-bar)')}Current</span><span>${sw('background:var(--avm-avail)')}Upcoming</span><span>${sw('background:var(--avm-surface-2);box-shadow:inset 0 -3px 0 var(--avm-brand)')}Changed hour</span>`;
-    else items = `<span>${sw('background:var(--avm-avail)')}Available</span><span>${sw('background:var(--avm-cell)')}Unavailable</span>`;
-    let tot;
-    if (S.mode !== 'edit' && S.view === 'compare' && cur() && upc()) tot = `${gridHrs(cur().grid)} → ${gridHrs(upc().grid)} hrs`;
-    else { const g = S.mode === 'edit' ? S.draft : (byId(S.view) || {}).grid; tot = (g ? gridHrs(g) : 0) + ' hrs'; }
-    $('avmLegend').innerHTML = items + `<span class="tot">Weekly available hours<b>${tot}</b></span>`;
-  }
-
-  /* ---------------- Painting (click / drag, mouse + touch) ---------------- */
-  let painting = false, paintVal = true;
-  function setCell(cell) {
-    const d = +cell.dataset.d, h = +cell.dataset.h;
-    if (S.draft[d][h] === paintVal) return;
-    S.draft[d][h] = paintVal;
-    cell.classList.toggle('on', paintVal);
-    cell.classList.toggle('chg', baseGrid()[d][h] !== paintVal);
-  }
-  function bindPaint() {
-    const g = $('avmGrid'); if (!g) return;
-    g.style.touchAction = 'none';
-    g.addEventListener('pointerdown', e => {
-      const c = e.target.closest('.avm-cell'); if (!c) return;
-      e.preventDefault(); painting = true;
-      paintVal = !S.draft[+c.dataset.d][+c.dataset.h];       // first cell decides add vs remove
-      setCell(c);
-    });
-    g.addEventListener('pointermove', e => {
-      if (!painting) return;
-      const t = document.elementFromPoint(e.clientX, e.clientY);
-      const c = t && t.closest && t.closest('.avm-cell');
-      if (c && g.contains(c)) setCell(c);
-    });
-  }
-  window.addEventListener('pointerup', () => { if (painting) { painting = false; render(); } });
-  window.addEventListener('pointercancel', () => { if (painting) { painting = false; render(); } });
 
   /* ---------------- Actions ---------------- */
+  /* Update starts from the newest version: the pending request, else the upcoming one, else current (or the tile being viewed) */
   function startEdit() {
-    const c = cur(), u = upc();
-    const v = S.view === 'compare' ? u : (byId(S.view) || c);
+    const c = cur(), u = upc(), r = pendReq();
+    const key = S.sel !== 'current' ? S.sel : (r ? 'req' : u ? 'up' : 'current');
     S.mode = 'edit';
-    S.baseId = v ? v.id : '__blank';                       // C19: no availability → blank week
-    S.draft = v ? cloneGrid(v.grid) : emptyGrid();
-    S.eff = (u && v && v.id === u.id) ? u.eff : '';         // C4
-    S.triedSave = false;
+    S.baseKey = key === 'current' && !c ? '__blank' : key;                                  // C19: no availability → blank week
+    S.draft = cloneGrid(baseGrid());
+    S.eff = key === 'up' ? u.eff : key === 'req' ? (r.eff >= today() ? r.eff : '') : '';     // C4
+    S.triedSave = false; S.selRow = null;
+    if (window.AVED) AVED.reset('avm');
     render();
   }
-  function exitEdit() { S.mode = 'view'; S.draft = null; S.baseId = null; S.eff = ''; S.triedSave = false; }
+  function exitEdit() { S.mode = 'view'; S.draft = null; S.baseKey = null; S.eff = ''; S.triedSave = false; S.selRow = null; }
   function guardDiscard(then) {                           // C16
     if (!S || S.mode !== 'edit' || !hasChanges()) return then();
     dialog({ tone: 'warn', icon: 'alert-triangle', title: 'Discard your changes?', body: '<p>Your changes to this availability haven’t been saved. Leaving now discards them.</p>', ok: 'Discard changes', okCls: 'danger', onOk: then });
@@ -398,46 +410,81 @@
     return out;
   }
   const hm = h => { const hh = Math.floor(((h % 24) + 24) % 24), m = Math.round((h % 1) * 60); return `${hh % 12 || 12}:${String(m).padStart(2, '0')}${hh < 12 ? 'a' : 'p'}`; };
+  const conflictHTML = (list, lead) => { const shown = list.slice(0, 6);
+    return `${lead || ''}<p><b>${list.length} scheduled shift${list.length > 1 ? 's' : ''}</b> fall outside the new availability:</p>
+      <ul>${shown.map(s => `<li>${DAYS[weekday(s.date)]}, ${fmt(s.date)}: ${hm(s.start)} – ${hm(s.end)} (${esc(s.role)})</li>`).join('')}${list.length > shown.length ? `<li>+${list.length - shown.length} more</li>` : ''}</ul>
+      <p>These shifts stay on the schedule and are flagged for review.</p>`; };
 
   function trySave() {
     S.triedSave = true;
     const k = analyse(S.eff);
     if (k === 'empty' || k === 'past') { render(); const i = $('avmEff'); i && i.focus(); return; }   // C1, C2
     if (!hasChanges()) return;
-    const E = S.eff, u = upc();
+    const E = S.eff, u = upc(), r = pendReq(), e = emp();
     const overriding = !!(u && !editingUpcoming());        // C8 (C9: editing upcoming never asks)
+    const closingReq = !!(r && S.baseKey !== 'req');
     const conflicts = conflictsFor(E, S.draft);
     const empty = gridHrs(S.draft) === 0;
-    if (!overriding && !conflicts.length && !empty) return commit(E);
-
+    if (!overriding && !closingReq && !conflicts.length && !empty) return commit(E);
     let body = '';
     if (overriding) body += `<p>An upcoming availability is already scheduled. Only one upcoming availability can exist, so saving will replace it:</p>
       <div class="box">Upcoming from <b>${fmt(u.eff)}</b> · ${gridHrs(u.grid)} hrs/week · saved by ${esc(u.updatedBy)}</div>
       <p>The new availability will apply from <b>${E === today() ? 'today' : fmt(E)}</b>.</p>`;
-    if (conflicts.length) {
-      const shown = conflicts.slice(0, 6);
-      body += `${overriding ? '<div class="sec">Shift conflicts</div>' : ''}<p><b>${conflicts.length} scheduled shift${conflicts.length > 1 ? 's' : ''}</b> fall outside the new availability:</p>
-        <ul>${shown.map(s => `<li>${DAYS[weekday(s.date)]}, ${fmt(s.date)}: ${hm(s.start)} – ${hm(s.end)} (${esc(s.role)})</li>`).join('')}${conflicts.length > shown.length ? `<li>+${conflicts.length - shown.length} more</li>` : ''}</ul>
-        <p>These shifts stay on the schedule and are flagged for review.</p>`;
-    }
-    if (empty) body += `<p>No hours are marked available. <b>${esc(emp().name)} will show as unavailable all week from ${E === today() ? 'today' : fmt(E)}.</b></p>`;   // C11
-    dialog({
-      tone: overriding ? 'danger' : 'warn', icon: 'alert-triangle',
-      title: overriding ? 'Override upcoming availability?' : 'Check before saving', body,
-      ok: overriding ? 'Override and save' : 'Save anyway', okCls: overriding ? 'danger' : 'primary',
-      onOk: () => commit(E)
-    });
+    if (closingReq) body += `<p>${esc(first(e.name))} has a <b>pending request</b> from ${fmt(r.eff)} (${gridHrs(r.grid)} hrs/week). Saving closes it — ${esc(first(e.name))} sees that you updated the availability instead.</p>`;
+    if (conflicts.length) body += conflictHTML(conflicts, overriding || closingReq ? '<div class="sec">Shift conflicts</div>' : '');
+    if (empty) body += `<p>No hours are marked available. <b>${esc(e.name)} will show as unavailable all week from ${E === today() ? 'today' : fmt(E)}.</b></p>`;   // C11
+    const strong = overriding || closingReq;
+    dialog({ tone: strong ? 'danger' : 'warn', icon: 'alert-triangle',
+      title: overriding ? 'Replace upcoming availability?' : closingReq ? 'Replace the pending request?' : 'Check before saving', body,
+      ok: strong ? 'Replace and save' : 'Save anyway', okCls: strong ? 'danger' : 'primary', onOk: () => commit(E) });
   }
 
   /* C6/C7/C8/C9: drop any upcoming (single-upcoming rule) and any version starting on E, then add the new one */
-  function commit(E) {
+  function addVersion(E, grid) {
     const T = today();
     STORE[S.empId] = versionsOf(S.empId).filter(v => !(v.eff > T) && v.eff !== E);
-    const nv = { id: 'v' + (_vid++), eff: E, grid: cloneGrid(S.draft), updatedAt: nowStamp(), updatedBy: MANAGER };
-    STORE[S.empId].push(nv);
-    exitEdit(); S.view = nv.id;                            // C12
+    STORE[S.empId].push({ id: 'v' + (_vid++), eff: E, grid: cloneGrid(grid), updatedAt: nowStamp(), updatedBy: MANAGER });
+  }
+  function commit(E) {
+    const T = today(), r = pendReq(), fromReq = S.baseKey === 'req';
+    addVersion(E, S.draft);
+    if (r) setReq(q => {
+      if (fromReq) { q.status = E <= T ? 'effective' : 'approved'; q.eff = E; q.grid = cloneGrid(S.draft); q.log = q.log || []; q.log.push({ t: 'Approved', at: nowStamp(), by: MANAGER, note: 'approved with changes' }); }
+      else { q.status = 'rejected'; q.log = q.log || []; q.log.push({ t: 'Rejected', at: nowStamp(), by: MANAGER, note: 'Your manager updated your availability directly.' }); }
+    });
+    exitEdit(); S.sel = E > T ? 'up' : 'current';            // C12
     render(); refreshSchedule(); persist();
-    toast(`Availability saved, effective ${E === T ? 'today' : fmt(E)}`);
+    toast(fromReq ? `${first(emp().name)}’s request approved with your changes, effective ${E === T ? 'today' : fmt(E)}` : `Availability saved, effective ${E === T ? 'today' : fmt(E)}`);
+  }
+
+  /* employee's pending request: approve as-is / decline with a note */
+  function approveReq() {
+    const r = pendReq(), u = upc(), e = emp(), T = today(), E = r.eff < T ? T : r.eff;
+    const conflicts = conflictsFor(E, r.grid);
+    let body = `<p>${esc(first(e.name))}’s availability (${gridHrs(r.grid)} hrs/week) becomes effective from <b>${E === T ? 'today' : fmt(E)}</b>.</p>`;
+    if (u) body += `<p>It replaces the upcoming availability from <b>${fmt(u.eff)}</b>.</p>`;
+    if (conflicts.length) body += conflictHTML(conflicts, '<div class="sec">Shift conflicts</div>');
+    dialog({ tone: u || conflicts.length ? 'warn' : 'info', icon: 'check-circle-2', title: `Approve ${first(e.name)}’s request?`, body, ok: 'Approve', okCls: 'green',
+      onOk: () => {
+        addVersion(E, r.grid);
+        setReq(q => { q.status = E <= T ? 'effective' : 'approved'; q.log = q.log || []; q.log.push({ t: 'Approved', at: nowStamp(), by: MANAGER }); });
+        S.sel = E > T ? 'up' : 'current'; render(); refreshSchedule(); persist();
+        toast(`${first(e.name)}’s availability approved — effective ${E === T ? 'today' : fmt(E)}`);
+      } });
+  }
+  function declineReq() {
+    const r = pendReq(), e = emp();
+    dialog({ tone: 'danger', icon: 'x-circle', title: `Decline ${first(e.name)}’s request?`,
+      body: `<p>The request from <b>${fmt(r.eff)}</b> won’t be applied. The current availability stays in effect.</p>
+        <label for="avmDlgNote">Note to ${esc(first(e.name))} <span style="font-weight:500;color:var(--avm-ink-3)">(optional — shown in the crew app)</span></label>
+        <textarea id="avmDlgNote" rows="3" style="width:100%;box-sizing:border-box;border:1px solid var(--avm-line-2);border-radius:8px;padding:8px;font:inherit;background:var(--avm-surface);color:var(--avm-ink)" placeholder="e.g. We need coverage on Friday evenings."></textarea>`,
+      ok: 'Decline request', okCls: 'danger',
+      onOk: () => {
+        const note = ($('avmDlgNote') || {}).value || '';
+        setReq(q => { q.status = 'rejected'; q.log = q.log || []; q.log.push({ t: 'Rejected', at: nowStamp(), by: MANAGER, note }); });
+        S.sel = 'current'; render(); persist();
+        toast(`${first(e.name)}’s availability request declined`);
+      } });
   }
 
   function changeUpcomingDate() {                          // C13
@@ -456,19 +503,18 @@
         if (d === u.eff) { err.textContent = 'Pick a different date to update.'; return false; }
         if (d === T) STORE[S.empId] = versionsOf(S.empId).filter(v => v.id === u.id || v.eff !== T);
         u.eff = d; u.updatedAt = nowStamp(); u.updatedBy = MANAGER;
-        S.view = u.id; render(); refreshSchedule(); persist();
+        S.sel = d === T ? 'current' : 'up'; render(); refreshSchedule(); persist();
         toast(d === T ? 'Upcoming availability is now current' : `Effective date updated to ${fmt(d)}`);
       }
     });
   }
-
   function deleteUpcoming() {                              // C14
     const u = upc();
     dialog({
       tone: 'danger', icon: 'trash-2', title: 'Delete upcoming availability?',
       body: `<p>The availability scheduled from <b>${fmt(u.eff)}</b> will be removed. The current availability keeps applying after that date.</p>`,
       ok: 'Delete upcoming', okCls: 'danger',
-      onOk: () => { STORE[S.empId] = versionsOf(S.empId).filter(v => v.id !== u.id); S.view = cur() ? cur().id : null; render(); refreshSchedule(); persist(); toast('Upcoming availability deleted'); }
+      onOk: () => { STORE[S.empId] = versionsOf(S.empId).filter(v => v.id !== u.id); S.sel = 'current'; render(); refreshSchedule(); persist(); toast('Upcoming availability deleted'); }
     });
   }
 
@@ -491,7 +537,7 @@
     dlgOk = onOk;
     $('avmDlgWrap').classList.add('open');
     icons();
-    ($('avmDlgBody').querySelector('input') || $('avmDlgOk')).focus();
+    ($('avmDlgBody').querySelector('input, textarea') || $('avmDlgOk')).focus();
   }
   const dlgOpen = () => $('avmDlgWrap').classList.contains('open');
   const closeDlg = () => $('avmDlgWrap').classList.remove('open');
@@ -503,28 +549,25 @@
     ov.addEventListener('click', e => {
       const t = e.target;
       if (t.closest('#avmClose')) return closeModal();
-      const vb = t.closest('[data-view]'); if (vb && S.mode === 'view') { S.view = vb.dataset.view; return render(); }
+      const mt = t.closest('[data-mtab]'); if (mt) return switchTab(mt.dataset.mtab);
+      if (S.tab === 'temp') return;                           // the temporary tab handles its own clicks
       if (t.closest('#avmStartEdit')) return startEdit();
+      const sv = t.closest('[data-sel]');
+      if (sv) { if (S.mode === 'edit') return guardDiscard(() => { exitEdit(); S.sel = sv.dataset.sel; render(); }); S.sel = sv.dataset.sel; return render(); }
       if (t.closest('#avmDelUp')) return deleteUpcoming();
       if (t.closest('#avmChgDate')) return changeUpcomingDate();
-      if (t.closest('#avmCancel')) return guardDiscard(() => { const keep = S.baseId; exitEdit(); S.view = byId(keep) ? keep : (cur() ? cur().id : null); render(); });
+      if (t.closest('#avmApprove')) return approveReq();
+      if (t.closest('#avmDecline')) return declineReq();
+      if (t.closest('#avmCancel')) return guardDiscard(() => { const k = S.baseKey; exitEdit(); S.sel = k && k !== '__blank' ? k : 'current'; render(); });
       if (t.closest('#avmSave')) return trySave();
-      if (t.closest('#avmAllWeek')) { S.draft = fullGrid(); return render(); }
-      if (t.closest('#avmClearWeek')) { S.draft = emptyGrid(); return render(); }
+      if (S.mode !== 'edit') return;
+      const f = t.closest('[data-fill]');
+      if (f) { S.draft = f.dataset.fill === 'base' ? cloneGrid(baseGrid()) : f.dataset.fill === 'all' ? fullGrid() : emptyGrid(); return render(); }
       if (t.closest('#avmUndoAll')) { S.draft = cloneGrid(baseGrid()); return render(); }                 // C18
-      const q = t.closest('[data-q]'); if (q) { S.eff = q.dataset.q; return render(); }                    // C3
-      const act = t.closest('[data-act]');
-      if (act) {
-        const d = +act.dataset.d;
-        if (act.dataset.act === 'all') S.draft[d] = Array(24).fill(true);
-        if (act.dataset.act === 'clear') S.draft[d] = Array(24).fill(false);
-        if (act.dataset.act === 'copy') S.draft = DAYS.map(() => S.draft[d].slice());
-        return render();
-      }
+      const q = t.closest('[data-q]'); if (q) { S.eff = q.dataset.q; return render(); }
+      const im = t.closest('[data-imode]'); if (im) { S.imode = im.dataset.imode; return render(); }                    // C3
     });
-    ov.addEventListener('change', e => {
-      if (e.target.id === 'avmEff') { S.eff = e.target.value; render(); }
-    });
+    ov.addEventListener('change', e => { if (e.target.id === 'avmEff') { S.eff = e.target.value; render(); } });
     $('avmDlgCancel').onclick = closeDlg;
     $('avmDlgOk').onclick = () => { if (dlgOk && dlgOk() === false) return; closeDlg(); };
     $('avmDlgWrap').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') $('avmDlgOk').click(); });
@@ -536,17 +579,21 @@
   }
 
   /* ---------------- Open / close ---------------- */
-  function openAvailabilityModal(empId) {
+  function openAvailabilityModal(empId, opts) {
     ensureDom();
-    S = { empId, view: null, mode: 'view', baseId: null, draft: null, eff: '', triedSave: false };
-    const c = cur();
-    S.view = c ? c.id : (upc() ? upc().id : null);
+    reloadStore();
+    S = { empId, tab: (opts && opts.tab) || 'regular', sel: 'current', mode: 'view', baseKey: null, draft: null, eff: '', triedSave: false, selRow: null };
     $('avmOverlay').classList.add('open');
     render();
   }
-  function closeModal() { guardDiscard(() => { if (S && S.mode === 'edit') exitEdit(); $('avmOverlay').classList.remove('open'); }); }
+  function closeModal() {
+    const hide = () => { if (S && S.mode === 'edit') exitEdit(); $('avmOverlay').classList.remove('open'); };
+    if (S && S.tab === 'temp' && TA()) return TA().crewGuard(hide);
+    guardDiscard(hide);
+  }
 
   window.openAvailabilityModal = openAvailabilityModal;
+  window.__availVersions = id => versionsOf(id);
   /* every employee's versions (seeds the ones not opened yet) — used by the crew export */
   window.__availAll = function () {
     const out = {};

@@ -6,6 +6,8 @@
    - Availability Request('zipCrewAvailReq')  review in the request pop-up;
                                               approve saves it as the upcoming
                                               availability ('zipAvailStore')
+   - Temporary Availability('zipTempAvail')   same pane, tagged "Temporary";
+                                              handled by temp-availability.js
    Decisions are written back, so the crew member sees them on their next view.
    ===================================================================== */
 (function () {
@@ -74,10 +76,31 @@
           <button type="button" class="sd-icon-btn sd-icon-btn--blue" title="View Availability Grid" data-crq="ar|view|${empId}|0"><i data-lucide="layout-grid"></i></button>
           <button type="button" class="sd-icon-btn sd-icon-btn--ok" title="Approve" data-crq="ar|ok|${empId}|0"><i data-lucide="check"></i></button>
           <button type="button" class="sd-icon-btn sd-icon-btn--no" title="Decline" data-crq="ar|no|${empId}|0"><i data-lucide="x"></i></button></div></div>`; }).join(''));
-    const extra = [to.length, sw.length, ar.length];
+    const ta = window.TA ? window.TA.dashRows() : { html: '', n: 0 };
+    add(panes[2], ta.html);
+    typeFilter(panes[2]);
+    const extra = [to.length, sw.length, ar.length + ta.n];
     chips.forEach((c, i) => { c.textContent = (base.chips[i] || 0) + (extra[i] || 0); });
-    if (total) total.textContent = base.total + to.length + sw.length + ar.length;
+    if (total) total.textContent = base.total + to.length + sw.length + ar.length + ta.n;
     icons();
+  }
+  /* Availability Request pane: tell regular (weekly) and temporary (date range) requests apart */
+  let TYPE = 'all';
+  function typeFilter(pane) {
+    if (!pane || !window.TA) return;
+    pane.querySelectorAll('.sd-row').forEach(r => {
+      if (r.dataset.atype) return;
+      r.dataset.atype = 'regular';
+      const nm = r.querySelector('.sd-row-name');
+      if (nm && !r.querySelector('.ta-type')) nm.insertAdjacentHTML('beforebegin', '<div class="sd-row-pre"><span class="ta-type reg"><i data-lucide="calendar-check"></i>Regular availability</span></div>');
+    });
+    let f = pane.querySelector('.ta-dfilter');
+    if (!f) { f = document.createElement('div'); f.className = 'ta-dfilter'; f.setAttribute('role', 'group'); f.setAttribute('aria-label', 'Request type'); }
+    pane.prepend(f);
+    const rows = [...pane.querySelectorAll('.sd-row')], n = t => rows.filter(r => r.dataset.atype === t).length;
+    f.innerHTML = [['all', 'All', rows.length], ['regular', 'Regular', n('regular')], ['temporary', 'Temporary', n('temporary')]]
+      .map(([k, l, c]) => `<button type="button" data-tafilter="${k}" class="${TYPE === k ? 'on' : ''}" aria-pressed="${TYPE === k}">${l} <span>${c}</span></button>`).join('');
+    rows.forEach(r => r.classList.toggle('ta-dhide', TYPE !== 'all' && r.dataset.atype !== TYPE));
   }
 
   /* ---------- decisions ---------- */
@@ -160,9 +183,19 @@
   }
 
   document.addEventListener('click', e => {
+    const tf = e.target.closest('[data-tafilter]'); if (tf) { TYPE = tf.dataset.tafilter; return render(); }
     const b = e.target.closest('[data-crq]'); if (!b) return;
     e.stopPropagation();
     const [kind, act, empId, id] = b.dataset.crq.split('|');
+    if (kind === 'ta') {                                                         // temporary availability request
+      const r = window.TA && window.TA.byId(id); if (!r) return;
+      const nm = r.empName || 'Employee';
+      if (act === 'view') return window.TA.openReview(id, { onDone: render });
+      if (act === 'ok') { window.TA.decide(id, true); render(); return toast(`${nm}'s temporary availability approved — effective ${window.TA.fmtRange(r.start, r.end)}`); }
+      return askNote(`Decline ${nm}'s temporary availability request?`, `${window.TA.fmtRange(r.start, r.end)} · regular availability stays in effect. The employee sees your note in the crew app.`, note => {
+        window.TA.decide(id, false, note); render(); toast(`${nm}'s temporary availability request declined`);
+      });
+    }
     const name = kind === 'sw' ? emp(((read(K.sw) || []).find(x => x.id === id) || {}).requestedBy).name : emp(+empId).name;
     if (kind === 'ar' && act === 'view') return openAvail(+empId);
     const done = msg => { render(); toast(msg); };
@@ -179,7 +212,7 @@
       done(`${name}'s request declined`);
     });
   }, true);
-  window.addEventListener('storage', e => { if ([K.to, K.ar, K.sw].includes(e.key)) render(); });
+  window.addEventListener('storage', e => { if ([K.to, K.ar, K.sw, 'zipTempAvail'].includes(e.key)) render(); });
 
   const css = document.createElement('style');
   css.textContent = `

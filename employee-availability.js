@@ -15,7 +15,7 @@
 
   /* ---------------- Config ---------------- */
   const STORE_TZ = 'America/Chicago', STORE_TZ_LABEL = 'America/Chicago (CT)';
-  const MIN_NOTICE_DAYS = 1;                    // earliest request date = today + N (store setting)
+  const MIN_NOTICE_DAYS = 0;                    // earliest request date = today + N (store setting) — today is allowed
   const MGR = 'Priya Sharma';
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -138,48 +138,33 @@
   const hoursChanged = () => S.mode === 'edit' && !same(S.draft, baseGrid());
   const hasChanges = () => hoursChanged() || (editingOpen() && !!S.eff && S.eff !== S.req.eff);      // R2
 
-  /* ---------------- DOM ---------------- */
+  /* ---------------- DOM ----------------
+     Top bar: Regular | Temporary tabs (left) · version tiles (right, collapsed by default)
+     Regular: action bar (effective date etc.) · note · tools · week grid · legend
+     Temporary: rendered by temp-availability.js into #taMain */
   const $ = id => document.getElementById(id);
+  const fmtS = iso => fmt(iso).slice(0, 6);
   function ensureDom() {
     if ($('eaView')) return;
     const v = document.createElement('div');
-    v.id = 'eaView';
+    v.id = 'eaView'; v.className = 'v2';
     v.innerHTML = `
-      <div class="ea-page">
-        <aside class="ea-panel ea-side">
-          <div class="ea-prof">
-            <button type="button" class="ea-icon-btn" id="eaBack" title="Back to Team Center" aria-label="Back to Team Center"><i data-lucide="arrow-left"></i></button>
-            <div class="min-w-0"><div class="nm">My availability</div><div class="rl" id="eaSub"></div></div>
-            <div class="ea-demo">
-              <button type="button" class="ea-icon-btn" id="eaDemoBtn" title="Prototype: switch scenario or act as the manager" aria-label="Prototype controls"><i data-lucide="flask-conical"></i></button>
-              <div class="ea-demo-menu" id="eaDemoMenu">
-                <div class="cap">Prototype · scenario</div>
-                <button type="button" data-sc="both">Manager change + my request</button>
-                <button type="button" data-sc="mgr">Manager change only</button>
-                <button type="button" data-sc="pending">My request only</button>
-                <button type="button" data-sc="approved">Request approved</button>
-                <button type="button" data-sc="rejected">Request rejected</button>
-                <button type="button" data-sc="none">Nothing upcoming</button>
-                <hr><div class="cap">Act as manager</div>
-                <button type="button" id="eaMgrApprove"><i data-lucide="check"></i>Approve my request</button>
-                <button type="button" id="eaMgrReject"><i data-lucide="x"></i>Reject my request</button>
-              </div>
-            </div>
-          </div>
-          <div class="ea-side-scroll">
-            <div class="ea-sec"><span>Availability timeline</span><span id="eaTlCount"></span></div>
-            <div class="ea-tl" id="eaTl" aria-label="Availability timeline"></div>
-            <div class="ea-sec"><span>Details</span></div>
-            <div id="eaDet"></div>
-          </div>
-        </aside>
-        <section class="ea-panel ea-main">
-          <div class="ea-bar" id="eaBar"></div>
-          <div id="eaSub2"></div>
-          <div id="eaNote"></div>
-          <div class="ea-bw" id="eaBw"><div class="ea-daypick" id="eaDaypick"></div><div id="eaBoard"></div></div>
-          <div class="ea-legend" id="eaLegend"></div>
-        </section>
+      <div class="v2-page">
+        <div class="v2-top">
+          <div class="v2-tabs" id="eaModes" role="tablist" aria-label="Availability type"></div>
+          <span class="grow"></span>
+          <div class="v2-topr" id="eaTopR"></div>
+        </div>
+        <div id="eaRegMain">
+          <section class="v2-card v2-reg">
+            <div class="ea-bar" id="eaBar"></div>
+            <div id="eaNote"></div>
+            <div id="eaTools"></div>
+            <div class="v2-gridbox" id="eaGrid"></div>
+            <div class="v2-foot" id="eaFoot"></div>
+          </section>
+        </div>
+        <div id="taMain" hidden></div>
       </div>`;
     document.body.appendChild(v);
     const dw = document.createElement('div');
@@ -190,83 +175,60 @@
         <div class="df"><button type="button" class="ea-btn" id="eaDCancel">Cancel</button><button type="button" class="ea-btn primary" id="eaDOk">OK</button></div>
       </div>`;
     document.body.appendChild(dw);
-    if (CREW) {   // crew app: no "back to Team Center", no prototype menu
-      const back = v.querySelector('#eaBack'); if (back) back.style.display = 'none';
-      const demo = v.querySelector('.ea-demo'); if (demo) demo.style.display = 'none';
-    }
     bindEvents();
   }
 
   /* ---------------- Render ---------------- */
-  function render() { renderHead(); renderTimeline(); renderDetail(); renderBar(); renderSub(); renderNote(); renderBoard(); renderLegend(); icons(); fit(); }
-
-  function renderHead() {
-    // the logged-in employee's own page (manager or crew) — no name / avatar needed
-    $('eaSub').innerHTML = `<span class="tz" title="Store timezone: ${STORE_TZ_LABEL}"><i data-lucide="globe"></i>${STORE_TZ_LABEL}</span>`;
+  const TA = () => window.TA || null;
+  const myId = () => CREW ? CREW.empId : ((typeof employeeData !== 'undefined' && employeeData[0]) ? employeeData[0].id : 0);
+  function render() {
+    renderModes();
+    const temp = S.tab === 'temp' && TA();
+    $('eaRegMain').hidden = !!temp; $('taMain').hidden = !temp;
+    if (temp) { TA().renderCrew($('taMain'), { top: $('eaTopR'), empId: myId(), me: me(), onChange: () => { renderModes(); icons(); if (typeof window.onCrewAvailChange === 'function') window.onCrewAvailChange(); } }); icons(); return; }
+    renderVstrip(); renderBar(); renderNote(); renderGrid(); renderTools(); renderFoot(); icons();
+  }
+  /* Regular | Temporary (temporary availability: temp-availability.js) */
+  function renderModes() {
+    const n = TA() ? TA().crewPending(myId()) : 0;
+    $('eaModes').innerHTML = `<button type="button" role="tab" data-eatab="regular" aria-selected="${S.tab !== 'temp'}"><i data-lucide="calendar-check"></i>Regular Availability</button>
+      ${TA() ? `<button type="button" role="tab" data-eatab="temp" class="temp" aria-selected="${S.tab === 'temp'}"><i data-lucide="calendar-clock"></i>Temporary Availability${n ? `<span class="n" title="${n} waiting for your manager">${n}</span>` : ''}</button>` : ''}`;
+  }
+  function switchTab(tab) {
+    if (tab === S.tab) return;
+    const go = () => { S.tab = tab; render(); };
+    if (S.tab === 'temp') return TA().crewGuard(go);
+    guard(() => { if (S.mode === 'edit') exitEdit(); go(); });
   }
 
-  function verCard(key, cls, top, v, m, g) {
-    const K = KIND[key];
-    return `<button type="button" class="ea-ver ${cls}" data-sel="${key}" style="--c:${K.c}">
-      <span class="top"><span class="k">${K.label}</span>${top}</span>
-      <span class="v">${v}</span>
-      <span class="row"><span class="m">${m}</span>${spark(g, K.c)}</span></button>`;
+  /* version tiles — collapsed strip (top right) */
+  /* Only two versions are ever shown: Current + Requested, or Current + Upcoming.
+     An open request (pending / approved) wins; otherwise the manager's upcoming change;
+     a rejected request shows only when nothing is upcoming. */
+  function secondKey() {
+    if (openReq()) return 'req';
+    if (S.mgrUp) return 'mgr';
+    if (S.req && S.req.status === 'rejected') return 'req';
+    return null;
   }
-  function renderTimeline() {
-    const view = S.mode === 'view', items = [];
-    const selCls = k => (S.sel === k && view ? 'sel' : '');
-    items.push(verCard('current', selCls('current'), chip('current', 'In effect'), `Since ${fmt(S.current.eff)}`, `<b>${gridHrs(S.current.grid)}</b> hrs / week`, S.current.grid));
-    const ups = [];
-    if (S.mgrUp) ups.push({ eff: S.mgrUp.eff, html: verCard('mgr', selCls('mgr'), chip('manager', 'By ' + esc(S.mgrUp.by.split(' ')[0])), `From ${fmt(S.mgrUp.eff)}`, `<b>${gridHrs(S.mgrUp.grid)}</b> hrs / week · ${inDays(S.mgrUp.eff)}`, S.mgrUp.grid) });
-    if (S.req) ups.push({ eff: S.req.eff, html: verCard('req', `${isOpen(S.req) ? '' : 'muted'} ${selCls('req')}`, chip(S.req.status), `From ${fmt(S.req.eff)}`, `<b>${gridHrs(S.req.grid)}</b> hrs / week`, S.req.grid) });
-    ups.sort((a, b) => a.eff.localeCompare(b.eff)).forEach(u => items.push('<div class="ea-conn"></div>' + u.html));
-    if (!openReq()) items.push(`<div class="ea-conn"></div><button type="button" class="ea-ver add" data-start="1"><span class="pl"><i data-lucide="plus"></i></span>
-      <span><span class="v" style="display:block">Request a change</span><span class="m">Choose your hours and the date they start</span></span></button>`);
-    $('eaTl').innerHTML = items.join('');
-    $('eaTlCount').textContent = `${1 + (S.mgrUp ? 1 : 0) + (S.req ? 1 : 0)} version${(S.mgrUp || S.req) ? 's' : ''}`;
+  function renderVstrip() {
+    const k2 = secondKey(); if (S.sel !== 'current' && S.sel !== k2) S.sel = 'current';
+    const vp = (key, k, v, cls) => { const on = S.sel === key && S.mode === 'view';
+      return `<button type="button" class="vp ${on ? 'on' : ''} ${cls || ''}" data-sel="${key}" style="--c:${KIND[key].c}" aria-pressed="${on}" title="Show ${KIND[key].label.toLowerCase()} in the grid below"><span class="dot"></span><span class="tx"><span class="k">${k}</span><span class="v">${v}</span></span>${on ? '<i data-lucide="check" class="ck"></i>' : ''}</button>`; };
+    let h = vp('current', 'Current', `Since ${fmtS(S.current.eff)} · ${gridHrs(S.current.grid)} hrs`);
+    if (k2 === 'req' && S.req.status === 'approved') h += vp('req', 'Upcoming · approved', `From ${fmtS(S.req.eff)} · ${gridHrs(S.req.grid)} hrs`);
+    else if (k2 === 'req') h += vp('req', `Requested ${chip(S.req.status)}`, `From ${fmtS(S.req.eff)} · ${gridHrs(S.req.grid)} hrs`, isOpen(S.req) ? '' : 'muted');
+    else if (k2 === 'mgr') h += vp('mgr', 'Upcoming · manager', `From ${fmtS(S.mgrUp.eff)} · ${gridHrs(S.mgrUp.grid)} hrs`);
+    const o = openReq();
+    $('eaTopR').innerHTML = `<div class="v2-vstrip" role="group" aria-label="Availability versions">${h}</div>
+      ${S.mode === 'view' ? `<button type="button" class="vbtn primary" data-start="1"><i data-lucide="pencil"></i>Update Regular Availability</button>` : ''}`;
   }
-
-  function stepsFor(r) {
-    const sub = r.log.find(x => x.t === 'Submitted'), ap = r.log.filter(x => x.t === 'Approved').pop();
-    const ok = '<i data-lucide="check"></i>', no = '<i data-lucide="x"></i>';
-    const s1 = { c: 'done', i: ok, t: 'Submitted', m: fmtDT(sub.at) };
-    if (r.status === 'pending') return [s1, { c: 'now', i: '', t: 'Manager review', m: 'Waiting for approval' }, { c: '', i: '', t: 'Approved', m: '—' }, { c: '', i: '', t: 'Effective', m: fmt(r.eff) }];
-    if (r.status === 'approved') return [s1, { c: 'done', i: ok, t: 'Manager review', m: ap.by }, { c: 'done', i: ok, t: 'Approved', m: fmtDT(ap.at) }, { c: 'now', i: '', t: 'Effective', m: `${fmt(r.eff)} · ${inDays(r.eff)}` }];
-    if (r.status === 'effective') return [s1, { c: 'done', i: ok, t: 'Manager review', m: ap.by }, { c: 'done', i: ok, t: 'Approved', m: fmtDT(ap.at) }, { c: 'done', i: ok, t: 'Effective', m: fmt(r.eff) }];
-    if (r.status === 'rejected') return [s1, { c: 'bad', i: no, t: 'Rejected', m: `${lastAct(r).by}, ${fmtDT(lastAct(r).at)}` }];
-    return [s1, { c: 'bad', i: no, t: 'Cancelled', m: fmtDT(lastAct(r).at) }];
-  }
-  function renderDetail() {
-    const o = openReq(); let h = '';
-    if (S.sel === 'current') {
-      h = `<div class="d">In effect since <b>${fmt(S.current.eff)}</b>. ${esc(S.current.src)}.</div>
-        <dl class="ea-kv"><dt>Hours / week</dt><dd>${gridHrs(S.current.grid)} hrs</dd><dt>Days available</dt><dd>${S.current.grid.filter(r => rowHrs(r)).length} of 7</dd>
-        <dt>Next change</dt><dd>${S.mgrUp || o ? fmt([S.mgrUp && S.mgrUp.eff, o && o.eff].filter(Boolean).sort()[0]) : 'None scheduled'}</dd></dl>
-        ${S.history.length ? '<div class="ea-det-acts"><button type="button" class="ea-btn sm" id="eaShowAct"><i data-lucide="history"></i>Past requests</button></div>' : ''}`;
-    } else if (S.sel === 'mgr' && S.mgrUp) {
-      h = `<div class="d"><b>${esc(S.mgrUp.by)}</b> changed your availability from <b>${fmt(S.mgrUp.eff)}</b>. Until then, your current availability applies.</div>
-        <dl class="ea-kv"><dt>Reason</dt><dd>${esc(S.mgrUp.reason)}</dd><dt>Set on</dt><dd>${fmtDT(S.mgrUp.at)}</dd><dt>Starts</dt><dd>${inDays(S.mgrUp.eff)}</dd>
-        <dt>Hours / week</dt><dd>${gridHrs(S.current.grid)} → ${gridHrs(S.mgrUp.grid)} hrs</dd></dl>`;
-    } else if (S.sel === 'req' && S.req) {
-      const r = S.req, rj = r.status === 'rejected' ? lastAct(r) : null;
-      const d = r.status === 'pending' ? `Waiting for manager approval. If approved, applies from <b>${fmt(r.eff)}</b>.`
-        : r.status === 'approved' ? `Approved. Becomes your availability on <b>${fmt(r.eff)}</b>.`
-        : r.status === 'effective' ? `Approved and in effect since <b>${fmt(r.eff)}</b>.`
-        : r.status === 'rejected' ? 'Not approved. You can send a new request.' : 'Cancelled. You can send a new request.';
-      h = `<div class="d">${d}</div>
-        <ol class="ea-vsteps">${stepsFor(r).map(s => `<li class="${s.c}"><div class="ea-sd">${s.i}</div><div><div class="t">${s.t}</div><div class="m">${esc(s.m)}</div></div></li>`).join('')}</ol>
-        ${rj && rj.note ? `<div class="ea-reason"><b>Manager’s note:</b> “${esc(rj.note)}”</div>` : ''}
-        <div class="ea-det-acts"><button type="button" class="ea-btn sm" id="eaShowAct"><i data-lucide="history"></i>Activity &amp; past requests</button>
-          ${o ? '<button type="button" class="ea-btn sm gd" id="eaCancelReq"><i data-lucide="x-circle"></i>Cancel request</button>' : ''}</div>`;
-    }
-    $('eaDet').innerHTML = `<div class="ea-det">${h}</div>`;
-  }
-
   function renderBar() {
     const o = openReq();
     if (S.mode === 'edit') {
       const T = TODAY(), nm = addDays(T, ((8 - weekday(T)) % 7) || 7), bad = S.eff && S.eff < minEff();
       const q = (iso, lbl) => `<button type="button" data-q="${iso}" class="${S.eff === iso ? 'on' : ''}">${lbl}</button>`;
+      const keep = o && o.eff >= minEff() ? o.eff : (S.baseKey === 'mgr' && S.mgrUp.eff >= minEff() ? S.mgrUp.eff : '');
       const from = S.baseKey === 'req' ? `your ${o ? o.status : ''} request` : S.baseKey === 'mgr' ? 'your manager’s change' : 'your current availability';
       $('eaBar').innerHTML = `
         <div class="ti"><span class="ic" style="--c:var(--ea-brand)"><i data-lucide="pencil"></i></span>
@@ -274,7 +236,7 @@
         <div class="r">
           <div class="ea-eff"><label for="eaEff">Effective from <em>*</em></label>
             <input type="date" id="eaEff" min="${minEff()}" value="${S.eff}" aria-required="true" class="${(S.tried && !S.eff) || bad ? 'err' : ''}">
-            <div class="ea-quick">${q(minEff(), 'Tomorrow')}${q(nm, 'Next Mon')}${q(addDays(nm, 7), 'Mon after')}</div></div>
+            <div class="ea-quick">${q(T, 'Today')}${q(addDays(T, 1), 'Tomorrow')}${q(nm, 'Next Mon')}${q(addDays(nm, 7), 'Mon after')}${keep && keep !== T && keep !== addDays(T, 1) && keep !== nm && keep !== addDays(nm, 7) ? q(keep, 'Keep ' + fmt(keep).slice(0, 6)) : ''}</div></div>
           <button type="button" class="ea-btn" id="eaCancelEdit">Cancel</button>
           <button type="button" class="ea-btn primary" id="eaSubmit" ${hasChanges() && !bad ? '' : 'disabled'} title="${hasChanges() ? '' : 'Change your hours or effective date to submit'}"><i data-lucide="send"></i>${editingOpen() ? 'Update request' : 'Submit request'}</button>
         </div>`;
@@ -284,135 +246,91 @@
     const sub = S.sel === 'current' ? `In effect since ${fmt(S.current.eff)}`
       : S.sel === 'mgr' ? `Set by ${esc(S.mgrUp.by)} · from ${fmt(S.mgrUp.eff)}`
       : `${STATUS[S.req.status]} · from ${fmt(S.req.eff)}`;
-    const cmp = S.sel !== 'current' ? `<label class="ea-tog"><input type="checkbox" id="eaCmp" ${S.compare ? 'checked' : ''}><i data-lucide="git-compare"></i>Compare with ${prevKey(S.sel) === 'mgr' ? 'manager’s change' : 'current'}</label>` : '';
+    const g = gridOf(S.sel), dh = S.sel !== 'current' ? gridHrs(g) - gridHrs(S.current.grid) : 0;
     $('eaBar').innerHTML = `<div class="ti"><span class="ic" style="--c:${K.c}"><i data-lucide="${K.icon}"></i></span><div><b>${K.label}</b><small>${sub}</small></div></div>
-      <div class="r">${cmp}<button type="button" class="ea-btn primary" data-start="1"><i data-lucide="${o ? 'pencil' : 'plus'}"></i>${o ? 'Update my request' : 'Request a change'}</button></div>`;
-  }
-
-  function renderSub() {
-    if (S.mode !== 'edit') { $('eaSub2').innerHTML = ''; return; }
-    $('eaSub2').innerHTML = `<div class="ea-sub"><span class="ea-hint"><i data-lucide="mouse-pointer-click"></i><span>Tick a <b>whole day</b>, a <b>day part</b>, or tap / drag <b>single hours</b>. The left column applies to <b>all days</b>.</span></span>
-      <button type="button" class="ea-btn sm" id="eaUndo" ${hoursChanged() ? '' : 'disabled'}><i data-lucide="undo-2"></i>Undo changes</button></div>`;
+      <div class="r">${S.sel === 'req' ? `<button type="button" class="ea-btn" id="eaShowAct"><i data-lucide="history"></i>Activity</button>${o ? '<button type="button" class="ea-btn gd" id="eaCancelReq"><i data-lucide="x-circle"></i>Cancel request</button>' : ''}` : ''}
+        ${S.sel !== 'current' ? '<button type="button" class="ea-btn" data-sel="current"><i data-lucide="arrow-left"></i>Back to current</button>' : ''}
+        <div class="v2-htot"><small>Weekly available hours</small><b>${gridHrs(g)} hrs${dh ? ` <span class="delta ${dh > 0 ? 'up' : 'dn'}">${dh > 0 ? '+' : ''}${dh} vs current</span>` : ''}</b></div></div>`;
   }
 
   const NOTE_IC = { 'n-muted': 'info', 'n-info': 'info', 'n-warn': 'alert-triangle', 'n-err': 'alert-circle' };
   function renderNote() {
-    const o = openReq(); let t = '', cls = '';
+    const o = openReq(); let t = '', cls = '', act = '';
     if (S.mode === 'edit') {
-      const mgrLine = S.mgrUp ? ` Your manager has a change scheduled from ${fmt(S.mgrUp.eff)}; if your request is approved, it <b>replaces</b> that change.` : '';   // R6
+      const mgrLine = S.baseKey === 'mgr' && S.mgrUp ? ` Submitting <b>replaces your manager’s upcoming availability</b> from ${fmt(S.mgrUp.eff)} — your request then goes to your manager for approval.` : '';   // R6
       if (!S.eff) { t = (S.tried ? 'Select an effective date before submitting.' : `Choose the date your new availability starts (earliest ${fmt(minEff())}).`) + mgrLine; cls = S.tried ? 'n-err' : 'n-muted'; }
       else if (S.eff < minEff()) { t = `The effective date must be ${fmt(minEff())} or later.`; cls = 'n-err'; }           // R1
       else if (o && o.status === 'approved') { t = 'This request is already approved. Updating it sends it back to your manager for approval.' + mgrLine; cls = 'n-warn'; }
-      else if (o) { t = `Updates your pending request${S.eff !== o.eff ? `; the effective date moves from ${fmt(o.eff)} to <b>${fmt(S.eff)}</b>` : ''}.` + mgrLine; cls = S.mgrUp ? 'n-warn' : 'n-info'; }
-      else { t = `If approved, this applies from <b>${fmt(S.eff)}</b>.` + mgrLine; cls = S.mgrUp ? 'n-warn' : 'n-info'; }
-    } else if (S.sel === 'req' && o && S.mgrUp) { t = `Your manager also scheduled a change from ${fmt(S.mgrUp.eff)}. If your request is approved, it replaces that change.`; cls = 'n-warn'; }
-    else if (S.sel === 'req' && S.req && S.req.status === 'rejected') { t = 'Your manager didn’t approve this request. Use <b>Request a change</b> to send a new one.'; cls = 'n-err'; }
-    $('eaNote').innerHTML = t ? `<div class="ea-note ${cls}"><i data-lucide="${NOTE_IC[cls]}"></i><div>${t}</div></div>` : '';
+      else if (o) { t = `Updates your pending request${S.eff !== o.eff ? `; the effective date moves from ${fmt(o.eff)} to <b>${fmt(S.eff)}</b>` : ''}.`; cls = 'n-info'; }
+      else { t = `If approved, this applies from <b>${fmt(S.eff)}</b>.` + mgrLine; cls = mgrLine ? 'n-warn' : 'n-info'; }
+    } else if (S.sel === 'req' && S.req && S.req.status === 'rejected') { t = 'Your manager didn’t approve this request. Use <b>Request a change</b> to send a new one.'; cls = 'n-err'; }
+    else if (S.sel === 'current' && TA() && TA().activeNotice(myId())) {
+      const tn = TA().activeNotice(myId());
+      t = `<b>Temporary availability ${tn.start <= TODAY() ? 'is in effect' : 'is coming up'}</b> for ${TA().fmtRange(tn.start, tn.end)} — it replaces these regular hours on those dates only.`; cls = 'n-info'; act = '<button type="button" class="ta-link" data-eatab="temp">View</button>';
+    }
+    $('eaNote').innerHTML = t ? `<div class="ea-note ${cls}"><i data-lucide="${NOTE_IC[cls]}"></i><div class="tx">${t}</div>${act}</div>` : '';
   }
 
-  function cb(st, key, label, lbText, edit) {
-    const aria = `${label}: ${st === 'on' ? 'available' : st === 'part' ? 'partly available' : 'unavailable'}`;
-    const inner = `<span class="bx">${ICO}</span>${lbText != null ? `<span class="lb">${lbText}</span>` : ''}`;
-    return edit ? `<button type="button" class="ea-cb ${st}" role="checkbox" aria-checked="${st === 'on' ? 'true' : st === 'part' ? 'mixed' : 'false'}" aria-label="${aria}" data-k="${key}">${inner}</button>`
-      : `<span class="ea-cb ${st}" aria-label="${aria}">${inner}</span>`;
+  function renderTools() {
+    if (S.mode !== 'edit') { $('eaTools').innerHTML = ''; return; }
+    const time = S.imode === 'time';
+    $('eaTools').innerHTML = `<div class="v2-tools">
+      <div class="v2-imode" role="tablist" aria-label="How to set hours">
+        <button type="button" role="tab" data-imode="drag" aria-selected="${!time}"><i data-lucide="mouse-pointer-2"></i>Drag on grid</button>
+        <button type="button" role="tab" data-imode="time" aria-selected="${time}"><i data-lucide="clock-3"></i>Enter times</button></div>
+      ${window.AVED ? AVED.toolsHTML('ea', edCfg()) : ''}</div>`;
+  }
+  /* the hours editor (avail-editor.js): Drag on grid | Enter times */
+  function edCfg() {
+    const ref = refInfo(), td = weekday(TODAY()), o = openReq();
+    return { keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td })),
+      get: k => S.draft[+k.slice(1)], set: (k, r) => { S.draft[+k.slice(1)] = r; }, ref: k => ref ? ref.g[+k.slice(1)] : null,
+      mode: S.imode === 'time' ? 'time' : 'drag', refShort: ref ? ref.short : '',
+      refLegend: S.baseKey === 'req' ? `Your ${o ? o.status : ''} request` : S.baseKey === 'mgr' ? 'Your manager’s upcoming hours' : 'Your regular hours',
+      onChange: render };
   }
 
-  function renderBoard() {
-    const edit = S.mode === 'edit';
-    const grid = edit ? S.draft : gridOf(S.sel);
-    const base = edit ? baseGrid() : (S.compare && S.sel !== 'current' ? gridOf(prevKey(S.sel)) : null);
-    const td = weekday(TODAY());
-    $('eaDaypick').innerHTML = DAYS.map((d, i) => `<button type="button" class="${i === S.mDay ? 'on' : ''}" data-day="${i}">${d}<small>${rowHrs(grid[i])}h</small></button>`).join('');
-    let h = `<div class="ea-board ${edit ? 'edit' : ''}" id="eaBd">`;
-    h += `<div class="ea-col gut"><div class="ea-ch"><span class="cap">${edit ? 'All days' : 'Time'}</span>${edit ? cb(stateOf(grid, ALL, 0, 24), 'w', 'Whole week', 'Whole week', true) : ''}</div>`;
-    PARTS.forEach((p, pi) => {
-      h += `<div class="ea-bh" title="${p.name} · ${p.lbl}">${edit ? cb(stateOf(grid, ALL, p.s, p.e), `pa|${pi}`, `${p.name} on all days`, `<span class="bn">${p.name}</span>`, true) : `<span class="bn">${p.name}</span>`}<span class="br">${p.lbl}</span></div>`;
-      for (let hr = p.s; hr < p.e; hr++) h += edit ? `<button type="button" class="ea-sl" data-k="ha|${hr}" title="Toggle ${tS(hr)}–${tS(hr + 1)} on all days">${tS(hr)}</button>` : `<div class="ea-sl">${tS(hr)}</div>`;
-    });
-    h += `</div>`;
-    DAYS.forEach((dn, d) => {
-      const row = grid[d];
-      h += `<div class="ea-col ${d === S.mDay ? 'show' : ''}"><div class="ea-ch ${d === td ? 'today' : ''}" ${d === td ? 'title="Today"' : ''}>
-        <span class="dn">${dn}<small>${rowHrs(row)} hrs</small></span>${cb(stateOf(grid, [d], 0, 24), `d|${d}`, `${DAYS_FULL[d]} all day`, 'All day', edit)}</div>`;
-      PARTS.forEach((p, pi) => {
-        const st = stateOf(grid, [d], p.s, p.e);
-        const txt = st === 'on' ? 'Available' : st === 'off' ? '—' : rtext(row, p.s, p.e);
-        h += `<div class="ea-bh">${cb(st, `p|${pi}|${d}`, `${DAYS_FULL[d]} ${p.name}`, txt, edit)}</div>`;
-        for (let hr = p.s; hr < p.e; hr++) {
-          const on = row[hr], top = on && (hr === p.s || !row[hr - 1]);
-          let end = hr; while (end < p.e && row[end]) end++;
-          const lab = top ? `<span class="lab">${tS(hr)}–${tS(end)}</span>` : '';
-          let cls = on ? 'on' : '';
-          if (top) cls += ' top';
-          if (base && base[d][hr] !== on) cls += edit ? ' chg' : (on ? ' new' : ' gone');
-          h += `<div class="ea-sl ${cls}" data-d="${d}" data-h="${hr}" title="${DAYS_FULL[d]} ${tS(hr)}–${tS(hr + 1)}">${lab}</div>`;
-        }
-      });
-      h += `</div>`;
-    });
-    $('eaBoard').innerHTML = h + `</div>`;
-    if (edit) bindPaint();
+  /* the availability window: one row per weekday (shared week grid from temp-availability.js) */
+  const ORDER = [1, 2, 3, 4, 5, 6, 0];
+  function refInfo() {
+    if (S.mode === 'edit') return { g: baseGrid(), name: S.baseKey === 'current' ? 'Regular' : S.baseKey === 'mgr' ? 'Manager’s change' : 'Your request', short: S.baseKey === 'current' ? 'regular' : S.baseKey === 'mgr' ? 'upcoming' : 'request', legend: S.baseKey === 'current' ? 'Your regular hours' : 'Hours you started from' };
+    if (S.sel !== 'current') return { g: S.current.grid, name: 'Current', short: 'current', legend: 'Your current hours' };
+    return null;
   }
-
-  function renderLegend() {
-    const edit = S.mode === 'edit', g = edit ? S.draft : gridOf(S.sel), cmp = !edit && S.compare && S.sel !== 'current';
-    let it = `<span><i style="background:var(--ea-avail);border-color:var(--ea-avail)"></i>Available</span><span><i style="background:var(--ea-cell)"></i>Unavailable</span>`;
-    if (edit) it += `<span><i style="background:var(--ea-brand);width:8px;height:8px;border-radius:50%;border:0;vertical-align:0"></i>Changed hour</span>`;
-    if (cmp) it += `<span><i style="box-shadow:inset 3px 0 0 var(--ea-brand);background:var(--ea-avail)"></i>Added</span><span><i style="background:repeating-linear-gradient(135deg,var(--ea-cell),var(--ea-cell) 3px,var(--ea-ghost) 3px,var(--ea-ghost) 5px)"></i>Removed</span>`;
-    const refG = edit ? baseGrid() : cmp ? gridOf(prevKey(S.sel)) : null;
-    const diff = refG ? gridHrs(g) - gridHrs(refG) : 0;
-    const delta = refG && diff ? `<span class="delta ${diff > 0 ? 'up' : 'dn'}">${diff > 0 ? '+' : ''}${diff} hrs</span>` : '';
-    const tot = cmp ? `${gridHrs(refG)} → ${gridHrs(g)} hrs` : `${gridHrs(g)} hrs`;
-    $('eaLegend').innerHTML = it + `<span class="tot">Weekly available hours ${delta}<b>${tot}</b></span>`;
+  function renderGrid() {
+    if (!TA()) { $('eaGrid').innerHTML = ''; return; }
+    const edit = S.mode === 'edit', g = edit ? S.draft : gridOf(S.sel), ref = refInfo(), td = weekday(TODAY());
+    const rows = ORDER.map(d => ({ k: 'd' + d, w: d, label: DAYS_FULL[d] + 's', title: 'Every ' + DAYS_FULL[d], sub: 'Every ' + DAYS_FULL[d], row: g[d], ref: ref ? ref.g[d] : null,
+      today: d === td, badge: d === td ? ' <span class="wg-today">Today</span>' : '' }));
+    TA().wgBind('ea', { get: k => S.draft[+k.slice(1)], set: (k, r) => { S.draft[+k.slice(1)] = r; }, setSel: k => { S.selRow = k; }, rerender: render,
+      keys: () => ORDER.map(d => 'd' + d), weekday: k => +k.slice(1) });
+    if (edit && window.AVED) return AVED.mount($('eaGrid'), 'ea', edCfg());
+    if (window.AVED) { const td2 = weekday(TODAY()); $('eaGrid').innerHTML = AVED.viewHTML({ keys: ORDER.map(d => ({ k: 'd' + d, w: d, today: d === td2 })), get: k => g[+k.slice(1)], ref: k => ref ? ref.g[+k.slice(1)] : null, refShort: ref ? ref.short : '' }); return; }
+    $('eaGrid').innerHTML = TA().wgHTML('ea', { rows, sel: S.selRow, edit, colHead: 'Weekday', sumHead: 'Your hours', refName: ref ? ref.name : '', refShort: ref ? ref.short : '', copyAllLabel: 'Copy to every day', bars: !edit });
   }
-
-  /* Fit the board to the screen: hour rows share the space left in the right panel */
-  function fit() {
-    const v = $('eaView'), bw = $('eaBw');
-    if (!v || v.style.display !== 'block' || !bw) return;
-    if (window.matchMedia('(max-width: 860px)').matches) { v.style.setProperty('--ea-slot', '18px'); return; }
-    const avail = bw.clientHeight - 12;                        // minus top padding
-    const head = 54, band = 26, borders = 4;
-    const slot = Math.max(11, Math.min(26, Math.floor((avail - head - 5 * band - borders) / 24)));
-    v.style.setProperty('--ea-slot', slot + 'px');
+  function renderFoot() {
+    const edit = S.mode === 'edit', g = edit ? S.draft : gridOf(S.sel), ref = refInfo();
+    const diff = ref ? gridHrs(g) - gridHrs(ref.g) : 0;
+    $('eaFoot').style.display = edit && window.AVED ? 'none' : ''; if (edit && window.AVED) return;
+    $('eaFoot').innerHTML = `<div class="vlegend"><span><i class="vsw" style="background:var(--a-avail)"></i>Available</span><span><i class="vsw" style="border:1px solid var(--a-line-2)"></i>Unavailable</span>
+        ${ref ? `<span><i class="vsw" style="border:1px dashed var(--a-primary);background:transparent"></i>${ref.legend}</span><span><span class="vtag diff">Changed</span>Differs from ${ref.short}</span>` : ''}</div>
+      <span class="grow"></span>
+      ${edit ? `<div class="vtotal">Weekly available hours ${ref && diff ? `<span class="delta ${diff > 0 ? 'up' : 'dn'}">${diff > 0 ? '+' : ''}${diff} hrs</span>` : ''}<b>${gridHrs(g)} hrs</b>${ref ? `<span>vs ${gridHrs(ref.g)} hrs</span>` : ''}</div>` : ''}`;
   }
-  window.addEventListener('resize', () => { if (S) fit(); });
-
-  /* ---------------- Editing ---------------- */
-  function setRange(days, s, e) { const val = stateOf(S.draft, days, s, e) !== 'on'; days.forEach(d => { for (let h = s; h < e; h++) S.draft[d][h] = val; }); }
-  function applyKey(k) {
-    const p = k.split('|');
-    if (p[0] === 'w') setRange(ALL, 0, 24);
-    if (p[0] === 'pa') { const x = PARTS[+p[1]]; setRange(ALL, x.s, x.e); }
-    if (p[0] === 'ha') setRange(ALL, +p[1], +p[1] + 1);
-    if (p[0] === 'd') setRange([+p[1]], 0, 24);
-    if (p[0] === 'p') { const x = PARTS[+p[1]]; setRange([+p[2]], x.s, x.e); }
-    render();
-    const again = document.querySelector(`#eaView [data-k="${k}"]`); if (again) again.focus();
-  }
-  let painting = false, paintVal = true;
-  function paint(c) { const d = +c.dataset.d, h = +c.dataset.h; if (S.draft[d][h] === paintVal) return; S.draft[d][h] = paintVal; c.classList.toggle('on', paintVal); c.classList.toggle('chg', baseGrid()[d][h] !== paintVal); }
-  function bindPaint() {
-    const b = $('eaBd'); b.style.touchAction = 'none';
-    b.addEventListener('pointerdown', e => { const c = e.target.closest('.ea-sl[data-d]'); if (!c) return; e.preventDefault(); painting = true; paintVal = !S.draft[+c.dataset.d][+c.dataset.h]; paint(c); });
-    b.addEventListener('pointermove', e => { if (!painting) return; const t = document.elementFromPoint(e.clientX, e.clientY); const c = t && t.closest && t.closest('.ea-sl[data-d]'); if (c && b.contains(c)) paint(c); });
-  }
-  const endPaint = () => { if (painting) { painting = false; render(); } };
-  window.addEventListener('pointerup', endPaint);
-  window.addEventListener('pointercancel', endPaint);
 
   /* ---------------- Actions ---------------- */
   function startEdit() {
     if (S.mode === 'edit') return;
     const o = openReq();
     S.mode = 'edit';
-    S.baseKey = o ? 'req' : (S.sel === 'mgr' && S.mgrUp ? 'mgr' : 'current');
+    S.baseKey = o ? 'req' : (S.mgrUp ? 'mgr' : 'current');       // no request of mine → edit the upcoming version if there is one
     S.draft = clone(baseGrid());
-    S.eff = o && o.eff >= minEff() ? o.eff : '';
-    S.tried = false; S.compare = false;
+    S.eff = o && o.eff >= minEff() ? o.eff : (!o && S.mgrUp && S.mgrUp.eff >= minEff() ? S.mgrUp.eff : '');
+    S.tried = false; S.compare = false; S.selRow = null;
+    if (window.AVED) AVED.reset('ea');
     render();
   }
-  function exitEdit() { S.mode = 'view'; S.draft = null; S.baseKey = null; S.eff = ''; S.tried = false; }
+  function exitEdit() { S.mode = 'view'; S.draft = null; S.baseKey = null; S.eff = ''; S.tried = false; S.selRow = null; }
   function guard(then) {                                                                           // R13
     if (!S || S.mode !== 'edit' || !hasChanges()) return then();
     dialog({ tone: 'warn', icon: 'alert-triangle', title: 'Discard your changes?', body: '<p>Your changes haven’t been submitted. Leaving now discards them.</p>', ok: 'Discard changes', okCls: 'danger', onOk: then });
@@ -437,7 +355,11 @@
       body += '<p>Your manager already approved this request. Updating it sets it back to <b>Pending approval</b>.</p>';
     }
     if (gridHrs(S.draft) === 0) { title = title || 'Submit with no available hours?'; body += `<p>Nothing is marked available. If approved, you’ll show as <b>unavailable all week</b> from ${fmt(E)}.</p>`; }   // R7
-    if (body && S.mgrUp) body += `<p>If approved, this also replaces your manager’s change from ${fmt(S.mgrUp.eff)}.</p>`;
+    if (S.mgrUp && S.baseKey === 'mgr') {
+      title = title || 'Replace the upcoming availability?'; ok = 'Submit request';
+      body += `<p>Your manager’s upcoming availability from <b>${fmt(S.mgrUp.eff)}</b> (${gridHrs(S.mgrUp.grid)} hrs/week) will be <b>replaced by this request</b>.</p>
+        <p>The request goes to your manager as <b>Pending approval</b>. Until it’s approved, your current availability keeps applying.</p>`;
+    }
     if (!body) return commit(E);
     dialog({ tone, icon: tone === 'danger' ? 'alert-triangle' : 'send', title, body, ok, okCls: tone === 'danger' ? 'danger' : 'primary', onOk: () => commit(E) });
   }
@@ -456,7 +378,20 @@
       S.req = { status: 'pending', eff: E, grid: clone(S.draft), submittedAt: at, log: [{ t: 'Submitted', at, by: ME, note: 'Effective ' + fmt(E) }] };
       toast('Request submitted');
     }
+    if (S.mgrUp) {                                       // the request replaces the manager's upcoming change
+      S.req.log.push({ t: 'Replaced upcoming', at, by: 'System', note: `manager’s upcoming availability from ${fmt(S.mgrUp.eff)} removed` });
+      dropMgrUp(S.mgrUp.eff); S.mgrUp = null;
+    }
     exitEdit(); S.sel = 'req'; render(); crewSave();
+  }
+  /* remove the manager's upcoming version from the shared stores (crew app) so the schedule and the manager see it gone */
+  function dropMgrUp(eff) {
+    if (!CREW) return;
+    const id = CREW.empId, rd = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+    const wr = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+    const av = rd('zipAvailStore'); if (av && av.store && av.store[id]) { av.store[id] = av.store[id].filter(v => v.eff !== eff); wr('zipAvailStore', av); }
+    const d = rd('zipCrewData'); if (d && d.availability && d.availability[id]) { d.availability[id] = d.availability[id].filter(v => v.eff !== eff); wr('zipCrewData', d); }
+    CREW.versions = (CREW.versions || []).filter(v => v.eff !== eff);
   }
   function cancelRequest() {                                                                       // R8
     const o = openReq();
@@ -513,31 +448,26 @@
     const v = $('eaView');
     v.addEventListener('click', e => {
       const t = e.target;
-      const menu = $('eaDemoMenu');
-      if (t.closest('#eaDemoBtn')) { menu.classList.toggle('open'); return; }
-      if (!t.closest('#eaDemoMenu')) menu.classList.remove('open');
-      const sc = t.closest('[data-sc]'); if (sc) { menu.classList.remove('open'); scenario(sc.dataset.sc); render(); return toast('Scenario loaded'); }
-      if (t.closest('#eaMgrApprove')) { menu.classList.remove('open'); return mgrApprove(); }
-      if (t.closest('#eaMgrReject')) { menu.classList.remove('open'); return mgrReject(); }
-      if (t.closest('#eaBack')) return closeMyAvailability();
-      const dy = t.closest('[data-day]'); if (dy) { S.mDay = +dy.dataset.day; return render(); }
+      const tb = t.closest('[data-eatab]'); if (tb) return switchTab(tb.dataset.eatab);
+      if (S.tab === 'temp') return;                                  // temporary tab handles its own clicks
       if (t.closest('[data-start]')) return startEdit();
       const sv = t.closest('[data-sel]');
       if (sv) {
         if (S.mode === 'edit') return guard(() => { exitEdit(); S.sel = sv.dataset.sel; render(); });
-        S.sel = sv.dataset.sel; if (S.sel === 'current') S.compare = false; return render();
+        S.sel = sv.dataset.sel; return render();
       }
       if (t.closest('#eaCancelReq')) return cancelRequest();
       if (t.closest('#eaShowAct')) return showActivity();
       if (t.closest('#eaCancelEdit')) return guard(() => { exitEdit(); render(); });
       if (t.closest('#eaSubmit')) return trySubmit();
       if (S.mode !== 'edit') return;
-      const k = t.closest('[data-k]'); if (k) return applyKey(k.dataset.k);
+      const im = t.closest('[data-imode]'); if (im) { S.imode = im.dataset.imode; S.selRow = null; return render(); }
+      const f = t.closest('[data-fill]');
+      if (f) { S.draft = f.dataset.fill === 'base' ? clone(baseGrid()) : DAYS.map(() => Array(24).fill(f.dataset.fill === 'all')); return render(); }
       if (t.closest('#eaUndo')) { S.draft = clone(baseGrid()); return render(); }
       const q = t.closest('[data-q]'); if (q) { S.eff = q.dataset.q; return render(); }
     });
     v.addEventListener('change', e => {
-      if (e.target.id === 'eaCmp') { S.compare = e.target.checked; render(); }
       if (e.target.id === 'eaEff') { S.eff = e.target.value; render(); }
     });
     $('eaDCancel').onclick = closeD;
@@ -545,17 +475,18 @@
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
       if ($('eaDw').classList.contains('open')) { e.stopPropagation(); closeD(); }
-      else if ($('eaDemoMenu').classList.contains('open')) $('eaDemoMenu').classList.remove('open');
     }, true);
   }
 
   /* ---------------- Open / close ---------------- */
-  function openMyAvailability() {
+  function openMyAvailability(opts) {
     ensureDom();
+    const keepTab = S ? S.tab : 'regular';
     if (CREW) crewScenario();          // always fresh: the manager may have changed something
     else if (!S) scenario('both');
+    S.tab = (opts && opts.tab) || keepTab || 'regular';
     rollForward();
-    if (S.mode !== 'edit') { S.sel = 'current'; S.compare = false; }   // always land on the current availability
+    if (S.mode !== 'edit') { S.sel = 'current'; S.compare = false; S.selRow = null; }   // land on the current availability
     $('eaView').style.display = 'block';
     render();
   }
@@ -567,7 +498,8 @@
       if (location.hash === '#team-center/availability') history.replaceState(null, '', '#team-center');
       document.querySelectorAll('.sidebar .tc-sub a.active').forEach(a => a.classList.remove('active'));
     };
-    if (force === true) return hide();
+    if (force === true) { if (TA()) TA().crewDiscard(); return hide(); }
+    if (S && S.tab === 'temp' && TA()) return TA().crewGuard(hide);
     guard(hide);
   }
   window.openMyAvailability = openMyAvailability;

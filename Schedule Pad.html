@@ -22,6 +22,8 @@
 <link rel="stylesheet" href="availability-modal.css">
 <link rel="stylesheet" href="team-center.css">
 <link rel="stylesheet" href="employee-availability.css">
+<link rel="stylesheet" href="temp-availability.css">
+<link rel="stylesheet" href="availability-v2.css">
 <link rel="stylesheet" href="offer-modal.css">
 
 <!-- Apply persisted dark mode before paint to avoid FOUC -->
@@ -5317,7 +5319,7 @@ html += `<tr class="empRow" data-emp-id="${emp.id}">
                     <img src="${emp.avatar}" class="w-9 h-9 rounded-full border border-slate-100 shrink-0">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between w-full gap-2 pr-3">
-                            <div class="font-bold text-[13px] text-blue-600 hover:underline truncate flex items-center gap-1">
+                            <div class="emp-name font-bold text-[13px] text-blue-600 hover:underline truncate flex items-center gap-1">
                                 ${emp.name}${statusHtml}<span class="emp-note-slot">${_empNoteIconHtml(emp.id)}</span>
                             </div>
                             <div class="emp-flags">${minHrsIconHtml(emp)}${emp.alerts && emp.alerts.length ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;" onclick="openAlertPopup(event,${emp.id})"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>` : ``}</div>
@@ -5572,7 +5574,7 @@ document.addEventListener('mouseover', e => {
     const date = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + c);
     const slots = _empAvail(emp, c);
     t.innerHTML = `<div class="av-h">${emp.name}<span>${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span></div>
-        ${slots ? `<div class="av-l">Available${slots.length > 1 ? ` · ${slots.length} slots` : ''}</div>${slots.map(a => `<div class="av-r ok"><i></i><b>${_avFmt(a.start)} – ${_avFmt(a.end)}</b></div>`).join('')}`
+        ${slots ? `<div class="av-l">${slots.temp ? 'Temporary availability' : 'Available'}${slots.length > 1 ? ` · ${slots.length} slots` : ''}</div>${slots.map(a => `<div class="av-r ok"><i></i><b>${_avFmt(a.start)} – ${_avFmt(a.end)}</b></div>`).join('')}`
                 : `<div class="av-r no"><i></i>Not available this day</div>`}`;
     t.style.display = 'block';
     const r = td.getBoundingClientRect();
@@ -7090,8 +7092,12 @@ function _empNoteIcon(id) {
     }
     function hide() { if (tip) tip.style.display = 'none'; cur = null; }
     document.addEventListener('mouseover', e => {
-        const td = e.target.closest && e.target.closest('#mainScheduleTable tr.empRow > td:first-child');
-        if (!td) { if (cur !== null) hide(); return; }
+        // only the photo or the name shows the note (not the info / alert icons), and never
+        // while the Min Hrs "Information" pop-up is open
+        const hot = e.target.closest && e.target.closest('#mainScheduleTable tr.empRow > td:first-child img, #mainScheduleTable tr.empRow > td:first-child .emp-name');
+        const mhOpen = !document.getElementById('minHrsPopup')?.classList.contains('hidden');
+        if (!hot || mhOpen) { if (cur !== null) hide(); return; }
+        const td = hot.closest('td');
         const id = td.parentElement.dataset.empId;
         if (id === cur) return;
         cur = id; show(td, id);
@@ -9931,6 +9937,8 @@ function resetDemoSchedule() {
 }
 </script>
 <script src="availability-modal.js"></script>
+<script src="temp-availability.js"></script>
+<script src="avail-editor.js"></script>
 <script src="employee-availability.js"></script>
 <script src="team-center.js"></script>
 <script src="offer-modal.js"></script>

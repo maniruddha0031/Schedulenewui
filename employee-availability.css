@@ -6,7 +6,7 @@
    Uses the app's font, slate text, blue brand, green availability and
    follows the app's dark mode (html.dark).
    ===================================================================== */
-#eaView, .ea-dw {
+#eaView, .ea-dw, .av2-modal {
   --ea-surface: #ffffff; --ea-surface-2: #f8fafc; --ea-line: #e2e8f0; --ea-line-2: #cbd5e1;
   --ea-ink: #0f172a; --ea-ink-2: #475569; --ea-ink-3: #94a3b8;
   --ea-brand: #2563eb; --ea-brand-soft: #eff6ff; --ea-brand-line: #bfdbfe;
@@ -18,7 +18,7 @@
   --ea-info: #1d4ed8; --ea-info-soft: #eff6ff; --ea-info-line: #bfdbfe;
   --ea-ok: #16a34a; --ea-cell: #ffffff;
 }
-html.dark #eaView, html.dark .ea-dw {
+html.dark #eaView, html.dark .ea-dw, html.dark .av2-modal {
   --ea-surface: #1e293b; --ea-surface-2: #162032; --ea-line: #2d3f55; --ea-line-2: #3b4f6b;
   --ea-ink: #f1f5f9; --ea-ink-2: #cbd5e1; --ea-ink-3: #94a3b8;
   --ea-brand: #3b82f6; --ea-brand-soft: #172a4a; --ea-brand-line: #24426e;
